@@ -51,7 +51,7 @@ import javax.swing.ImageIcon;
  * @author vistahr
  *
  */
-public class LanChat implements Receiver, Runnable {
+public class APP implements Receiver, Runnable {
 	
 	
 	private GUI gui;
@@ -65,7 +65,7 @@ public class LanChat implements Receiver, Runnable {
 	 * 			not implemented
 	 */
 	public static void main(String[] args) {
-		Thread t = new Thread(new LanChat(new Multicast("230.0.0.1",4447,4446)));
+		Thread t = new Thread(new APP(new Multicast("230.0.0.1",4447,4446)));
 		t.start();
 	}
 	
@@ -75,7 +75,7 @@ public class LanChat implements Receiver, Runnable {
 	 * @param mcast
 	 * 			Multicast object
 	 */
-	public LanChat(Multicast mcast) {
+	public APP(Multicast mcast) {
 		this.multicast = mcast;
 		this.gui = new GUI();
 	}
