@@ -154,7 +154,7 @@ public class GUI {
 		this.frame.setSize(335,250);
 		this.frame.setResizable(false);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		this.frame.pack();
 		
 		// Windows listener
 		this.frame.addWindowListener(new WindowListener() {
