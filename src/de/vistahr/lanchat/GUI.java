@@ -94,7 +94,7 @@ public class GUI {
 	public JTextField txtChatname	= new JTextField(12);
 	public JEditorPane paneChatbox 	= new JEditorPane();
 	public JLabel lblSendMsg 		= new JLabel("Message:");
-	public JTextField txtSendMsg 	= new JTextField(25);
+	public JTextField txtSendMsg 	= new JTextField(20);
 	public JButton btnSendMsg		= new JButton("send");
 	public JButton btnMute 			= new JButton(new ImageIcon(getClass().getResource("/res/unmute.png")));
 	
@@ -109,7 +109,7 @@ public class GUI {
 		// Components settings
 		paneChatbox.setEditable(false);
 		JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
-		paneChatbox.setPreferredSize(new Dimension(295, 130));
+		paneChatbox.setPreferredSize(new Dimension(320, 150));
 		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		editorScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -147,7 +147,7 @@ public class GUI {
 		
 		// add Panels
 		this.frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
-		this.frame.getContentPane().add(panelCenter, BorderLayout.CENTER);
+		this.frame.getContentPane().add(panelCenter, BorderLayout.LINE_START);
 		this.frame.getContentPane().add(panelBottom, BorderLayout.PAGE_END);
 		
 		// Frame settings
@@ -168,7 +168,7 @@ public class GUI {
 				SystemTray tray = SystemTray.getSystemTray();
 	        	try {
 					tray.add(getTrayIcon());
-					showTrayMessageDialog(APP_NAME, "minimized to tray");
+					//showTrayMessageDialog(APP_NAME, "minimized to tray");
 				} catch (AWTException ex) {
 					showMessageDialog(ex.getMessage());
 				}
