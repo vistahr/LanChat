@@ -34,6 +34,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
 /**
  * Multicast support with socket handling, receive and send
  * functionality.
@@ -96,6 +99,9 @@ public class Multicast {
 	public void send(String stringMsg) throws IOException {
 		MulticastSocket socket =  new MulticastSocket(this.multicastPort);
 		byte[] message = stringMsg.getBytes("UTF8");
+		// to base 64
+		String message64 = new BASE64Encoder().encode(stringMsg.getBytes("UTF8")); 
+		message = message64.getBytes("UTF8");
 		socket.send(new DatagramPacket(message, message.length , InetAddress.getByName(this.networkGroup) ,this.networkPort));
 	}
 	
@@ -116,7 +122,8 @@ public class Multicast {
 			socket.receive(packet);
 			if(packet.getLength() != 0) {
 				String message = new String(packet.getData(),0,packet.getLength(), "UTF8"); 
-				r.onReceive(message);
+				byte[] byteMsg = new BASE64Decoder().decodeBuffer(message);
+				r.onReceive(new String(byteMsg));
 			}
 		}
 	}
