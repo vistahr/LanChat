@@ -42,6 +42,8 @@ import java.util.Date;
 
 import javax.swing.ImageIcon;
 
+import de.vistahr.lanchat.view.ChatView;
+
 
 /**
  * Main class handle the action listeners and 
@@ -51,10 +53,10 @@ import javax.swing.ImageIcon;
  * @author vistahr
  *
  */
-public class APP implements Receiver, Runnable {
+public class APP implements Receivable, Runnable {
 	
 	
-	private GUI gui;
+	private ChatView gui;
 	private Multicast multicast;
 	private boolean muteSound = false;
 	
@@ -77,7 +79,7 @@ public class APP implements Receiver, Runnable {
 	 */
 	public APP(Multicast mcast) {
 		this.multicast = mcast;
-		this.gui = new GUI();
+		this.gui = new ChatView();
 	}
 
 	

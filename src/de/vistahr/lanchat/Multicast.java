@@ -111,7 +111,7 @@ public class Multicast {
 	 * 			Receiver interface
 	 * @throws IOException
 	 */
-	public void receive(Receiver r) throws IOException {
+	public void receive(Receivable r) throws IOException {
 		MulticastSocket socket = this.openSocket();
 		
 		byte[] bytes = new byte[65536]; 
