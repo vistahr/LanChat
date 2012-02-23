@@ -40,6 +40,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -52,6 +59,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import de.vistahr.lanchat.model.ChatModel;
+
 
 /**
  * GUI class handle the swing gui with all components,
@@ -60,51 +69,68 @@ import javax.swing.UIManager;
  * @author vistahr
  *
  */
-public class ChatView {
+public class ChatView extends Observable implements Observer {
 	
 	
-	{ // Systemlook
-		try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-	}
-	
-
 	// Mainframe & basics
 	private JFrame frame;
 	private TrayIcon trayIcon;
 	public static String APP_NAME = "LanChat - blabla your life";
 	
+	// Components
+	private JButton btnQuit 		= new JButton("leave it");
+	private JLabel lblChatname 		= new JLabel("Chatname:");
+	private JTextField txtChatname	= new JTextField(12);
+	private JEditorPane paneChatbox = new JEditorPane();
+	private JLabel lblSendMsg 		= new JLabel("Message:");
+	private JTextField txtSendMsg 	= new JTextField(20);
+	private JButton btnSendMsg		= new JButton("send");
+	private JButton btnMute 		= new JButton(new ImageIcon(getClass().getResource("/res/unmute.png")));
+	
+	
 
-	/**
-	 * Return the initialized Frame
-	 * @return JFrame object
-	 */
-	public JFrame getFrame() {
-		return this.frame;
+	@Override
+	public void update(Observable o, Object model) {
+		setPaneChatbox(((ChatModel) model).getEntries());
+		setTxtChatname(((ChatModel) model).getChatname());
 	}
 	
 	
+	public void setTxtChatname(String name) {
+		txtChatname.setText(name);
+	}
+
 	
-	// Components
-	public JButton btnQuit 			= new JButton("leave it");
-	public JLabel lblChatname 		= new JLabel("Chatname:");
-	public JTextField txtChatname	= new JTextField(12);
-	public JEditorPane paneChatbox 	= new JEditorPane();
-	public JLabel lblSendMsg 		= new JLabel("Message:");
-	public JTextField txtSendMsg 	= new JTextField(20);
-	public JButton btnSendMsg		= new JButton("send");
-	public JButton btnMute 			= new JButton(new ImageIcon(getClass().getResource("/res/unmute.png")));
+	public void setPaneChatbox(Hashtable<Date, String> entries) {
+		Date str;
+		Set<Date> set = entries.keySet();
+		
+		Iterator<Date> itr = set.iterator();
+	    while (itr.hasNext()) {
+	      str = itr.next();
+	      paneChatbox.setText(str + ": " + entries.get(str));
+	    }
+		
+	}
 	
 	
 	/**
 	 * Constructor set up the UI and listeners
 	 */
-	public ChatView() {
+	public ChatView(Observable model) {
+		
+		model.addObserver(this);
+		
+		// Systemlook
+		try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		
+		
 		// Frame
-		this.frame = new JFrame(APP_NAME);
+		frame = new JFrame(APP_NAME);
 		
 		// Components settings
 		paneChatbox.setEditable(false);
@@ -146,25 +172,35 @@ public class ChatView {
 		
 		
 		// add Panels
-		this.frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
-		this.frame.getContentPane().add(panelCenter, BorderLayout.LINE_START);
-		this.frame.getContentPane().add(panelBottom, BorderLayout.PAGE_END);
+		frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
+		frame.getContentPane().add(panelCenter, BorderLayout.LINE_START);
+		frame.getContentPane().add(panelBottom, BorderLayout.PAGE_END);
 		
 		// Frame settings
-		this.frame.setSize(335,250);
-		this.frame.setResizable(false);
-		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.frame.pack();
+		frame.setSize(335,250);
+		frame.setResizable(false);
 		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		
+		frame.setVisible(true);
+		
+		addWindowListener();
+		
+	}
+	
+	
+	
+	private void addWindowListener() {
 		// Windows listener
-		this.frame.addWindowListener(new WindowListener() {
+		frame.addWindowListener(new WindowListener() {
 			@Override
 			public void windowOpened(WindowEvent e) {}
 			@Override
 			public void windowIconified(WindowEvent e) {
 				// hide
-				getFrame().setState(JFrame.ICONIFIED);
-				getFrame().setVisible(false);
+				frame.setState(JFrame.ICONIFIED);
+				frame.setVisible(false);
 				SystemTray tray = SystemTray.getSystemTray();
 	        	try {
 					tray.add(getTrayIcon());
@@ -183,9 +219,10 @@ public class ChatView {
 			public void windowClosed(WindowEvent e) {}
 			@Override
 			public void windowActivated(WindowEvent e) {}
-		});
-		
+		});		
 	}
+	
+	
 	
 	/**
 	 * Creates an warning dialog box
@@ -224,8 +261,8 @@ public class ChatView {
 			    trayIcon.addMouseListener(new MouseListener() {
 			        public void mouseClicked(MouseEvent e) {
 			        	// Get back
-			        	getFrame().setVisible(true);
-			        	getFrame().setState(JFrame.NORMAL);
+			        	frame.setVisible(true);
+			        	frame.setState(JFrame.NORMAL);
 			        	SystemTray.getSystemTray().remove(getTrayIcon());
 			        }
 					@Override
@@ -244,5 +281,9 @@ public class ChatView {
 		
 		return null;
 	}
+
+
+
+
 
 }

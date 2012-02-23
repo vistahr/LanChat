@@ -27,6 +27,9 @@
  * 	or implied, of Vince.
  */
 
+
+
+
 package de.vistahr.lanchat;
 
 
@@ -43,6 +46,8 @@ import java.util.Date;
 import javax.swing.ImageIcon;
 
 import de.vistahr.lanchat.view.ChatView;
+import de.vistahr.network.Multicast;
+import de.vistahr.network.Receivable;
 
 
 /**
@@ -65,12 +70,12 @@ public class APP implements Receivable, Runnable {
 	 * Starts a new LanChat in a single thread
 	 * @param args
 	 * 			not implemented
-	 */
+	 
 	public static void main(String[] args) {
 		Thread t = new Thread(new APP(new Multicast("230.0.0.1",4447,4446)));
 		t.start();
 	}
-	
+	*/
 	
 	/**
 	 * Constructor - set up the gui

@@ -27,12 +27,13 @@
  * 	or implied, of Vince.
  */
 
-package de.vistahr.lanchat;
+package de.vistahr.network;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;

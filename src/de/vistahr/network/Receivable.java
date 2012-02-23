@@ -27,7 +27,7 @@
  * 	or implied, of Vince.
  */
 
-package de.vistahr.lanchat;
+package de.vistahr.network;
 
 /**
  * Receiver interface
