@@ -36,18 +36,14 @@ import java.awt.Image;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Date;
-import java.util.Hashtable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -60,7 +56,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import de.vistahr.lanchat.model.ChatModel;
+import de.vistahr.lanchat.model.ChatData;
+import de.vistahr.lanchat.model.ChatMessage;
 
 
 /**
@@ -71,6 +68,14 @@ import de.vistahr.lanchat.model.ChatModel;
  *
  */
 public class ChatView implements Observer {
+	
+	{  // Systemlook
+		try {
+	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }	
+	}
 	
 
 	// Mainframe & basics
@@ -89,6 +94,15 @@ public class ChatView implements Observer {
 	private JButton btnMute 		= new JButton(new ImageIcon(getClass().getResource("/res/unmute.png")));
 	
 	
+	/**
+	 * Constructor set up the UI and listeners
+	 */
+	public ChatView(Observable model) {
+		model.addObserver(this);
+		initialize();
+	}
+	
+	
 	
 	public JButton getBtnQuit() {
 		return btnQuit;
@@ -97,11 +111,6 @@ public class ChatView implements Observer {
 
 	public String getTxtChatname() {
 		return txtChatname.getText();
-	}
-
-
-	public void setTxtSendMsg(String msg) {
-		this.txtSendMsg.setText(msg);
 	}
 
 	public JTextField getJTextfieldSendMsg() {
@@ -126,40 +135,25 @@ public class ChatView implements Observer {
 	private void setTxtChatname(String name) {
 		txtChatname.setText(name);
 	}
+	
+	private void setTxtSendMsg(String msg) {
+		txtSendMsg.setText(msg);
+	}
 
 	
-	private void setPaneChatbox(Hashtable<Date, String> entries) {
-		Date str;
-		Set<Date> set = entries.keySet();
+	private void setPaneChatbox(ArrayList<ChatMessage> entries) {
+		String message = "";
 		
-		Iterator<Date> itr = set.iterator();
+		Iterator<ChatMessage> itr = entries.iterator();
 	    while (itr.hasNext()) {
-	      str = itr.next();
-	      paneChatbox.setText(str + ": " + entries.get(str));
+	    	message = message + "\n" + itr.next().toString();
 	    }
-		
+	    paneChatbox.setText(message.toString());
 	}
 
 
-	
-	/**
-	 * Constructor set up the UI and listeners
-	 */
-	public ChatView(Observable model) {
-		model.addObserver(this);
-		initialize();
-	}
-	
 	
 	public void initialize() {
-		// Systemlook
-		try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-		
-
 		// Frame
 		frame = new JFrame(APP_NAME);
 		
@@ -184,8 +178,8 @@ public class ChatView implements Observer {
 		panelTop.add(panelTopR, BorderLayout.LINE_END);
 		
 		
-		JPanel panelCenter = new JPanel();
-		panelCenter.add(editorScrollPane);
+		//JPanel panelCenter = new JPanel();
+		//panelCenter.add(editorScrollPane);
 		
 		JPanel panelBottomL = new JPanel();
 		panelBottomL.add(lblSendMsg);
@@ -204,12 +198,12 @@ public class ChatView implements Observer {
 		
 		// add Panels
 		frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
-		frame.getContentPane().add(panelCenter, BorderLayout.LINE_START);
+		frame.getContentPane().add(editorScrollPane);
 		frame.getContentPane().add(panelBottom, BorderLayout.PAGE_END);
 		
 		// Frame settings
-		frame.setSize(335,250);
-		frame.setResizable(false);
+		frame.setSize(350,250);
+		frame.setResizable(true);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
@@ -226,14 +220,18 @@ public class ChatView implements Observer {
 
 	@Override
 	public void update(Observable o, Object model) {
-		setPaneChatbox(((ChatModel) model).getEntries());
-		setTxtChatname(((ChatModel) model).getChatname());
+		setPaneChatbox(((ChatData) model).getEntries());
+		setTxtChatname(((ChatData) model).getChatname());
+		setTxtSendMsg(((ChatData) model).getChatMessage());
 	}
 
 		
 
 	
 	
+
+
+
 	// TODO - move to controller
 	private void addWindowListener() {
 		// Windows listener

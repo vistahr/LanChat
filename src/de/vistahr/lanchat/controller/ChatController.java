@@ -35,15 +35,14 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 
-import de.vistahr.lanchat.model.ChatModel;
+import de.vistahr.lanchat.model.ChatData;
+import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.view.ChatView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.Receivable;
@@ -51,14 +50,14 @@ import de.vistahr.network.Receivable;
 
 public class ChatController {
 	
-	private ChatModel model;
+	private ChatData model;
 	private ChatView view;
 	private Multicast mcast;
 	private boolean muteSound = false;
 	
 	
 	
-	public ChatController(ChatModel m, ChatView v) {
+	public ChatController(ChatData m, ChatView v) {
 		model = m;
 		view  = v;
 		
@@ -76,7 +75,7 @@ public class ChatController {
 		
 		
 
-		mcast = new Multicast("230.0.0.1",4447,4446);
+		mcast = new Multicast("230.0.0.2",4447,4446);
 		
 		// Receivertaskloop
 		ExecutorService exec = Executors.newSingleThreadExecutor();
@@ -87,7 +86,13 @@ public class ChatController {
 					mcast.receive(new Receivable() {
 						@Override
 						public void onReceive(String data) {
-							model.addEntry(new Date(), data);
+							// TODO add Protocol
+							model.addEntry(new ChatMessage(model.getChatname(), data, new Date())); 
+							/* TODO sound & tray msg
+							this.gui.showTrayMessageDialog("incoming message", message);
+							if(this.muteSound == false)
+								this.playSound("/res/ding.wav");
+								*/
 						}
 					});
 				} catch (IOException e) {
@@ -156,8 +161,10 @@ public class ChatController {
 	 */
 	private void quitChatPressed(ActionEvent e) {
 		try {
-			mcast.send(view.getTxtChatname() + " leaved");
+			ChatMessage msg = new ChatMessage(model.getChatname(), "leaved", new Date());
+			mcast.send(msg.toString());
 			mcast.closeSocket();
+			
 		} catch (IOException ex) {
 			view.showMessageDialog(ex.getMessage());
 		}
@@ -170,21 +177,21 @@ public class ChatController {
 	 * @param e
 	 */
 	private void sendMessagePressed(ActionEvent e) {
-		try {
-			if(view.getTxtChatname().trim().length() == 0)
+		try { // TODO
+			/*if(model.getChatname().trim().length() == 0)
 				throw new IllegalArgumentException("invalid chatname");
 				
-			if(view.getTxtChatname().trim().length() == 0)
+			if(model.getChatMessage().trim().length() == 0)
 				throw new IllegalArgumentException("invalid chatmessage");
-			
+			*/
 			// send
-			Date sendDate = new Date();
-			SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-			mcast.send("[" + df.format(sendDate) + "] " + view.getTxtChatname() + ": " + view.getTxtSendMsg());
-			view.setTxtSendMsg("");
+			ChatMessage msg = new ChatMessage(model.getChatname(), model.getChatMessage(), new Date());
+			mcast.send(msg.toString());
+			//model.setChatMessage("");
 			
 		} catch(Exception ex) {
 			view.showMessageDialog(ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 	

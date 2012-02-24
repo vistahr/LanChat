@@ -29,14 +29,14 @@
 package de.vistahr.lanchat;
 
 import de.vistahr.lanchat.controller.ChatController;
-import de.vistahr.lanchat.model.ChatModel;
+import de.vistahr.lanchat.model.ChatData;
 import de.vistahr.lanchat.view.ChatView;
 
 public class LanChat {
 
 	
 	public static void main(String[] args) {
-		ChatModel model = new ChatModel();
+		ChatData model = new ChatData();
 		ChatView view = new ChatView(model);
 		
 		new ChatController(model, view);

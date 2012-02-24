@@ -55,6 +55,8 @@ public class Multicast {
 	private InetAddress group;
 	private MulticastSocket socket;
 	
+	private static String CHARSET = "ISO-8859-1";
+	
 	/**
 	 * Set up the basic connection data
 	 * @param networkGroup
@@ -99,10 +101,10 @@ public class Multicast {
 	 */
 	public void send(String stringMsg) throws IOException {
 		MulticastSocket socket =  new MulticastSocket(this.multicastPort);
-		byte[] message = stringMsg.getBytes("UTF8");
+		byte[] message = stringMsg.getBytes(CHARSET);
 		// to base 64
-		String message64 = new BASE64Encoder().encode(stringMsg.getBytes("UTF8")); 
-		message = message64.getBytes("UTF8");
+		String message64 = new BASE64Encoder().encode(stringMsg.getBytes(CHARSET)); 
+		message = message64.getBytes(CHARSET);
 		socket.send(new DatagramPacket(message, message.length , InetAddress.getByName(this.networkGroup) ,this.networkPort));
 	}
 	
@@ -122,7 +124,7 @@ public class Multicast {
 		while(true) { 
 			socket.receive(packet);
 			if(packet.getLength() != 0) {
-				String message = new String(packet.getData(),0,packet.getLength(), "UTF8"); 
+				String message = new String(packet.getData(),0,packet.getLength(), CHARSET); 
 				byte[] byteMsg = new BASE64Decoder().decodeBuffer(message);
 				r.onReceive(new String(byteMsg));
 			}
