@@ -36,11 +36,12 @@ import java.awt.Image;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -69,9 +70,9 @@ import de.vistahr.lanchat.model.ChatModel;
  * @author vistahr
  *
  */
-public class ChatView extends Observable implements Observer {
+public class ChatView implements Observer {
 	
-	
+
 	// Mainframe & basics
 	private JFrame frame;
 	private TrayIcon trayIcon;
@@ -88,20 +89,46 @@ public class ChatView extends Observable implements Observer {
 	private JButton btnMute 		= new JButton(new ImageIcon(getClass().getResource("/res/unmute.png")));
 	
 	
+	
+	public JButton getBtnQuit() {
+		return btnQuit;
+	}
 
-	@Override
-	public void update(Observable o, Object model) {
-		setPaneChatbox(((ChatModel) model).getEntries());
-		setTxtChatname(((ChatModel) model).getChatname());
+
+	public String getTxtChatname() {
+		return txtChatname.getText();
+	}
+
+
+	public void setTxtSendMsg(String msg) {
+		this.txtSendMsg.setText(msg);
+	}
+
+	public JTextField getJTextfieldSendMsg() {
+		return txtSendMsg;
+	}
+	
+	public String getTxtSendMsg() {
+		return txtSendMsg.getText();
+	}
+
+
+	public JButton getBtnSendMsg() {
+		return btnSendMsg;
+	}
+
+
+	public JButton getBtnMute() {
+		return btnMute;
 	}
 	
 	
-	public void setTxtChatname(String name) {
+	private void setTxtChatname(String name) {
 		txtChatname.setText(name);
 	}
 
 	
-	public void setPaneChatbox(Hashtable<Date, String> entries) {
+	private void setPaneChatbox(Hashtable<Date, String> entries) {
 		Date str;
 		Set<Date> set = entries.keySet();
 		
@@ -112,15 +139,19 @@ public class ChatView extends Observable implements Observer {
 	    }
 		
 	}
-	
+
+
 	
 	/**
 	 * Constructor set up the UI and listeners
 	 */
 	public ChatView(Observable model) {
-		
 		model.addObserver(this);
-		
+		initialize();
+	}
+	
+	
+	public void initialize() {
 		// Systemlook
 		try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -128,7 +159,7 @@ public class ChatView extends Observable implements Observer {
             e.printStackTrace();
         }
 		
-		
+
 		// Frame
 		frame = new JFrame(APP_NAME);
 		
@@ -184,13 +215,26 @@ public class ChatView extends Observable implements Observer {
 		frame.pack();
 		
 		frame.setVisible(true);
+		frame.setLocationRelativeTo(null);
+		
+		
+		Image icon = new ImageIcon(getClass().getResource("/res/chat.png")).getImage();
+		frame.setIconImage(icon);
 		
 		addWindowListener();
-		
 	}
+
+	@Override
+	public void update(Observable o, Object model) {
+		setPaneChatbox(((ChatModel) model).getEntries());
+		setTxtChatname(((ChatModel) model).getChatname());
+	}
+
+		
+
 	
 	
-	
+	// TODO - move to controller
 	private void addWindowListener() {
 		// Windows listener
 		frame.addWindowListener(new WindowListener() {
