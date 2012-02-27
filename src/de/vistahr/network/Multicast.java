@@ -55,7 +55,7 @@ public class Multicast {
 	private InetAddress group;
 	private MulticastSocket socket;
 	
-	private static String CHARSET = "ISO-8859-1";
+	private static String CHARSET = "UTF-8";
 	
 	/**
 	 * Set up the basic connection data

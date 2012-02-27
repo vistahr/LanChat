@@ -32,6 +32,8 @@ package de.vistahr.lanchat.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -43,7 +45,6 @@ import javax.swing.ImageIcon;
 
 import de.vistahr.lanchat.model.ChatData;
 import de.vistahr.lanchat.model.ChatMessage;
-import de.vistahr.lanchat.model.Message;
 import de.vistahr.lanchat.view.ChatView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.Receivable;
@@ -79,8 +80,7 @@ public class ChatController {
 			model.setChatname(InetAddress.getLocalHost().getHostName());
 			
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.setChatname("none");
 		}
 		
 		
@@ -96,10 +96,15 @@ public class ChatController {
 					mcast.receive(new Receivable() {
 						@Override
 						public void onReceive(String data) {
-							// TODO add Protocol
-							SLCP receiver = new SLCP(SLCP_VERSION);
-							if(receiver.isValid(data)) {
+							try {
+								// Parse incoming data
+								SLCP receiver = new SLCP(SLCP_VERSION);
 								model.addEntry(receiver.parse(data));
+								
+							} catch (NullPointerException e) {
+								// continue empty messaga data
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 							
 							
@@ -152,6 +157,28 @@ public class ChatController {
 				mutePressed(e);
 			}
 		});
+		// chatname
+		view.getJTextfieldChatname().addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				changeChatname(e);
+			}
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+		});
+	}
+	
+	
+	/**
+	 * Key event, when chatname changed
+	 * @param e
+	 */	
+	private void changeChatname(KeyEvent e) {
+		model.setChatname(view.getTxtChatname());
 	}
 	
 	
@@ -176,8 +203,10 @@ public class ChatController {
 	 */
 	private void quitChatPressed(ActionEvent e) {
 		try {
+			// send quit message
 			ChatMessage msg = new ChatMessage(model.getChatname(), "leaved", new Date());
-			mcast.send(msg.toString());
+			SLCP sender = new SLCP(SLCP_VERSION);
+			mcast.send(sender.generate(msg,"message"));
 			mcast.closeSocket();
 			
 		} catch (IOException ex) {
@@ -193,21 +222,26 @@ public class ChatController {
 	 */
 	private void sendMessagePressed(ActionEvent e) {
 		try { // TODO
-			/*if(model.getChatname().trim().length() == 0)
+			if(model.getChatname().trim().length() == 0)
 				throw new IllegalArgumentException("invalid chatname");
 				
-			if(model.getChatMessage().trim().length() == 0)
-				throw new IllegalArgumentException("invalid chatmessage");
-			*/
+			//if(model.getChatMessage().trim().length() == 0)
+				//throw new IllegalArgumentException("invalid chatmessage");
+			
 			// send
 			ChatMessage msg = new ChatMessage(view.getTxtChatname(), view.getTxtSendMsg(), new Date());
 			SLCP sender = new SLCP(SLCP_VERSION);
-			mcast.send(sender.generate(msg));
+			mcast.send(sender.generate(msg,"message"));
 			model.setChatMessage("");
-			
-		} catch(Exception ex) {
+		
+		} catch(IOException ex) {
 			view.showMessageDialog(ex.getMessage());
-			ex.printStackTrace();
+			
+		} catch (NullPointerException ex) {
+			view.showMessageDialog(ex.getMessage()); // TODO
+			
+		} catch (IllegalArgumentException ex) {
+			view.showMessageDialog(ex.getMessage());
 		}
 	}
 	

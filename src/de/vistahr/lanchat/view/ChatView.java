@@ -108,7 +108,10 @@ public class ChatView implements Observer {
 		return btnQuit;
 	}
 
-
+	public JTextField getJTextfieldChatname() {
+		return txtChatname;
+	}
+	
 	public String getTxtChatname() {
 		return txtChatname.getText();
 	}

@@ -31,8 +31,8 @@ package de.vistahr.network;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,6 +50,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.Message;
@@ -59,37 +60,30 @@ import de.vistahr.lanchat.model.Message;
 /**
  * Simple LanChat Protocol
  * 
- * Definition:
- * <?xml version="1.0"?>
- * <lanchat version="1">
+ * Message-Definition:
+ * <lanchat type="message" version="1">
  * 		<date></date>
  * 		<from></from>
  * 		<message></message>
+ * 		<id></id>
+ * </lanchat>
+ * 
+ * Ping-Definition:
+ * <lanchat type="ping" version="1">
+ * 		<from></from>
  * 		<id></id>
  * </lanchat>
  */
 public class SLCP implements Protocol {
 	
 	public final String version;
-	public static String ENCODING = "ISO-8859-1"; // TODO
+	public static String ENCODING = "UTF-8"; // TODO
 	
 	public SLCP(String version) {
 		this.version = version;
 	}
 	
-	
-	@Override
-	public boolean isValid(byte[] incoming) {
-		return isValid(incoming.toString());
-	}
 
-
-	@Override
-	public boolean isValid(String incoming) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-	
 	
 
 	@Override
@@ -111,6 +105,7 @@ public class SLCP implements Protocol {
 			
 			NodeList lanchat = xml.getDocumentElement().getChildNodes();
 			
+			// TODO - use getByName not item, this sucks !!!!
 			Node dateNode = lanchat.item(0);
 			String date = dateNode.getTextContent();
 			
@@ -123,10 +118,16 @@ public class SLCP implements Protocol {
 			Node IDNode = lanchat.item(3);
 			String ID = IDNode.getTextContent();
 			
+			SimpleDateFormat df = new SimpleDateFormat(ChatMessage.DATE_FORMAT);
 			
-			return new ChatMessage(from, message, new Date(date), Integer.parseInt(ID)); // TODO;
 			
-			
+			return new ChatMessage(from, message, df.parse(date), Integer.parseInt(ID)); // TODO;
+		
+		} catch (SAXParseException e) {
+			// contine - invalid input
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -144,7 +145,7 @@ public class SLCP implements Protocol {
 
 	
 	@Override
-	public String generate(Message message) {
+	public String generate(Message message, String type) {
 		String xmlString = "";
 		
 		// build XML
@@ -157,23 +158,37 @@ public class SLCP implements Protocol {
 			Element root = doc.createElement("lanchat");
 			root.setAttribute("version", version);
 			
-			Element date = doc.createElement("date");
-			SimpleDateFormat df = new SimpleDateFormat(ChatMessage.DATE_FORMAT);
-			date.appendChild(doc.createTextNode(df.format(message.getWritten())));
+
+			if(!type.equals("message") && !type.equals("ping"))
+					throw new IllegalArgumentException("type must be message or ping : ");
+			
+			root.setAttribute("type", type);
+			
+			Element msg = null;
+			if(type.equals("message")) {
+				msg = doc.createElement("message");
+				msg.appendChild(doc.createTextNode(message.getChatMessage()));
+				
+				Element date = doc.createElement("date");
+				SimpleDateFormat df = new SimpleDateFormat(ChatMessage.DATE_FORMAT);
+				date.appendChild(doc.createTextNode(df.format(message.getWritten())));
+				
+				root.appendChild(date);
+			}
 			
 			Element from = doc.createElement("from");
 			from.appendChild(doc.createTextNode(message.getChatName()));
+			root.appendChild(from);
 			
-			Element msg = doc.createElement("message");
-			msg.appendChild(doc.createTextNode(message.getChatMessage()));
+			
+			if(type.equals("message"))
+				root.appendChild(msg); // TODO - first parser with getByName refactor
 			
 			Element id = doc.createElement("id");
 			id.appendChild(doc.createTextNode("" + message.getID()));
 			
 			
-			root.appendChild(date);
-			root.appendChild(from);
-			root.appendChild(msg);
+			
 			root.appendChild(id);
 			
 			doc.appendChild(root);

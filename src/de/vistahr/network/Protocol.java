@@ -33,12 +33,9 @@ import de.vistahr.lanchat.model.Message;
 
 interface Protocol {
 
-	public boolean isValid(byte[] incoming);
-	public boolean isValid(String incoming);
-
 	public Message parse(byte[] incoming);
 	public Message parse(String incoming);
 	
-	public String generate(Message message);
+	public String generate(Message message, String type);
 	
 }
