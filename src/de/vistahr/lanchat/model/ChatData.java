@@ -37,12 +37,12 @@ public class ChatData extends Observable {
 	
 	private String chatName;
 	private String chatMessage;
-	private ArrayList<ChatMessage> entries;
+	private ArrayList<Message> entries;
 	
 	
 	
 	public ChatData() {
-		entries = new ArrayList<ChatMessage>();
+		entries = new ArrayList<Message>();
 	}
 	
 	
@@ -54,7 +54,7 @@ public class ChatData extends Observable {
 		return chatName;
 	}
 	
-	public ArrayList<ChatMessage> getEntries() {
+	public ArrayList<Message> getEntries() {
 		return entries;
 	}
 	
@@ -71,7 +71,7 @@ public class ChatData extends Observable {
 		notifyObservers(this);
 	}
 	
-	public void addEntry(ChatMessage cm) {
+	public void addEntry(Message cm) {
 		entries.add(cm);
 		setChanged();
 		notifyObservers(this);

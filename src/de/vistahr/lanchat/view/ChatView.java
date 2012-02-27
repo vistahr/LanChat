@@ -57,7 +57,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import de.vistahr.lanchat.model.ChatData;
-import de.vistahr.lanchat.model.ChatMessage;
+import de.vistahr.lanchat.model.Message;
 
 
 /**
@@ -141,10 +141,10 @@ public class ChatView implements Observer {
 	}
 
 	
-	private void setPaneChatbox(ArrayList<ChatMessage> entries) {
+	private void setPaneChatbox(ArrayList<Message> entries) {
 		String message = "";
 		
-		Iterator<ChatMessage> itr = entries.iterator();
+		Iterator<Message> itr = entries.iterator();
 	    while (itr.hasNext()) {
 	    	message = message + "\n" + itr.next().toString();
 	    }

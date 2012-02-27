@@ -28,34 +28,17 @@
  */
 package de.vistahr.network;
 
-import java.util.Date;
-
-import de.vistahr.lanchat.model.ChatMessage;
+import de.vistahr.lanchat.model.Message;
 
 
+interface Protocol {
 
-/**
- * Protocol:
- * <lanchat version="1">
- * 		<date></date>
- * 		<from></from>
- * 		<message></message>
- * 		<mac></mac>
- * </lanchat>
- */
+	public boolean isValid(byte[] incoming);
+	public boolean isValid(String incoming);
 
-public class Protocol {
-
-	public boolean isValid() {
-		return true;
-	}
-
-	public ChatMessage parse(byte[] incoming) {
-		return parse(incoming.toString());
-	}
+	public Message parse(byte[] incoming);
+	public Message parse(String incoming);
 	
-	public ChatMessage parse(String incoming) {
-		return new ChatMessage("", "", new Date());
-	}
+	public String generate(Message message);
 	
 }

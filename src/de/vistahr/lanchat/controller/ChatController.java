@@ -43,9 +43,11 @@ import javax.swing.ImageIcon;
 
 import de.vistahr.lanchat.model.ChatData;
 import de.vistahr.lanchat.model.ChatMessage;
+import de.vistahr.lanchat.model.Message;
 import de.vistahr.lanchat.view.ChatView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.Receivable;
+import de.vistahr.network.SLCP;
 
 
 public class ChatController {
@@ -55,6 +57,14 @@ public class ChatController {
 	private Multicast mcast;
 	private boolean muteSound = false;
 	
+	// Simple LanChat Protocol verion
+	public static String SLCP_VERSION = "1";
+	
+	
+	// Multicast settings
+	public static String MULTICAST_URL = "230.0.0.1";
+	public static int MULTICAST_GROUP = 4447;
+	public static int MULTICAST_PORT = 4446;
 	
 	
 	public ChatController(ChatData m, ChatView v) {
@@ -75,7 +85,7 @@ public class ChatController {
 		
 		
 
-		mcast = new Multicast("230.0.0.2",4447,4446);
+		mcast = new Multicast(MULTICAST_URL, MULTICAST_GROUP, MULTICAST_PORT);
 		
 		// Receivertaskloop
 		ExecutorService exec = Executors.newSingleThreadExecutor();
@@ -87,7 +97,12 @@ public class ChatController {
 						@Override
 						public void onReceive(String data) {
 							// TODO add Protocol
-							model.addEntry(new ChatMessage(model.getChatname(), data, new Date())); 
+							SLCP receiver = new SLCP(SLCP_VERSION);
+							if(receiver.isValid(data)) {
+								model.addEntry(receiver.parse(data));
+							}
+							
+							
 							/* TODO sound & tray msg
 							this.gui.showTrayMessageDialog("incoming message", message);
 							if(this.muteSound == false)
@@ -185,9 +200,10 @@ public class ChatController {
 				throw new IllegalArgumentException("invalid chatmessage");
 			*/
 			// send
-			ChatMessage msg = new ChatMessage(model.getChatname(), model.getChatMessage(), new Date());
-			mcast.send(msg.toString());
-			//model.setChatMessage("");
+			ChatMessage msg = new ChatMessage(view.getTxtChatname(), view.getTxtSendMsg(), new Date());
+			SLCP sender = new SLCP(SLCP_VERSION);
+			mcast.send(sender.generate(msg));
+			model.setChatMessage("");
 			
 		} catch(Exception ex) {
 			view.showMessageDialog(ex.getMessage());

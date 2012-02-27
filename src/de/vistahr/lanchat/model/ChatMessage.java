@@ -33,49 +33,78 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class ChatMessage {
+public class ChatMessage implements Message {
 	
 	private String chatName;
 	private String chatMessage;	
 	private Date written;
+	private int ID;
 	
 	public static String DATE_FORMAT = "HH:mm:ss";
 
 	
+	// TODO
 	public ChatMessage(String chatName, String chatMessage, Date written) {
 		this.chatName = chatName;
 		this.chatMessage = chatMessage;	
-		this.written = written;	
+		this.written = written;
+		this.ID = 0;
 	}
 	
 
+	public ChatMessage(String chatName, String chatMessage, Date written, int ID) {
+		this.chatName = chatName;
+		this.chatMessage = chatMessage;	
+		this.written = written;
+		this.ID = ID;
+	}
+	
+	@Override
 	public Date getWritten() {
 		return written;
 	}
 	
+	@Override
 	public void setWritten(Date written) {
 		this.written = written;
 	}
 	
+	@Override
 	public String getChatName() {
 		return chatName;
 	}
 	
+	@Override
 	public void setChatName(String chatName) {
 		this.chatName = chatName;
 	}
 	
+	@Override
 	public String getChatMessage() {
 		return chatMessage;
 	}
 	
+	@Override
 	public void setChatMessage(String chatMessage) {
 		this.chatMessage = chatMessage;
 	}
+
+	@Override
+	public int getID() {
+		return ID;
+	}
+
+	@Override
+	public void setID(int ID) {
+		this.ID = ID;
+	}
 	
+	@Override
 	public String toString() {
 		SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
 		return "[" + df.format(getWritten()) + "] " + getChatName() + ": " + getChatMessage();
 	}
+
+
 	
 }
