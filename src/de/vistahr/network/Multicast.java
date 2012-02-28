@@ -27,12 +27,13 @@
  * 	or implied, of Vince.
  */
 
-package de.vistahr.lanchat;
+package de.vistahr.network;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -53,6 +54,8 @@ public class Multicast {
 	
 	private InetAddress group;
 	private MulticastSocket socket;
+	
+	private static String CHARSET = "UTF-8";
 	
 	/**
 	 * Set up the basic connection data
@@ -98,10 +101,10 @@ public class Multicast {
 	 */
 	public void send(String stringMsg) throws IOException {
 		MulticastSocket socket =  new MulticastSocket(this.multicastPort);
-		byte[] message = stringMsg.getBytes("UTF8");
+		byte[] message = stringMsg.getBytes(CHARSET);
 		// to base 64
-		String message64 = new BASE64Encoder().encode(stringMsg.getBytes("UTF8")); 
-		message = message64.getBytes("UTF8");
+		String message64 = new BASE64Encoder().encode(stringMsg.getBytes(CHARSET)); 
+		message = message64.getBytes(CHARSET);
 		socket.send(new DatagramPacket(message, message.length , InetAddress.getByName(this.networkGroup) ,this.networkPort));
 	}
 	
@@ -111,7 +114,7 @@ public class Multicast {
 	 * 			Receiver interface
 	 * @throws IOException
 	 */
-	public void receive(Receiver r) throws IOException {
+	public void receive(Receivable r) throws IOException {
 		MulticastSocket socket = this.openSocket();
 		
 		byte[] bytes = new byte[65536]; 
@@ -121,7 +124,7 @@ public class Multicast {
 		while(true) { 
 			socket.receive(packet);
 			if(packet.getLength() != 0) {
-				String message = new String(packet.getData(),0,packet.getLength(), "UTF8"); 
+				String message = new String(packet.getData(),0,packet.getLength(), CHARSET); 
 				byte[] byteMsg = new BASE64Decoder().decodeBuffer(message);
 				r.onReceive(new String(byteMsg));
 			}
