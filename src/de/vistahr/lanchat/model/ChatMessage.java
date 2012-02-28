@@ -43,7 +43,7 @@ public class ChatMessage implements Message {
 	public static String DATE_FORMAT = "HH:mm:ss";
 
 	
-	// TODO
+	
 	public ChatMessage(String chatName, String chatMessage, Date written) {
 		this.chatName = chatName;
 		this.chatMessage = chatMessage;	

@@ -68,6 +68,7 @@ public class ChatController {
 	public static int MULTICAST_PORT = 4446;
 	
 	
+	
 	public ChatController(ChatData m, ChatView v) {
 		model = m;
 		view  = v;
@@ -206,7 +207,7 @@ public class ChatController {
 			// send quit message
 			ChatMessage msg = new ChatMessage(model.getChatname(), "leaved", new Date());
 			SLCP sender = new SLCP(SLCP_VERSION);
-			mcast.send(sender.generate(msg,"message"));
+			mcast.send(sender.generateMessage(msg));
 			mcast.closeSocket();
 			
 		} catch (IOException ex) {
@@ -231,7 +232,7 @@ public class ChatController {
 			// send
 			ChatMessage msg = new ChatMessage(view.getTxtChatname(), view.getTxtSendMsg(), new Date());
 			SLCP sender = new SLCP(SLCP_VERSION);
-			mcast.send(sender.generate(msg,"message"));
+			mcast.send(sender.generateMessage(msg));
 			model.setChatMessage("");
 		
 		} catch(IOException ex) {

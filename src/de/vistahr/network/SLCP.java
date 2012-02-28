@@ -76,16 +76,17 @@ import de.vistahr.lanchat.model.Message;
  */
 public class SLCP implements Protocol {
 	
+	
 	public final String version;
 	public static String ENCODING = "UTF-8"; // TODO
+	
+	
 	
 	public SLCP(String version) {
 		this.version = version;
 	}
 	
-
 	
-
 	@Override
 	public Message parse(byte[] incoming) {
 		return parse(incoming.toString());
@@ -141,6 +142,26 @@ public class SLCP implements Protocol {
 		
 		
 		return null;
+	}
+	
+	
+	/**
+	 * Generatemapper to send a message
+	 * @param message
+	 * @return valid xml simple lanchat string
+	 */
+	public String generateMessage(Message message) {
+		return generate(message, "message");
+	}
+	
+	
+	/**
+	 * Generatemapper to send a ping
+	 * @param message
+	 * @return valid xml simple lanchat string
+	 */
+	public String generatePing(Message message) {
+		return generate(message, "ping");
 	}
 
 	
