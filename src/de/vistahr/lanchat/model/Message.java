@@ -30,7 +30,10 @@ package de.vistahr.lanchat.model;
 
 import java.util.Date;
 
-
+/**
+ * Chat message interface
+ * @author vistahr
+ */
 public interface Message {
 	
 	public Date getWritten();

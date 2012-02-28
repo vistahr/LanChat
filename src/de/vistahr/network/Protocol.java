@@ -28,13 +28,15 @@
  */
 package de.vistahr.network;
 
+import java.text.ParseException;
+
 import de.vistahr.lanchat.model.Message;
 
 
 interface Protocol {
 
-	public Message parse(byte[] incoming);
-	public Message parse(String incoming);
+	public Message parse(byte[] incoming) throws ParseException;
+	public Message parse(String incoming) throws ParseException;
 	
 	public String generate(Message message, String type);
 	

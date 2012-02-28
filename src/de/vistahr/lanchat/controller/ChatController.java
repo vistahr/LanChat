@@ -28,20 +28,25 @@
  */
 package de.vistahr.lanchat.controller;
 
-
-
+import java.awt.AWTException;
+import java.awt.SystemTray;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 
 import de.vistahr.lanchat.model.ChatData;
 import de.vistahr.lanchat.model.ChatMessage;
@@ -50,14 +55,16 @@ import de.vistahr.network.Multicast;
 import de.vistahr.network.Receivable;
 import de.vistahr.network.SLCP;
 
-
+/**
+ * Main Chatcontroller
+ * @author vistahr
+ */
 public class ChatController {
 	
 	private ChatData model;
 	private ChatView view;
 	private Multicast mcast;
-	private boolean muteSound = false;
-	
+
 	// Simple LanChat Protocol verion
 	public static String SLCP_VERSION = "1";
 	
@@ -74,18 +81,16 @@ public class ChatController {
 		view  = v;
 		
 		// add Listeners
-		addActionListeners();
+		addListeners();
 		
+		// Set default Username
 		try {
-			// Set default Username
 			model.setChatname(InetAddress.getLocalHost().getHostName());
-			
 		} catch (UnknownHostException e) {
 			model.setChatname("none");
 		}
 		
-		
-
+		// init multicast instance
 		mcast = new Multicast(MULTICAST_URL, MULTICAST_GROUP, MULTICAST_PORT);
 		
 		// Receivertaskloop
@@ -100,25 +105,27 @@ public class ChatController {
 							try {
 								// Parse incoming data
 								SLCP receiver = new SLCP(SLCP_VERSION);
-								model.addEntry(receiver.parse(data));
+								try {
+									model.addEntry(receiver.parse(data));
+									// when muted, hide tray messages
+									if(!model.isMute()) {
+										view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage());
+										playSound(getClass().getResource("/res/ding.wav"));
+									}
+									
+								} catch(ParseException e) {
+									// continue - invalid input
+								}
 								
 							} catch (NullPointerException e) {
 								// continue empty messaga data
 							} catch (Exception e) {
-								e.printStackTrace();
+								view.showMessageDialog(e.getMessage());
 							}
-							
-							
-							/* TODO sound & tray msg
-							this.gui.showTrayMessageDialog("incoming message", message);
-							if(this.muteSound == false)
-								this.playSound("/res/ding.wav");
-								*/
 						}
 					});
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					view.showMessageDialog(e.getMessage());
 				}
 			}
 		};
@@ -127,8 +134,10 @@ public class ChatController {
 	}
 	
 
-	
-	private void addActionListeners() {
+	/**
+	 * Add viewlisteners
+	 */
+	private void addListeners() {
 		// send 
 		view.getBtnSendMsg().addActionListener(new ActionListener() {
 			@Override
@@ -136,7 +145,6 @@ public class ChatController {
 				sendMessagePressed(e);
 			}
 		});
-		
 		// send 
 		view.getJTextfieldSendMsg().addActionListener(new ActionListener() {
 			@Override
@@ -171,6 +179,35 @@ public class ChatController {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
+		// window listeners
+		view.getFrame().addWindowListener(new WindowListener() {
+			@Override
+			public void windowOpened(WindowEvent e) {}
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// hide
+				view.getFrame().setState(JFrame.ICONIFIED);
+				view.getFrame().setVisible(false);
+				SystemTray tray = SystemTray.getSystemTray();
+	        	try {
+					tray.add(view.getTrayIcon());
+				} catch (AWTException ex) {
+					view.showMessageDialog(ex.getMessage());
+				}
+			}
+			@Override
+			public void windowDeiconified(WindowEvent e) {}
+			@Override
+			public void windowDeactivated(WindowEvent e) {}
+			@Override
+			public void windowClosing(WindowEvent e) {
+				quitChatPressed(null);
+			}
+			@Override
+			public void windowClosed(WindowEvent e) {}
+			@Override
+			public void windowActivated(WindowEvent e) {}
+		});	
 	}
 	
 	
@@ -188,11 +225,11 @@ public class ChatController {
 	 * @param e
 	 */
 	private void mutePressed(ActionEvent e) {
-		if(muteSound == false) {
-			muteSound = true;
+		if(!model.isMute()) {
+			model.setMute(true);
 			view.getBtnMute().setIcon(new ImageIcon(getClass().getResource("/res/mute.png")));
 		} else {
-			muteSound = false;
+			model.setMute(false);
 			view.getBtnMute().setIcon(new ImageIcon(getClass().getResource("/res/unmute.png")));
 		}
 	}
@@ -248,6 +285,11 @@ public class ChatController {
 		} catch (IllegalArgumentException ex) {
 			view.showMessageDialog(ex.getMessage());
 		}
+	}
+	
+	
+	// TODO
+	private void playSound(URL res) {
 	}
 	
 }

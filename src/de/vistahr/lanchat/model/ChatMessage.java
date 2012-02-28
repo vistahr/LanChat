@@ -26,13 +26,15 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-
 package de.vistahr.lanchat.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
+/**
+ * A  message represents a single message
+ * @author vistahr
+ */
 public class ChatMessage implements Message {
 	
 	private String chatName;

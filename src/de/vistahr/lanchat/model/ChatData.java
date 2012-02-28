@@ -31,23 +31,35 @@ package de.vistahr.lanchat.model;
 import java.util.ArrayList;
 import java.util.Observable;
 
-
-
+/**
+ * Main model, which holds the data of the view
+ * @author vistahr
+ */
 public class ChatData extends Observable {
 	
 	private String chatName;
 	private String chatMessage;
 	private ArrayList<Message> entries;
 	
+	private boolean mute;
 	
 	
 	public ChatData() {
 		entries = new ArrayList<Message>();
 		chatMessage = "";
 		chatName = "";
+		mute = false;
 	}
 	
 	
+	public boolean isMute() {
+		return mute;
+	}
+
+	public void setMute(boolean mute) {
+		this.mute = mute;
+	}
+
 	public String getChatMessage() {
 		return chatMessage;
 	}
@@ -77,6 +89,11 @@ public class ChatData extends Observable {
 		entries.add(cm);
 		setChanged();
 		notifyObservers(this);
+	}
+	
+	
+	public Message getLastEntry() {
+		return getEntries().get(getEntries().size() - 1);
 	}
 
 

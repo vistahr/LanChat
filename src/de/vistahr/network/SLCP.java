@@ -88,12 +88,12 @@ public class SLCP implements Protocol {
 	
 	
 	@Override
-	public Message parse(byte[] incoming) {
+	public Message parse(byte[] incoming) throws ParseException {
 		return parse(incoming.toString());
 	}
 
 	@Override
-	public Message parse(String incoming) {
+	public Message parse(String incoming) throws ParseException {
 		
 		try {
 			DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
@@ -125,10 +125,8 @@ public class SLCP implements Protocol {
 			return new ChatMessage(from, message, df.parse(date), Integer.parseInt(ID)); // TODO;
 		
 		} catch (SAXParseException e) {
-			// contine - invalid input
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ParseException("invalid input", 0);
+			
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

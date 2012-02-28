@@ -32,9 +32,12 @@ import de.vistahr.lanchat.controller.ChatController;
 import de.vistahr.lanchat.model.ChatData;
 import de.vistahr.lanchat.view.ChatView;
 
+/**
+ * Startclass for lanchat init the maincontroller, model & view
+ * @author vistahr
+ */
 public class LanChat {
 
-	
 	public static void main(String[] args) {
 		ChatData model = new ChatData();
 		ChatView view = new ChatView(model);

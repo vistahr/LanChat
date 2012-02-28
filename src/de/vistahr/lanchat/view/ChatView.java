@@ -26,10 +26,8 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-
 package de.vistahr.lanchat.view;
 
-import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -38,8 +36,6 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Observable;
@@ -58,7 +54,6 @@ import javax.swing.UIManager;
 
 import de.vistahr.lanchat.model.ChatData;
 import de.vistahr.lanchat.model.Message;
-
 
 /**
  * GUI class handle the swing gui with all components,
@@ -103,6 +98,10 @@ public class ChatView implements Observer {
 	}
 	
 	
+
+	public JFrame getFrame() {
+		return frame;
+	}
 	
 	public JButton getBtnQuit() {
 		return btnQuit;
@@ -217,10 +216,18 @@ public class ChatView implements Observer {
 		
 		Image icon = new ImageIcon(getClass().getResource("/res/chat.png")).getImage();
 		frame.setIconImage(icon);
-		
-		addWindowListener();
 	}
-
+	
+	// TODO - auto grown sendTxtMsgField
+	private void addListeners() {
+		//getJTextfieldSendMsg().addL
+	}
+	
+	
+	
+	/**
+	 * Refresh observed Data
+	 */
 	@Override
 	public void update(Observable o, Object model) {
 		setPaneChatbox(((ChatData) model).getEntries());
@@ -228,45 +235,40 @@ public class ChatView implements Observer {
 		setTxtSendMsg(((ChatData) model).getChatMessage());
 	}
 
-		
-
 	
 	
-
-
-
-	// TODO - move to controller
-	private void addWindowListener() {
-		// Windows listener
-		frame.addWindowListener(new WindowListener() {
-			@Override
-			public void windowOpened(WindowEvent e) {}
-			@Override
-			public void windowIconified(WindowEvent e) {
-				// hide
-				frame.setState(JFrame.ICONIFIED);
-				frame.setVisible(false);
-				SystemTray tray = SystemTray.getSystemTray();
-	        	try {
-					tray.add(getTrayIcon());
-					//showTrayMessageDialog(APP_NAME, "minimized to tray");
-				} catch (AWTException ex) {
-					showMessageDialog(ex.getMessage());
-				}
+	/**
+	 * Initialize and set up the trayicon
+	 * @return TrayIcon object
+	 */
+	public TrayIcon getTrayIcon() {
+		// check if os supports tray
+		if (SystemTray.isSupported()) {
+			if(this.trayIcon == null) {
+			    Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/res/chat.png"));
+			    trayIcon = new TrayIcon(icon, APP_NAME);
+			    trayIcon.setImageAutoSize(true);
+			    trayIcon.addMouseListener(new MouseListener() {
+			        public void mouseClicked(MouseEvent e) {
+			        	// Get back
+			        	getFrame().setVisible(true);
+			        	getFrame().setState(JFrame.NORMAL);
+			        	SystemTray.getSystemTray().remove(getTrayIcon());
+			        }
+					@Override
+					public void mousePressed(MouseEvent e) {}
+					@Override
+					public void mouseReleased(MouseEvent e) {}
+					@Override
+					public void mouseEntered(MouseEvent e) {}
+					@Override
+					public void mouseExited(MouseEvent e) {}
+			    });
 			}
-			@Override
-			public void windowDeiconified(WindowEvent e) {}
-			@Override
-			public void windowDeactivated(WindowEvent e) {}
-			@Override
-			public void windowClosing(WindowEvent e) {}
-			@Override
-			public void windowClosed(WindowEvent e) {}
-			@Override
-			public void windowActivated(WindowEvent e) {}
-		});		
+		    return trayIcon;
+		}
+		return null;
 	}
-	
 	
 	
 	/**
@@ -290,45 +292,5 @@ public class ChatView implements Observer {
 		getTrayIcon().displayMessage(header, message, TrayIcon.MessageType.INFO);
 	}	
 	
-	
-	/**
-	 * Initialize and set up the trayicon
-	 * @return TrayIcon object
-	 */
-	private TrayIcon getTrayIcon() {
-		
-		if (SystemTray.isSupported()) {
-			
-			if(this.trayIcon == null) {
-			    Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/res/chat.png"));
-			    this.trayIcon = new TrayIcon(icon, APP_NAME);
-			    trayIcon.setImageAutoSize(true);
-			    trayIcon.addMouseListener(new MouseListener() {
-			        public void mouseClicked(MouseEvent e) {
-			        	// Get back
-			        	frame.setVisible(true);
-			        	frame.setState(JFrame.NORMAL);
-			        	SystemTray.getSystemTray().remove(getTrayIcon());
-			        }
-					@Override
-					public void mousePressed(MouseEvent e) {}
-					@Override
-					public void mouseReleased(MouseEvent e) {}
-					@Override
-					public void mouseEntered(MouseEvent e) {}
-					@Override
-					public void mouseExited(MouseEvent e) {}
-			    });
-			}
-			
-		    return trayIcon;
-		}
-		
-		return null;
-	}
-
-
-
-
 
 }
