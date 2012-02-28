@@ -43,6 +43,8 @@ public class ChatData extends Observable {
 	
 	public ChatData() {
 		entries = new ArrayList<Message>();
+		chatMessage = "";
+		chatName = "";
 	}
 	
 	

@@ -222,12 +222,16 @@ public class ChatController {
 	 * @param e
 	 */
 	private void sendMessagePressed(ActionEvent e) {
-		try { // TODO
+		// fill model
+		model.setChatMessage(view.getTxtSendMsg());
+		
+		try {
+			// check for empty inputs
 			if(model.getChatname().trim().length() == 0)
 				throw new IllegalArgumentException("invalid chatname");
-				
-			//if(model.getChatMessage().trim().length() == 0)
-				//throw new IllegalArgumentException("invalid chatmessage");
+			// check for empty inputs	
+			if(model.getChatMessage().trim().length() == 0)
+				throw new IllegalArgumentException("invalid chatmessage");
 			
 			// send
 			ChatMessage msg = new ChatMessage(view.getTxtChatname(), view.getTxtSendMsg(), new Date());
@@ -239,7 +243,7 @@ public class ChatController {
 			view.showMessageDialog(ex.getMessage());
 			
 		} catch (NullPointerException ex) {
-			view.showMessageDialog(ex.getMessage()); // TODO
+			view.showMessageDialog("error: modelvar not initialized");
 			
 		} catch (IllegalArgumentException ex) {
 			view.showMessageDialog(ex.getMessage());
