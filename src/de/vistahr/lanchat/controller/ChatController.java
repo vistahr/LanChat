@@ -32,6 +32,8 @@ import java.awt.AWTException;
 import java.awt.SystemTray;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -207,9 +209,15 @@ public class ChatController {
 			public void windowClosed(WindowEvent e) {}
 			@Override
 			public void windowActivated(WindowEvent e) {}
-		});	
+		});
+		// autoscroll
+		view.getEditorScrollPane().getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+			}
+		});
 	}
-	
 	
 	/**
 	 * Key event, when chatname changed

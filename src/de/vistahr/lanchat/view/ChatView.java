@@ -79,14 +79,15 @@ public class ChatView implements Observer {
 	public static String APP_NAME = "LanChat - blabla your life";
 	
 	// Components
-	private JButton btnQuit 		= new JButton("leave it");
-	private JLabel lblChatname 		= new JLabel("Chatname:");
-	private JTextField txtChatname	= new JTextField(12);
-	private JEditorPane paneChatbox = new JEditorPane();
-	private JLabel lblSendMsg 		= new JLabel("Message:");
-	private JTextField txtSendMsg 	= new JTextField(20);
-	private JButton btnSendMsg		= new JButton("send");
-	private JButton btnMute 		= new JButton(new ImageIcon(getClass().getResource("/res/unmute.png")));
+	private JButton btnQuit 			 = new JButton("leave it");
+	private JLabel lblChatname 			 = new JLabel("Chatname:");
+	private JTextField txtChatname		 = new JTextField(12);
+	private JEditorPane paneChatbox 	 = new JEditorPane();
+	private JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
+	private JLabel lblSendMsg 			 = new JLabel("Message:");
+	private JTextField txtSendMsg 		 = new JTextField(20);
+	private JButton btnSendMsg			 = new JButton("send");
+	private JButton btnMute 			 = new JButton(new ImageIcon(getClass().getResource("/res/unmute.png")));
 	
 	
 	/**
@@ -123,14 +124,16 @@ public class ChatView implements Observer {
 		return txtSendMsg.getText();
 	}
 
-
 	public JButton getBtnSendMsg() {
 		return btnSendMsg;
 	}
 
-
 	public JButton getBtnMute() {
 		return btnMute;
+	}
+	
+	public JScrollPane getEditorScrollPane() {
+		return editorScrollPane;
 	}
 	
 	
@@ -141,6 +144,7 @@ public class ChatView implements Observer {
 	private void setTxtSendMsg(String msg) {
 		txtSendMsg.setText(msg);
 	}
+
 
 	
 	private void setPaneChatbox(ArrayList<Message> entries) {
@@ -161,7 +165,6 @@ public class ChatView implements Observer {
 		
 		// Components settings
 		paneChatbox.setEditable(false);
-		JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
 		paneChatbox.setPreferredSize(new Dimension(320, 150));
 		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		editorScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
