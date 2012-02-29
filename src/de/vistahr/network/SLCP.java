@@ -86,6 +86,10 @@ public class SLCP implements Protocol {
 		this.version = version;
 	}
 	
+	public SLCP(int version) {
+		this.version = "" + version;
+	}
+	
 	
 	@Override
 	public Message parse(byte[] incoming) throws ParseException {
