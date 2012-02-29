@@ -53,9 +53,10 @@ public class Multicast {
 	private int multicastPort;
 	
 	private InetAddress group;
-	private MulticastSocket socket;
+	private MulticastSocket socket = null;
 	
 	private static String CHARSET = "UTF-8";
+	
 	
 	/**
 	 * Set up the basic connection data
@@ -70,14 +71,21 @@ public class Multicast {
 		this.networkGroup  = networkGroup;
 		this.networkPort   = networkPort;
 		this.multicastPort = multicastPort;
+		try {
+			openSocket();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
+	
 	/**
-	 * Close the current socket
-	 * @throws IOException
+	 * Get MulticastSocket
+	 * @return MulticastSocket
 	 */
-	public void closeSocket() throws IOException {
-		this.socket.leaveGroup(this.group);
+	public MulticastSocket getSocket() {
+		return socket;
 	}
 	
 	/**
@@ -86,12 +94,24 @@ public class Multicast {
 	 * @throws IOException
 	 */
 	public MulticastSocket openSocket() throws IOException {
-		this.group  = InetAddress.getByName(this.networkGroup);
-		this.socket = new MulticastSocket(this.networkPort);
-		socket.joinGroup(this.group);
-		
-		return this.socket;
+		if(socket == null) {
+			group  = InetAddress.getByName(networkGroup);
+			socket = new MulticastSocket(networkPort);
+			socket.joinGroup(group);
+		}
+		return socket;
 	}
+	
+	/**
+	 * Close the current socket
+	 * @throws IOException
+	 */
+	public void closeSocket() throws IOException {
+		socket.leaveGroup(this.group);
+		socket = null;
+	}
+	
+
 	
 	/**
 	 * Send a given message
@@ -100,7 +120,6 @@ public class Multicast {
 	 * @throws IOException
 	 */
 	public void send(String stringMsg) throws IOException {
-		MulticastSocket socket =  new MulticastSocket(this.multicastPort);
 		byte[] message = stringMsg.getBytes(CHARSET);
 		// to base 64
 		String message64 = new BASE64Encoder().encode(stringMsg.getBytes(CHARSET)); 
@@ -115,8 +134,6 @@ public class Multicast {
 	 * @throws IOException
 	 */
 	public void receive(Receivable r) throws IOException {
-		MulticastSocket socket = this.openSocket();
-		
 		byte[] bytes = new byte[65536]; 
 	    DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 	    
@@ -137,6 +154,16 @@ public class Multicast {
 	@Override
 	public String toString() {
 		return this.networkGroup + ":" + this.networkPort; 
+	}
+
+
+	public String getNetworkGroup() {
+		return networkGroup;
+	}
+
+
+	public int getNetworkPort() {
+		return networkPort;
 	}
 	
 	
