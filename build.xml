@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<project name="LanChat" basedir="." default="build">
+
+	<property name="src.dir" value="src"/>
+
+	<property name="test.dir" value="test"/>
+		
+	<property name="build.dir" value="bin"/>
+	<property name="target.dir" value="target"/>
+	
+	<property name="lib.dir" value="lib"/>
+	<property name="test.report.dir" value="report"/>
+	
+	<property name="main-class" value="de.vistahr.lanchat.LanChat"/>
+	
+	
+	<target name="init-clean">
+		<delete dir="${build.dir}"/>
+		<delete dir="${test.report.dir}" />
+	</target>
+	
+	
+	<target name="compile" depends="init-clean">
+		<mkdir dir="${build.dir}"/>
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" debug="off"/>
+		<echo message="compile to '${build.dir}' done."/>
+	</target>
+	
+	
+	<target name="test" depends="compile">
+		<mkdir dir="${test.report.dir}" />
+		<junit printsummary="yes" fork="yes" haltonfailure="no">        
+			<classpath location="${lib.dir}/junit-4.10.jar" />       
+			<formatter type="xml" />
+				<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.dir}"> 
+					<include name="**/*Test.java"/> 
+				</fileset>
+			</batchtest>
+		</junit>
+		<echo message="test done, JUnit Reports in '${test.report.dir}' generated." />
+	</target>
+	
+	
+	<target name="build" depends="test">
+		<mkdir dir="${target.dir}"/>
+		<jar destfile="${target.dir}/${ant.project.name}.jar" update="true">
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${src.dir}" excludes="**/*.java"/>
+			<manifest>
+		      <attribute name="Main-Class" value="${main-class}"/>
+		    </manifest>
+		</jar>
+		<echo message="build done, Jarfile '${target.dir}/${ant.project.name}.jar' generated."/>
+	</target>
+
+
+</project>
