@@ -13,6 +13,8 @@
 	
 	<property name="main-class" value="de.vistahr.lanchat.LanChat"/>
 	
+	<property name="ci-jar-name" value="${ant.project.name}#${GIT_COMMIT}${BUILD_ID}.jar"/>
+	 
 	
 	<target name="init-clean">
 		<delete dir="${target.dir}"/>
