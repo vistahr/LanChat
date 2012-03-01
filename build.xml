@@ -15,6 +15,7 @@
 	
 	
 	<target name="init-clean">
+		<delete dir="${target.dir}"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="${test.report.dir}" />
 	</target>
