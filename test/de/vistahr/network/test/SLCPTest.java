@@ -19,7 +19,7 @@ import de.vistahr.network.SLCP;
 public class SLCPTest {
 	
 	SLCP slcp;
-	ChatMessage msg;
+	ChatMessage globalSettedMsg;
 	
 	String protocolv1MsgOutput;
 	String protocolv1PingOutput;
@@ -32,11 +32,9 @@ public class SLCPTest {
 		slcp = new SLCP(SLCP_VERSION);
 		
 		Date dateSend = new Date();
-		SimpleDateFormat dateFormat = new SimpleDateFormat(Message.DATE_FORMAT);
-		String dateSendStr = dateFormat.format(dateSend);
 		
-		msg = new ChatMessage("testname", "testmessage", dateSend, 96);
-		protocolv1MsgOutput = "<?xml version=\"1.0\" encoding=\"" + SLCP.ENCODING + "\" standalone=\"no\"?><lanchat type=\"message\" version=\"" + SLCP_VERSION + "\"><date>" + dateSendStr + "</date><from>testname</from><message>testmessage</message><id>96</id></lanchat>";
+		globalSettedMsg = new ChatMessage("testname", "testmessage", dateSend, 96);
+		protocolv1MsgOutput = "<?xml version=\"1.0\" encoding=\"" + SLCP.ENCODING + "\" standalone=\"no\"?><lanchat type=\"message\" version=\"" + SLCP_VERSION + "\"><date>" + dateSend.toString() + "</date><from>testname</from><message>testmessage</message><id>96</id></lanchat>";
 		protocolv1PingOutput = "<?xml version=\"1.0\" encoding=\"" + SLCP.ENCODING + "\" standalone=\"no\"?><lanchat type=\"ping\" version=\"" + SLCP_VERSION + "\"><from>testname</from><id>96</id></lanchat>";
 		
 	}
@@ -44,7 +42,7 @@ public class SLCPTest {
 	@After
 	public void tearDown() throws Exception {
 		slcp = null;
-		msg = null;
+		globalSettedMsg = null;
 		protocolv1MsgOutput = "";
 		protocolv1PingOutput = "";
 	}
@@ -55,30 +53,31 @@ public class SLCPTest {
 	}
 
 	@Test
-	public void testParseByteArray() {
-		fail("Not yet implemented");
+	public void testParseByteArray() throws ParseException {
+		fail("not implemented");
 	}
 
 	@Test
 	public void testParseString() throws ParseException {
-		fail("Not yet implemented");
+		Message msgOutFromParse = slcp.parse(protocolv1MsgOutput);
+		assertEquals(globalSettedMsg, msgOutFromParse);
 	}
 
 	@Test
 	public void testGenerateMessage() {
-		String xmlOutput = slcp.generate(msg, "message");
+		String xmlOutput = slcp.generate(globalSettedMsg, "message");
 		assertEquals(protocolv1MsgOutput, xmlOutput);
 	}
 
 	@Test
 	public void testGeneratePing() {
-		String xmlOutput = slcp.generate(msg, "ping");
+		String xmlOutput = slcp.generate(globalSettedMsg, "ping");
 		assertEquals(protocolv1PingOutput, xmlOutput);
 	}
 
 	@Test
 	public void testGenerate() {
-		String xmlOutput = slcp.generate(msg, "message");
+		String xmlOutput = slcp.generate(globalSettedMsg, "message");
 		assertEquals(protocolv1MsgOutput, xmlOutput);
 	}
 
