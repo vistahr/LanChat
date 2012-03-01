@@ -54,7 +54,7 @@
 		      <attribute name="Main-Class" value="${main-class}"/>
 		    </manifest>
 		</jar>
-		<echo message="build done, Jarfile '${target.dir}/${ant.project.name}.jar' generated."/>
+		<echo message="build done, Jarfile '${target.dir}/${ci-jar-name}' generated."/>
 	</target>
 
 
