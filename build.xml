@@ -18,7 +18,9 @@
 	<property name="ci-version" value="_v01"/> 
 	
 	
-	<property name="junit" value="junit-4.9.jar"/> 
+	<path id="class.path">    
+		<fileset dir="${lib.dir}" includes="*.jar" />
+	</path>
 	
 	
 	<target name="init-clean">
@@ -30,17 +32,22 @@
 	
 	<target name="compile" depends="init-clean">
 		<mkdir dir="${build.dir}"/>
-		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" debug="off"/>
-		<echo message="compile to '${build.dir}' done."/>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,source" includeantruntime="false">
+	      <classpath refid="class.path" />
+	    </javac>
+	    <javac srcdir="${test.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,source" includeantruntime="false">
+	      <classpath refid="class.path" />
+	    </javac>
 	</target>
 	
 	
 	<target name="test" depends="compile">
 		<mkdir dir="${test.report.dir}" />
-		<junit printsummary="yes" fork="no" haltonfailure="no">        
-			<classpath location="${lib.dir}/${junit}" />       
+		<junit printsummary="yes">        
+			<classpath location="${build.dir}" />
+			<classpath refid="class.path" />      
 			<formatter type="xml" />
-				<batchtest todir="${test.report.dir}">
+			<batchtest todir="${test.report.dir}">
 				<fileset dir="${test.dir}"> 
 					<include name="**/*Test.java"/> 
 				</fileset>
