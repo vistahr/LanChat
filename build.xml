@@ -15,8 +15,10 @@
 	
 	<property environment="env"/>
 	<property name="ci-build" value="${env.BUILD_NUMBER}"/>
-	<property name="ci-version" value="v01"/> 
+	<property name="ci-version" value="_v01"/> 
 	
+	
+	<property name="junit" value="junit-4.9.jar"/> 
 	
 	
 	<target name="init-clean">
@@ -36,7 +38,7 @@
 	<target name="test" depends="compile">
 		<mkdir dir="${test.report.dir}" />
 		<junit printsummary="yes" fork="no" haltonfailure="no">        
-			<classpath location="${lib.dir}/junit-4.10.jar" />       
+			<classpath location="${lib.dir}/${junit}" />       
 			<formatter type="xml" />
 				<batchtest todir="${test.report.dir}">
 				<fileset dir="${test.dir}"> 
