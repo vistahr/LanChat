@@ -52,8 +52,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import de.vistahr.lanchat.model.ChatData;
-import de.vistahr.lanchat.model.Message;
+import de.vistahr.lanchat.model.ChatViewData;
+import de.vistahr.lanchat.model.ChatMessage;
+
 
 /**
  * GUI class handle the swing gui with all components,
@@ -64,7 +65,7 @@ import de.vistahr.lanchat.model.Message;
  */
 public class ChatView implements Observer {
 	
-	{  // Systemlook
+	{  // init systemlook before instantiate components
 		try {
 	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	    } catch (Exception e) {
@@ -72,11 +73,16 @@ public class ChatView implements Observer {
 	    }	
 	}
 	
-
 	// Mainframe & basics
 	private JFrame frame;
 	private TrayIcon trayIcon;
-	public static String APP_NAME = "LanChat - blabla your life";
+	public static final String APP_NAME = "LanChat - blabla your life";
+	
+	public static final String RES_PATH = "/res/";
+	public static final String RES_ICON_MUTE = "mute.png";
+	public static final String RES_ICON_UNMUTE = "unmute.png";
+	public static final String RES_ICON_APP = "chat.png";
+	public static final String RES_SOUND_SEND = "ding.wav";
 	
 	// Components
 	private JButton btnQuit 			 = new JButton("leave it");
@@ -87,7 +93,7 @@ public class ChatView implements Observer {
 	private JLabel lblSendMsg 			 = new JLabel("Message:");
 	private JTextField txtSendMsg 		 = new JTextField(20);
 	private JButton btnSendMsg			 = new JButton("send");
-	private JButton btnMute 			 = new JButton(new ImageIcon(getClass().getResource("/res/unmute.png")));
+	private JButton btnMute 			 = new JButton();
 	
 	
 	/**
@@ -147,10 +153,10 @@ public class ChatView implements Observer {
 
 
 	
-	private void setPaneChatbox(ArrayList<Message> entries) {
+	private void setPaneChatbox(ArrayList<ChatMessage> entries) {
 		String message = "";
 		
-		Iterator<Message> itr = entries.iterator();
+		Iterator<ChatMessage> itr = entries.iterator();
 	    while (itr.hasNext()) {
 	    	message = message + "\n" + itr.next().toString();
 	    }
@@ -193,7 +199,11 @@ public class ChatView implements Observer {
 		
 		JPanel panelBottomR = new JPanel();
 		btnMute.setPreferredSize(new Dimension(20,20));
-		
+		try {
+			btnMute.setIcon(new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_MUTE)));
+		} catch(NullPointerException e) {
+			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_MUTE);
+		}
 		
 		
 		JPanel panelBottom = new JPanel(new BorderLayout());
@@ -216,9 +226,13 @@ public class ChatView implements Observer {
 		frame.setVisible(true);
 		frame.setLocationRelativeTo(null);
 		
+		try {
+			Image icon = new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_APP)).getImage();
+			frame.setIconImage(icon);
+		} catch(NullPointerException e) {
+			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_APP);
+		}
 		
-		Image icon = new ImageIcon(getClass().getResource("/res/chat.png")).getImage();
-		frame.setIconImage(icon);
 	}
 	
 	// TODO - auto grown sendTxtMsgField
@@ -233,9 +247,9 @@ public class ChatView implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object model) {
-		setPaneChatbox(((ChatData) model).getEntries());
-		setTxtChatname(((ChatData) model).getChatname());
-		setTxtSendMsg(((ChatData) model).getChatMessage());
+		setPaneChatbox(((ChatViewData) model).getEntries());
+		setTxtChatname(((ChatViewData) model).getChatname());
+		setTxtSendMsg(((ChatViewData) model).getChatMessage());
 	}
 
 	
