@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 
 
 import sun.misc.BASE64Decoder;
@@ -66,17 +67,13 @@ public class Multicast {
 	 * 			Networkport
 	 * @param multicastPort
 	 * 			Multicastport
+	 * @throws IOException 
 	 */
-	public Multicast(String networkGroup,int networkPort,int multicastPort) {
+	public Multicast(String networkGroup,int networkPort,int multicastPort) throws IOException {
 		this.networkGroup  = networkGroup;
 		this.networkPort   = networkPort;
 		this.multicastPort = multicastPort;
-		try {
-			openSocket();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		openSocket();
 	}
 	
 	
