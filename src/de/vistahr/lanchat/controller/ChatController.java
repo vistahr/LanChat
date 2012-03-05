@@ -50,8 +50,9 @@ import java.util.concurrent.Executors;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-import de.vistahr.lanchat.model.ChatData;
+import de.vistahr.lanchat.model.ChatViewData;
 import de.vistahr.lanchat.model.ChatMessage;
+import de.vistahr.lanchat.model.ChatResponse;
 import de.vistahr.lanchat.view.ChatView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.Receivable;
@@ -63,7 +64,7 @@ import de.vistahr.network.SLCP;
  */
 public class ChatController {
 	
-	private ChatData model;
+	private ChatViewData model;
 	private ChatView view;
 	private Multicast mcast;
 
@@ -78,7 +79,7 @@ public class ChatController {
 	
 	
 	
-	public ChatController(ChatData m, ChatView v) {
+	public ChatController(ChatViewData m, ChatView v) {
 		model = m;
 		view  = v;
 		
@@ -93,7 +94,11 @@ public class ChatController {
 		}
 		
 		// init multicast instance
-		mcast = new Multicast(MULTICAST_URL, MULTICAST_GROUP, MULTICAST_PORT);
+		try {
+			mcast = new Multicast(MULTICAST_URL, MULTICAST_GROUP, MULTICAST_PORT);
+		} catch (IOException e) {
+			view.showMessageDialog(e.getMessage());
+		}
 		
 		// Receivertaskloop
 		ExecutorService exec = Executors.newSingleThreadExecutor();
@@ -108,7 +113,9 @@ public class ChatController {
 								// Parse incoming data
 								SLCP receiver = new SLCP(SLCP_VERSION);
 								try {
-									model.addEntry(receiver.parse(data));
+									ChatResponse resp = receiver.parse(data);
+									if(resp instanceof ChatMessage)
+										model.addEntry((ChatMessage)resp);
 									// when muted, hide tray messages
 									if(!model.isMute()) {
 										view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage());
@@ -233,13 +240,24 @@ public class ChatController {
 	 * @param e
 	 */
 	private void mutePressed(ActionEvent e) {
-		if(!model.isMute()) {
-			model.setMute(true);
-			view.getBtnMute().setIcon(new ImageIcon(getClass().getResource("/res/mute.png")));
-		} else {
-			model.setMute(false);
-			view.getBtnMute().setIcon(new ImageIcon(getClass().getResource("/res/unmute.png")));
-		}
+		
+			if(!model.isMute()) {
+				try {
+					model.setMute(true);
+					view.getBtnMute().setIcon(new ImageIcon(getClass().getResource(ChatView.RES_PATH + ChatView.RES_ICON_MUTE)));
+				} catch(NullPointerException ex) {
+					view.showMessageDialog("Cannot load resource " + ChatView.RES_PATH + ChatView.RES_ICON_MUTE);
+				}
+				
+			} else {
+				try {
+					model.setMute(false);
+					view.getBtnMute().setIcon(new ImageIcon(getClass().getResource(ChatView.RES_PATH + ChatView.RES_ICON_UNMUTE)));
+				} catch(NullPointerException ex) {
+					view.showMessageDialog("Cannot load resource " + ChatView.RES_PATH + ChatView.RES_ICON_UNMUTE);
+				}
+			}
+		
 	}
 	
 	
@@ -272,10 +290,10 @@ public class ChatController {
 		
 		try {
 			// check for empty inputs
-			if(model.getChatname().trim().length() == 0)
+			if(model.getChatname().length() == 0)
 				throw new IllegalArgumentException("invalid chatname");
 			// check for empty inputs	
-			if(model.getChatMessage().trim().length() == 0)
+			if(model.getChatMessage().length() == 0)
 				throw new IllegalArgumentException("invalid chatmessage");
 			
 			// send
