@@ -154,7 +154,7 @@ public class ChatView implements Observer {
 
 	
 	private void setPaneChatbox(ArrayList<ChatMessage> entries) {
-		String message = "";
+		String message = "connected...";
 		
 		Iterator<ChatMessage> itr = entries.iterator();
 	    while (itr.hasNext()) {

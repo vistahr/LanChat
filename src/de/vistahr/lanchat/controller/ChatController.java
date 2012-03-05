@@ -75,9 +75,7 @@ public class ChatController {
 	// Multicast settings
 	public static String MULTICAST_URL = "230.0.0.1";
 	public static int MULTICAST_GROUP = 4447;
-	public static int MULTICAST_PORT = 4446;
-	
-	
+
 	
 	public ChatController(ChatViewData m, ChatView v) {
 		model = m;
@@ -95,7 +93,7 @@ public class ChatController {
 		
 		// init multicast instance
 		try {
-			mcast = new Multicast(MULTICAST_URL, MULTICAST_GROUP, MULTICAST_PORT);
+			mcast = new Multicast(MULTICAST_URL, MULTICAST_GROUP);
 		} catch (IOException e) {
 			view.showMessageDialog(e.getMessage());
 		}
@@ -231,7 +229,11 @@ public class ChatController {
 	 * @param e
 	 */	
 	private void changeChatname(KeyEvent e) {
-		model.setChatname(view.getTxtChatname());
+		try {
+			model.setChatname(view.getTxtChatname());
+		} catch(IllegalArgumentException ex) {
+			model.setChatname("default");
+		}	
 	}
 	
 	
@@ -285,17 +287,10 @@ public class ChatController {
 	 * @param e
 	 */
 	private void sendMessagePressed(ActionEvent e) {
-		// fill model
-		model.setChatMessage(view.getTxtSendMsg());
-		
 		try {
-			// check for empty inputs
-			if(model.getChatname().length() == 0)
-				throw new IllegalArgumentException("invalid chatname");
-			// check for empty inputs	
-			if(model.getChatMessage().length() == 0)
-				throw new IllegalArgumentException("invalid chatmessage");
-			
+			// fill model
+			model.setChatMessage(view.getTxtSendMsg());
+		
 			// send
 			ChatMessage msg = new ChatMessage(view.getTxtChatname(), view.getTxtSendMsg(), new Date());
 			SLCP sender = new SLCP(SLCP_VERSION);
@@ -309,7 +304,7 @@ public class ChatController {
 			view.showMessageDialog("error: modelvar not initialized");
 			
 		} catch (IllegalArgumentException ex) {
-			view.showMessageDialog(ex.getMessage());
+			// no msg output for chatname & message
 		}
 	}
 	

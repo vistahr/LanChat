@@ -49,7 +49,7 @@ public class MulticastTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		m = new Multicast(ChatController.MULTICAST_URL, ChatController.MULTICAST_GROUP, ChatController.MULTICAST_PORT);
+		m = new Multicast(ChatController.MULTICAST_URL, ChatController.MULTICAST_GROUP);
 	}
 
 	@After
@@ -76,6 +76,7 @@ public class MulticastTest {
 		sStrings.add("abc");
 		sStrings.add("öäü");
 		sStrings.add("?!=$%&/(-.,;");
+		sStrings.add("This is a message users can send o.O ;-) ");
 		
 		Iterator<String> iter = sStrings.iterator();
 		while(iter.hasNext()) {

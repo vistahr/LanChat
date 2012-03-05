@@ -77,6 +77,9 @@ public class ChatViewData extends Observable {
 	
 	
 	public void setChatname(String cn) {
+		if(cn.equals("") || cn == null)
+			throw new IllegalArgumentException("No chatname setted");
+		
 		String validCharPattern = "\\W";
 		try {
 			chatName = cn.trim().replaceAll(validCharPattern, "");
@@ -91,6 +94,11 @@ public class ChatViewData extends Observable {
 	}
 
 	public void setChatMessage(String cm) {
+		if(cm.equals("") || cm == null) {
+			chatMessage = "";
+			throw new IllegalArgumentException("No chatmessage setted");
+		}
+		
 		chatMessage = cm.trim();
 		if(cm.length() > CHATMSG_LENGTH)
 			chatMessage = chatMessage.substring(0, CHATMSG_LENGTH);

@@ -75,11 +75,20 @@ public class ChatViewDataTest {
 		String msg = cvd.getChatMessage();
 		assertEquals("", msg);
 		
-		String testMessage = "wow, awesome msg";
+		String testMessage;
+		
+		testMessage = "wow, awesome msg";
 		cvd.setChatMessage(testMessage);
 		assertEquals(testMessage, cvd.getChatMessage());
+		
 	}
 
+	@Test(expected=IllegalArgumentException.class)
+	public void testSetChatnameIllegalArgumentException() {
+		String testChatname = "";
+		cvd.setChatname(testChatname);
+	}
+	
 	@Test
 	public void testGetSetChatname() {
 		String name = cvd.getChatname();
