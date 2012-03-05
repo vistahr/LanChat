@@ -30,14 +30,12 @@ package de.vistahr.network;
 
 import java.text.ParseException;
 
-import de.vistahr.lanchat.model.Message;
+import de.vistahr.lanchat.model.ChatResponse;
 
 
 interface Protocol {
 
-	public Message parse(byte[] incoming) throws ParseException;
-	public Message parse(String incoming) throws ParseException;
-	
-	public String generate(Message message, String type);
+	public ChatResponse parse(String incoming) throws ParseException;
+	public String generate(ChatResponse message, String type);
 	
 }

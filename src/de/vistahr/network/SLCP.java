@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -53,7 +53,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import de.vistahr.lanchat.model.ChatMessage;
-import de.vistahr.lanchat.model.Message;
+import de.vistahr.lanchat.model.ChatPing;
+import de.vistahr.lanchat.model.ChatResponse;
 
 
 
@@ -62,7 +63,7 @@ import de.vistahr.lanchat.model.Message;
  * 
  * Message-Definition:
  * <lanchat type="message" version="1">
- * 		<date></date>
+ * 		<tstamp></tstamp>
  * 		<from></from>
  * 		<message></message>
  * 		<id></id>
@@ -90,14 +91,9 @@ public class SLCP implements Protocol {
 		this.version = "" + version;
 	}
 	
-	
-	@Override
-	public Message parse(byte[] incoming) throws ParseException {
-		return parse(incoming.toString());
-	}
 
 	@Override
-	public Message parse(String incoming) throws ParseException {
+	public ChatResponse parse(String incoming) throws ParseException {
 		
 		try {
 			DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
@@ -107,41 +103,63 @@ public class SLCP implements Protocol {
 			
 			xml.getDocumentElement().normalize();
 			
+			Element lanchat = xml.getDocumentElement();
 			
-			NodeList lanchat = xml.getDocumentElement().getChildNodes();
+			// parse nodes
+			NodeList nl;
 			
-			// TODO - use getByName not item, this sucks !!!!
-			Node dateNode = lanchat.item(0);
-			String date = dateNode.getTextContent();
+			nl = lanchat.getElementsByTagName("tstamp");
+			Node dateNode = nl.item(0);
+			long tstamp = 0;
+			try {
+				tstamp = Long.parseLong(dateNode.getTextContent());
+			} catch(NumberFormatException e) {
+				throw new ParseException("invalid input", 0);
+			}
 			
-			Node fromNode = lanchat.item(1);
+			
+			
+			nl = lanchat.getElementsByTagName("from");
+			Node fromNode = nl.item(0);
 			String from = fromNode.getTextContent();
 			
-			Node messageNode = lanchat.item(2);
-			String message = messageNode.getTextContent();
 			
-			Node IDNode = lanchat.item(3);
+			String message = "";
+			try {
+				nl = lanchat.getElementsByTagName("message");
+				Node messageNode = nl.item(0);
+				message = messageNode.getTextContent();
+			} catch(NullPointerException e) {
+				// continue - ChatPing has no message
+			}
+				
+			nl = lanchat.getElementsByTagName("id");
+			Node IDNode = nl.item(0);
 			String ID = IDNode.getTextContent();
 			
-			SimpleDateFormat df = new SimpleDateFormat(ChatMessage.DATE_FORMAT);
+			
+			if(message == null)
+				return new ChatPing(from, new Date(tstamp), Integer.parseInt(ID));
 			
 			
-			return new ChatMessage(from, message, df.parse(date), Integer.parseInt(ID)); // TODO;
-		
+			return new ChatMessage(from, message, new Date(tstamp), Integer.parseInt(ID));
+			
+
 		} catch (SAXParseException e) {
+			throw new ParseException("invalid input", 0);
+			 
+		} catch (NullPointerException e) {
 			throw new ParseException("invalid input", 0);
 			
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		
 		return null;
 	}
@@ -152,23 +170,23 @@ public class SLCP implements Protocol {
 	 * @param message
 	 * @return valid xml simple lanchat string
 	 */
-	public String generateMessage(Message message) {
+	public String generateMessage(ChatMessage message) {
 		return generate(message, "message");
 	}
 	
 	
 	/**
 	 * Generatemapper to send a ping
-	 * @param message
+	 * @param ping
 	 * @return valid xml simple lanchat string
 	 */
-	public String generatePing(Message message) {
-		return generate(message, "ping");
+	public String generatePing(ChatPing ping) {
+		return generate(ping, "ping");
 	}
 
 	
 	@Override
-	public String generate(Message message, String type) {
+	public String generate(ChatResponse message, String type) {
 		String xmlString = "";
 		
 		// build XML
@@ -191,13 +209,11 @@ public class SLCP implements Protocol {
 			if(type.equals("message")) {
 				msg = doc.createElement("message");
 				msg.appendChild(doc.createTextNode(message.getChatMessage()));
-				
-				Element date = doc.createElement("date");
-				SimpleDateFormat df = new SimpleDateFormat(ChatMessage.DATE_FORMAT);
-				date.appendChild(doc.createTextNode(df.format(message.getWritten())));
-				
-				root.appendChild(date);
 			}
+			
+			Element date = doc.createElement("tstamp");
+			date.appendChild(doc.createTextNode("" + message.getWritten().getTime()));
+			root.appendChild(date);
 			
 			Element from = doc.createElement("from");
 			from.appendChild(doc.createTextNode(message.getChatName()));
@@ -205,11 +221,10 @@ public class SLCP implements Protocol {
 			
 			
 			if(type.equals("message"))
-				root.appendChild(msg); // TODO - first parser with getByName refactor
+				root.appendChild(msg); 
 			
 			Element id = doc.createElement("id");
 			id.appendChild(doc.createTextNode("" + message.getID()));
-			
 			
 			
 			root.appendChild(id);
@@ -231,14 +246,12 @@ public class SLCP implements Protocol {
             DOMSource source = new DOMSource(doc);
             trans.transform(source, result);
             
-            
             xmlString = sw.toString();
 			
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
