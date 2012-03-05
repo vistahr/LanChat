@@ -3,6 +3,8 @@ package de.vistahr.network.test;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,9 +41,20 @@ public class MulticastTest {
 	}
 	
 
-	@Test(timeout = 500)
-	public void testSend() throws IOException {
-		final String testSendString = "testSend";
+	@Test
+	public void testSendAndReceive() throws IOException {
+		ArrayList<String> sStrings = new ArrayList<String>();
+		sStrings.add("123");
+		sStrings.add("abc");
+		sStrings.add("öäü");
+		sStrings.add("?!=$%&/(-.,;");
+		
+		Iterator<String> iter = sStrings.iterator();
+		while(iter.hasNext()) {
+			sendAndReceive(iter.next());
+		}
+	}
+	public void sendAndReceive(final String curMsg) throws IOException {
 		t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -49,7 +62,8 @@ public class MulticastTest {
 					m.receive(new Receivable() {
 						@Override
 						public void onReceive(String data) {
-							assertEquals(testSendString, data);
+							assertEquals(curMsg, data);
+							
 						}
 					});
 				} catch (IOException e) {
@@ -57,29 +71,10 @@ public class MulticastTest {
 				}
 			}
 		});
-		m.send(testSendString);
+		m.send(curMsg);
 	}
 
-	@Test(timeout = 500)
-	public void testReceive() throws IOException {
-		final String testSendString = "testReceive";
-		t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					m.receive(new Receivable() {
-						@Override
-						public void onReceive(String data) {
-							assertEquals(testSendString, data);
-						}
-					});
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		m.send(testSendString);
-	}
+
 
 	@Test
 	public void testToString() {
