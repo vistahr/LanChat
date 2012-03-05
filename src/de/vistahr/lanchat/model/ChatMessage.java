@@ -17,7 +17,7 @@
  * 	FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Vince OR
  * 	CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
  * 	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * 	SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * 	SERVICES{ LOSS OF USE, DATA, OR PROFITS{ OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
  * 	ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * 	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * 	ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -28,20 +28,24 @@
  */
 package de.vistahr.lanchat.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * A  message represents a single message
- * @author vistahr
- */
-public class ChatMessage extends Message {
-	
+public class ChatMessage extends ChatResponse {
+
+
 	public ChatMessage(String chatName, String chatMessage, Date written) {
-		super(chatName, chatMessage, written);
+		super(chatName, chatMessage, written, 0);
+	}
+	
+	public ChatMessage(String chatName, String chatMessage, Date written, int ID) {
+		super(chatName, chatMessage, written, ID);
+	}
+	
+	public String toString() {
+		SimpleDateFormat df = new SimpleDateFormat(DATE_OUT_FORMAT);
+		return String.format("[%s]%s: %s",df.format(getWritten()),getChatName(),getChatMessage());
 	}
 
-	public ChatMessage(String chatName, String chatMessage, Date written, int ID) {
-		super(chatName, chatMessage, written,ID);
-	}
 	
 }
