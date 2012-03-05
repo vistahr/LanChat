@@ -34,6 +34,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -174,16 +176,15 @@ public class ChatController {
 			}
 		});
 		// chatname
-		view.getJTextfieldChatname().addKeyListener(new KeyListener() {
+		view.getJTextfieldChatname().addFocusListener(new FocusListener() {
 			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-			@Override
-			public void keyReleased(KeyEvent e) {
+			public void focusLost(FocusEvent e) {
 				changeChatname(e);
 			}
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 		// window listeners
@@ -228,7 +229,7 @@ public class ChatController {
 	 * Key event, when chatname changed
 	 * @param e
 	 */	
-	private void changeChatname(KeyEvent e) {
+	private void changeChatname(FocusEvent e) {
 		try {
 			model.setChatname(view.getTxtChatname());
 		} catch(IllegalArgumentException ex) {
