@@ -34,8 +34,6 @@ import java.awt.Image;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -53,8 +51,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-
-import com.sun.tools.example.debug.expr.ExpressionParser.GetFrame;
 
 import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.model.ChatMessage;
@@ -77,9 +73,6 @@ public class ChatView implements Observer {
 	    }	
 	}
 	
-	// Mainframe & basics
-	private JFrame frame;
-	private TrayIcon trayIcon;
 	public static final String APP_NAME = "LanChat - blabla your life";
 	
 	public static final String RES_PATH = "/res/";
@@ -88,6 +81,10 @@ public class ChatView implements Observer {
 	public static final String RES_ICON_APP = "chat.png";
 	public static final String RES_SOUND_SEND = "ding.wav";
 	
+	// Mainframe & basics
+	private JFrame frame;
+	private TrayIcon trayIcon;
+	
 	// Components
 	private JButton btnQuit 			 = new JButton("leave it");
 	private JLabel lblChatname 			 = new JLabel("Chatname:");
@@ -95,11 +92,15 @@ public class ChatView implements Observer {
 	private JEditorPane paneChatbox 	 = new JEditorPane();
 	private JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
 	private JLabel lblSendMsg 			 = new JLabel("Message:");
-	private JTextField txtSendMsg 		 = new JTextField(20);
+	private JTextField txtSendMsg 		 = new JTextField("");
 	private JButton btnSendMsg			 = new JButton("send");
 	private JButton btnMute 			 = new JButton();
+	
 	// Panels
+	private JPanel panelTop;
 	private JPanel panelBottom;
+	
+	
 	
 	/**
 	 * Constructor set up the UI and listeners
@@ -147,7 +148,16 @@ public class ChatView implements Observer {
 		return editorScrollPane;
 	}
 	
-	
+	public JPanel getPanelTop() {
+		return panelTop;
+	}
+
+	public JPanel getPanelBottom() {
+		return panelBottom;
+	}
+
+
+
 	private void setTxtChatname(String name) {
 		txtChatname.setText(name);
 	}
@@ -197,7 +207,7 @@ public class ChatView implements Observer {
 		}
 		
 		
-		JPanel panelTop = new JPanel(new BorderLayout());
+		panelTop = new JPanel(new BorderLayout());
 		panelTop.add(panelTopL, BorderLayout.LINE_START);
 		panelTop.add(panelTopR, BorderLayout.LINE_END);
 		
@@ -208,6 +218,7 @@ public class ChatView implements Observer {
 		JPanel panelBottomL = new JPanel();
 		panelBottomL.add(lblSendMsg);
 		panelBottomL.add(txtSendMsg);
+		txtSendMsg.setPreferredSize(new Dimension(200,30));
 		panelBottomL.add(btnSendMsg);
 
 		

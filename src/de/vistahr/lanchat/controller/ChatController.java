@@ -29,11 +29,14 @@
 package de.vistahr.lanchat.controller;
 
 import java.awt.AWTException;
+import java.awt.Dimension;
 import java.awt.SystemTray;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
@@ -49,6 +52,8 @@ import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.model.ChatMessage;
@@ -118,7 +123,7 @@ public class ChatController {
 									// when muted, hide tray messages
 									if(!model.isMute()) {
 										view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
-										playSound(getClass().getResource("/res/ding.wav"));
+										playSound(getClass().getResource(ChatView.RES_PATH + ChatView.RES_SOUND_SEND));
 									}
 									
 								} catch(ParseException e) {
@@ -182,8 +187,6 @@ public class ChatController {
 			}
 			@Override
 			public void focusGained(FocusEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		// window listeners
@@ -220,6 +223,28 @@ public class ChatController {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+			}
+		});
+		// autoresize for textinput
+		view.getPanelBottom().addComponentListener(new ComponentListener() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+			}
+			@Override
+			public void componentResized(ComponentEvent e) {
+				System.out.println(e.getComponent().getSize().width);
+				view.getJTextfieldSendMsg().setPreferredSize(new Dimension(e.getComponent().getSize().width,30));
+				JPanel panel =  (JPanel) e.getSource();
+				panel.setVisible(false); // TODO
+				panel.revalidate();
+				panel.repaint();
+				panel.setVisible(true);
+			}
+			@Override
+			public void componentMoved(ComponentEvent e) {
+			}
+			@Override
+			public void componentHidden(ComponentEvent e) {
 			}
 		});
 	}
@@ -278,6 +303,9 @@ public class ChatController {
 		} catch (IOException ex) {
 			view.showMessageDialog(ex.getMessage());
 		}
+		view.getFrame().setVisible(false);
+		view.getFrame().dispose();
+		view = null;
 		System.exit(1);
 	}
 
@@ -288,9 +316,12 @@ public class ChatController {
 	 */
 	private void sendMessagePressed(ActionEvent e) {
 		try {
+			if(view.getTxtSendMsg().equals(""))
+				throw new IllegalArgumentException();
+			
 			// fill model
 			model.setChatMessage(view.getTxtSendMsg());
-		
+			
 			// send
 			ChatMessage msg = new ChatMessage(view.getTxtChatname(), view.getTxtSendMsg(), new Date());
 			SLCP sender = new SLCP(SLCP_VERSION);
