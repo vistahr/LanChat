@@ -36,8 +36,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
@@ -52,9 +50,10 @@ import java.util.concurrent.Executors;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-import de.vistahr.lanchat.model.ChatViewData;
+import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.ChatResponse;
+import de.vistahr.lanchat.model.Name;
 import de.vistahr.lanchat.view.ChatView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.Receivable;
@@ -66,7 +65,7 @@ import de.vistahr.network.SLCP;
  */
 public class ChatController {
 	
-	private ChatViewData model;
+	private Chat model;
 	private ChatView view;
 	private Multicast mcast;
 
@@ -79,7 +78,7 @@ public class ChatController {
 	public static int MULTICAST_GROUP = 4447;
 
 	
-	public ChatController(ChatViewData m, ChatView v) {
+	public ChatController(Chat m, ChatView v) {
 		model = m;
 		view  = v;
 		
@@ -88,9 +87,9 @@ public class ChatController {
 		
 		// Set default Username
 		try {
-			model.setChatname(InetAddress.getLocalHost().getHostName());
+			model.setChatName(InetAddress.getLocalHost().getHostName());
 		} catch (UnknownHostException e) {
-			model.setChatname("none");
+			model.setChatName(Name.getDefaultFallbackName());
 		}
 		
 		// init multicast instance
@@ -118,7 +117,7 @@ public class ChatController {
 										model.addEntry((ChatMessage)resp);
 									// when muted, hide tray messages
 									if(!model.isMute()) {
-										view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage());
+										view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
 										playSound(getClass().getResource("/res/ding.wav"));
 									}
 									
@@ -231,9 +230,9 @@ public class ChatController {
 	 */	
 	private void changeChatname(FocusEvent e) {
 		try {
-			model.setChatname(view.getTxtChatname());
+			model.setChatName(view.getTxtChatname());
 		} catch(IllegalArgumentException ex) {
-			model.setChatname("default");
+			model.setChatName(Name.getDefaultFallbackName());
 		}	
 	}
 	
@@ -271,7 +270,7 @@ public class ChatController {
 	private void quitChatPressed(ActionEvent e) {
 		try {
 			// send quit message
-			ChatMessage msg = new ChatMessage(model.getChatname(), "leaved", new Date());
+			ChatMessage msg = new ChatMessage(model.getChatName().getName(), "leaved", new Date());
 			SLCP sender = new SLCP(SLCP_VERSION);
 			mcast.send(sender.generateMessage(msg));
 			mcast.closeSocket();
@@ -302,7 +301,7 @@ public class ChatController {
 			view.showMessageDialog(ex.getMessage());
 			
 		} catch (NullPointerException ex) {
-			view.showMessageDialog("error: modelvar not initialized");
+			ex.printStackTrace();
 			
 		} catch (IllegalArgumentException ex) {
 			// no msg output for chatname & message
