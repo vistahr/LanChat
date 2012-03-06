@@ -34,6 +34,8 @@ import java.awt.Image;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -52,7 +54,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import de.vistahr.lanchat.model.ChatViewData;
+import com.sun.tools.example.debug.expr.ExpressionParser.GetFrame;
+
+import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.model.ChatMessage;
 
 
@@ -94,7 +98,8 @@ public class ChatView implements Observer {
 	private JTextField txtSendMsg 		 = new JTextField(20);
 	private JButton btnSendMsg			 = new JButton("send");
 	private JButton btnMute 			 = new JButton();
-	
+	// Panels
+	private JPanel panelBottom;
 	
 	/**
 	 * Constructor set up the UI and listeners
@@ -184,6 +189,14 @@ public class ChatView implements Observer {
 		panelTopR.add(txtChatname);
 		panelTopR.add(btnMute);
 		
+		btnMute.setPreferredSize(new Dimension(20,20));
+		try {
+			btnMute.setIcon(new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_UNMUTE)));
+		} catch(NullPointerException e) {
+			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_UNMUTE);
+		}
+		
+		
 		JPanel panelTop = new JPanel(new BorderLayout());
 		panelTop.add(panelTopL, BorderLayout.LINE_START);
 		panelTop.add(panelTopR, BorderLayout.LINE_END);
@@ -196,20 +209,11 @@ public class ChatView implements Observer {
 		panelBottomL.add(lblSendMsg);
 		panelBottomL.add(txtSendMsg);
 		panelBottomL.add(btnSendMsg);
+
 		
-		JPanel panelBottomR = new JPanel();
-		btnMute.setPreferredSize(new Dimension(20,20));
-		try {
-			btnMute.setIcon(new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_MUTE)));
-		} catch(NullPointerException e) {
-			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_MUTE);
-		}
-		
-		
-		JPanel panelBottom = new JPanel(new BorderLayout());
+		panelBottom = new JPanel(new BorderLayout());
 		panelBottom.add(panelBottomL, BorderLayout.LINE_START);
-		panelBottom.add(panelBottomR, BorderLayout.LINE_END);
-		
+
 		
 		// add Panels
 		frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
@@ -235,11 +239,6 @@ public class ChatView implements Observer {
 		
 	}
 	
-	// TODO - auto grown sendTxtMsgField
-	private void addListeners() {
-		//getJTextfieldSendMsg().addL
-	}
-	
 	
 	
 	/**
@@ -247,9 +246,9 @@ public class ChatView implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object model) {
-		setPaneChatbox(((ChatViewData) model).getEntries());
-		setTxtChatname(((ChatViewData) model).getChatname());
-		setTxtSendMsg(((ChatViewData) model).getChatMessage());
+		setPaneChatbox(((Chat) model).getEntries());
+		setTxtChatname(((Chat) model).getChatName().getName());
+		setTxtSendMsg(((Chat) model).getChatMessage().getMessage());
 	}
 
 	

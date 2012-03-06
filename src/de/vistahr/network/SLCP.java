@@ -208,7 +208,7 @@ public class SLCP implements Protocol {
 			Element msg = null;
 			if(type.equals("message")) {
 				msg = doc.createElement("message");
-				msg.appendChild(doc.createTextNode(message.getChatMessage()));
+				msg.appendChild(doc.createTextNode(message.getChatMessage().getMessage()));
 			}
 			
 			Element date = doc.createElement("tstamp");
@@ -216,7 +216,7 @@ public class SLCP implements Protocol {
 			root.appendChild(date);
 			
 			Element from = doc.createElement("from");
-			from.appendChild(doc.createTextNode(message.getChatName()));
+			from.appendChild(doc.createTextNode(message.getChatName().getName()));
 			root.appendChild(from);
 			
 			

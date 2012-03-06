@@ -44,7 +44,7 @@ public class ChatMessage extends ChatResponse {
 	
 	public String toString() {
 		SimpleDateFormat df = new SimpleDateFormat(DATE_OUT_FORMAT);
-		return String.format("[%s]%s: %s",df.format(getWritten()),getChatName(),getChatMessage());
+		return String.format("[%s]%s: %s",df.format(getWritten()),getChatName().getName(),getChatMessage().getMessage());
 	}
 
 	

@@ -29,7 +29,7 @@
 package de.vistahr.lanchat;
 
 import de.vistahr.lanchat.controller.ChatController;
-import de.vistahr.lanchat.model.ChatViewData;
+import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.view.ChatView;
 
 /**
@@ -39,7 +39,7 @@ import de.vistahr.lanchat.view.ChatView;
 public class LanChat {
 
 	public static void main(String[] args) {
-		ChatViewData model = new ChatViewData();
+		Chat model = new Chat();
 		ChatView view = new ChatView(model);
 		
 		new ChatController(model, view);

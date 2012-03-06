@@ -17,7 +17,7 @@
  * 	FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Vince OR
  * 	CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
  * 	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * 	SERVICES{ LOSS OF USE, DATA, OR PROFITS{ OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * 	SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
  * 	ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * 	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * 	ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -35,9 +35,8 @@ public abstract class ChatResponse {
 
 	public final static String DATE_OUT_FORMAT = "HH:MM:ss";
 	
-
-	private String chatName;
-	private String chatMessage;	
+	private Name chatName;
+	private Message chatMessage;	
 	private Date written;
 	private int ID;
 	
@@ -49,8 +48,8 @@ public abstract class ChatResponse {
 	
 
 	public ChatResponse(String chatName, String chatMessage, Date written, int ID) {
-		this.chatName = chatName;
-		this.chatMessage = chatMessage;	
+		setChatName(chatName);
+		setChatMessage(chatMessage);
 		this.written = written;
 		this.ID = ID;
 	}
@@ -66,23 +65,23 @@ public abstract class ChatResponse {
 	}
 	
 	
-	public String getChatName() {
+	public Name getChatName() {
 		return chatName;
 	}
 	
 	
-	public void setChatName(String chatName) {
-		this.chatName = chatName;
+	public void setChatName(String cn) {
+		chatName = new Name(cn);
 	}
 	
 	
-	public String getChatMessage() {
+	public Message getChatMessage() {
 		return chatMessage;
 	}
 	
 	
-	public void setChatMessage(String chatMessage) {
-		this.chatMessage = chatMessage;
+	public void setChatMessage(String cm) {
+		chatMessage = new Message(cm);
 	}
 
 	
@@ -94,14 +93,18 @@ public abstract class ChatResponse {
 	public void setID(int ID) {
 		this.ID = ID;
 	}
+
 	
-	
-	
+	public abstract String toString();
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ID;
+		result = prime * result
+				+ ((chatMessage == null) ? 0 : chatMessage.hashCode());
 		result = prime * result
 				+ ((chatName == null) ? 0 : chatName.hashCode());
 		result = prime * result + ((written == null) ? 0 : written.hashCode());
@@ -115,10 +118,15 @@ public abstract class ChatResponse {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof ChatResponse))
 			return false;
 		ChatResponse other = (ChatResponse) obj;
 		if (ID != other.ID)
+			return false;
+		if (chatMessage == null) {
+			if (other.chatMessage != null)
+				return false;
+		} else if (!chatMessage.equals(other.chatMessage))
 			return false;
 		if (chatName == null) {
 			if (other.chatName != null)
@@ -132,5 +140,8 @@ public abstract class ChatResponse {
 			return false;
 		return true;
 	}
+
+	
+
 	
 }
