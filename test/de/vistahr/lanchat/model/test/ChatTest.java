@@ -38,15 +38,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.vistahr.lanchat.model.ChatMessage;
-import de.vistahr.lanchat.model.ChatViewData;
+import de.vistahr.lanchat.model.Chat;
 
-public class ChatViewDataTest {
+public class ChatTest {
 
-	ChatViewData cvd;
+	Chat cvd;
 	
 	@Before
 	public void setUp() throws Exception {
-		cvd = new ChatViewData();
+		cvd = new Chat();
 	}
 
 	@After
@@ -70,48 +70,7 @@ public class ChatViewDataTest {
 		assertTrue(cvd.isMute());
 	}
 
-	@Test
-	public void testGetSetChatMessage() {
-		String msg = cvd.getChatMessage();
-		assertEquals("", msg);
-		
-		String testMessage;
-		
-		testMessage = "wow, awesome msg";
-		cvd.setChatMessage(testMessage);
-		assertEquals(testMessage, cvd.getChatMessage());
-		
-	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void testSetChatnameIllegalArgumentException() {
-		String testChatname = "";
-		cvd.setChatname(testChatname);
-	}
-	
-	@Test
-	public void testGetSetChatname() {
-		String name = cvd.getChatname();
-		assertEquals("", name);
-		
-		String testChatname;
-		
-		testChatname = "coolNewChatuser_yeah";
-		cvd.setChatname(testChatname);
-		assertEquals(testChatname, cvd.getChatname());
-		
-		testChatname = "coolNewChatuser_yeahblaaaFooooBar";
-		cvd.setChatname(testChatname);
-		assertNotSame(testChatname, cvd.getChatname());
-		
-		testChatname = "häääüö";
-		cvd.setChatname(testChatname);
-		assertNotSame(testChatname, cvd.getChatname());
-		
-		testChatname = "User.WTF";
-		cvd.setChatname(testChatname);
-		assertNotSame(testChatname, cvd.getChatname());
-	}
 
 	@Test
 	public void testGetEntries() {

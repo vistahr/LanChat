@@ -59,30 +59,5 @@ public class ChatPingTest {
 		assertNotNull(cp);
 	}
 
-	@Test
-	public void testGetSetWritten() {
-		assertEquals(now.hashCode(), cp.getWritten().hashCode());
-		Date later = new Date();
-		cp.setWritten(later);
-		assertEquals(later.hashCode(), cp.getWritten().hashCode());
-	}
-
-	@Test
-	public void testGetSetChatName() {
-		assertEquals("testname", cp.getChatName());
-		cp.setChatName("wtf! buggy name?");
-		assertEquals("wtf! buggy name?", cp.getChatName());
-	}
-
-
-
-	@Test
-	public void testGetSetID() {
-		assertEquals(96, cp.getID());
-		cp.setID(500);
-		assertEquals(500, cp.getID());
-	}
-
-
 
 }

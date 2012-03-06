@@ -36,29 +36,69 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.vistahr.lanchat.model.ChatMessage;
-
-public class ChatMessageTest {
-
-	ChatMessage cm;
+public class TestChatResponse {
+	
+	MockChatResponse mock;
 	Date now;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		now = new Date();
-		cm = new ChatMessage("testname", "arg ... doh", now, 96);
+		mock = new MockChatResponse("testname", "something written.", now, 96);
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		cm = null;
+		mock = null;
 	}
-	
+
+
 	
 	@Test
-	public void testChatMessage() {
-		assertNotNull(cm);
+	public void testChatResponseStringStringDate() {
+		assertNotNull(new MockChatResponse("testname", "something written.", new Date()));
 	}
+
+	@Test
+	public void testChatResponseStringStringDateInt() {
+		assertNotNull(mock);
+	}
+
+	@Test
+	public void testGetSetWritten() {
+		assertEquals(now, mock.getWritten());
+		Date later = new Date();
+		mock.setWritten(later);
+		assertEquals(later, mock.getWritten());
+	}
+
+
+
+	@Test
+	public void testGetSetChatName() {
+		assertEquals("testname", mock.getChatName().getName());
+		mock.setChatName("newName");
+		assertEquals("newName", mock.getChatName().getName());
+	}
+
+
+
+	@Test
+	public void testGetSetChatMessage() {
+		assertEquals("something written.", mock.getChatMessage().getMessage());
+		mock.setChatMessage("simple message");
+		assertEquals("simple message", mock.getChatMessage().getMessage());
+	}
+
+
+	@Test
+	public void testGetSetID() {
+		assertEquals(96, mock.getID());
+		mock.setID(100044);
+		assertEquals(100044, mock.getID());
+	}
+
+
 
 
 }

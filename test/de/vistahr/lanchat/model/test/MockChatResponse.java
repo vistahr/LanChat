@@ -28,37 +28,24 @@
  */
 package de.vistahr.lanchat.model.test;
 
-import static org.junit.Assert.*;
-
 import java.util.Date;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import de.vistahr.lanchat.model.ChatResponse;
 
-import de.vistahr.lanchat.model.ChatMessage;
+public class MockChatResponse extends ChatResponse {
 
-public class ChatMessageTest {
-
-	ChatMessage cm;
-	Date now;
-	
-	@Before
-	public void setUp() {
-		now = new Date();
-		cm = new ChatMessage("testname", "arg ... doh", now, 96);
+	public MockChatResponse(String chatName, String chatMessage, Date written) {
+		super(chatName, chatMessage, written);
 	}
 
-	@After
-	public void tearDown() throws Exception {
-		cm = null;
-	}
-	
-	
-	@Test
-	public void testChatMessage() {
-		assertNotNull(cm);
+	public MockChatResponse(String chatName, String chatMessage, Date written,
+			int ID) {
+		super(chatName, chatMessage, written, ID);
 	}
 
+	@Override
+	public String toString() {
+		return null;
+	}
 
 }
