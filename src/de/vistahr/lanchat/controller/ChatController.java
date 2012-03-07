@@ -52,7 +52,6 @@ import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import de.vistahr.lanchat.model.Chat;
@@ -73,7 +72,9 @@ public class ChatController {
 	private Chat model;
 	private ChatView view;
 	private Multicast mcast;
-
+	
+	private ExecutorService exec;
+	
 	// Simple LanChat Protocol verion
 	public static String SLCP_VERSION = "1";
 	
@@ -86,10 +87,16 @@ public class ChatController {
 	public ChatController(Chat m, ChatView v) {
 		model = m;
 		view  = v;
-		
+		// init controller
+		initControllerAction();
 		// add Listeners
-		addListeners();
-		
+		addListenersAction();
+		// run receivertaskloop
+		runReceiverAction();
+	}
+	
+	
+	private void initControllerAction() {
 		// Set default Username
 		try {
 			model.setChatName(InetAddress.getLocalHost().getHostName());
@@ -103,9 +110,12 @@ public class ChatController {
 		} catch (IOException e) {
 			view.showMessageDialog(e.getMessage());
 		}
-		
+	}
+	
+	
+	private void runReceiverAction() {
 		// Receivertaskloop
-		ExecutorService exec = Executors.newSingleThreadExecutor();
+		exec = Executors.newSingleThreadExecutor();
 		Runnable receiverTask = new Runnable() {
 			@Override
 			public void run() {
@@ -143,47 +153,46 @@ public class ChatController {
 			}
 		};
 		exec.submit(receiverTask);
-		
 	}
 	
 
 	/**
 	 * Add viewlisteners
 	 */
-	private void addListeners() {
+	private void addListenersAction() {
 		// send 
 		view.getBtnSendMsg().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sendMessagePressed(e);
+				sendMessagePressedAction(e);
 			}
 		});
 		// send 
 		view.getJTextfieldSendMsg().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sendMessagePressed(e);
+				sendMessagePressedAction(e);
 			}
 		});
 		// quit
 		view.getBtnQuit().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				quitChatPressed(e);
+				quitChatPressedAction(e);
 			}
 		});
 		// mute
 		view.getBtnMute().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mutePressed(e);
+				mutePressedAction(e);
 			}
 		});
 		// chatname
 		view.getJTextfieldChatname().addFocusListener(new FocusListener() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				changeChatname(e);
+				changeChatnameAction(e);
 			}
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -211,7 +220,7 @@ public class ChatController {
 			public void windowDeactivated(WindowEvent e) {}
 			@Override
 			public void windowClosing(WindowEvent e) {
-				quitChatPressed(null);
+				quitChatPressedAction(null);
 			}
 			@Override
 			public void windowClosed(WindowEvent e) {}
@@ -226,19 +235,15 @@ public class ChatController {
 			}
 		});
 		// autoresize for textinput
-		view.getPanelBottom().addComponentListener(new ComponentListener() {
+		view.getFrame().addComponentListener(new ComponentListener() {
 			@Override
 			public void componentShown(ComponentEvent e) {
 			}
 			@Override
 			public void componentResized(ComponentEvent e) {
-				System.out.println(e.getComponent().getSize().width);
-				view.getJTextfieldSendMsg().setPreferredSize(new Dimension(e.getComponent().getSize().width,30));
-				JPanel panel =  (JPanel) e.getSource();
-				panel.setVisible(false); // TODO
-				panel.revalidate();
-				panel.repaint();
-				panel.setVisible(true);
+				System.out.println("" + e);
+				//view.getJTextfieldSendMsg().setPreferredSize(new Dimension(e.getComponent().getWidth() - 150 ,30));
+				//view.getJTextfieldSendMsg().revalidate();
 			}
 			@Override
 			public void componentMoved(ComponentEvent e) {
@@ -253,7 +258,7 @@ public class ChatController {
 	 * Key event, when chatname changed
 	 * @param e
 	 */	
-	private void changeChatname(FocusEvent e) {
+	private void changeChatnameAction(FocusEvent e) {
 		try {
 			model.setChatName(view.getTxtChatname());
 		} catch(IllegalArgumentException ex) {
@@ -266,7 +271,7 @@ public class ChatController {
 	 * Toggle action, event when mute button pressed
 	 * @param e
 	 */
-	private void mutePressed(ActionEvent e) {
+	private void mutePressedAction(ActionEvent e) {
 		
 			if(!model.isMute()) {
 				try {
@@ -292,7 +297,7 @@ public class ChatController {
 	 * Action event, when quit button pressed
 	 * @param e
 	 */
-	private void quitChatPressed(ActionEvent e) {
+	private void quitChatPressedAction(ActionEvent e) {
 		try {
 			// send quit message
 			ChatMessage msg = new ChatMessage(model.getChatName().getName(), "leaved", new Date());
@@ -306,7 +311,7 @@ public class ChatController {
 		view.getFrame().setVisible(false);
 		view.getFrame().dispose();
 		view = null;
-		System.exit(1);
+		exec.shutdown();
 	}
 
 	
@@ -314,7 +319,7 @@ public class ChatController {
 	 * Action event, when send message pressed
 	 * @param e
 	 */
-	private void sendMessagePressed(ActionEvent e) {
+	private void sendMessagePressedAction(ActionEvent e) {
 		try {
 			if(view.getTxtSendMsg().equals(""))
 				throw new IllegalArgumentException();

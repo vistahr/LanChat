@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -218,7 +219,11 @@ public class ChatView implements Observer {
 		JPanel panelBottomL = new JPanel();
 		panelBottomL.add(lblSendMsg);
 		panelBottomL.add(txtSendMsg);
-		txtSendMsg.setPreferredSize(new Dimension(200,30));
+		Dimension txtSendMsgDim = new Dimension(200,30);
+		txtSendMsg.setPreferredSize(txtSendMsgDim);
+		txtSendMsg.setMinimumSize(txtSendMsgDim);
+		
+		
 		panelBottomL.add(btnSendMsg);
 
 		
@@ -232,7 +237,7 @@ public class ChatView implements Observer {
 		frame.getContentPane().add(panelBottom, BorderLayout.PAGE_END);
 		
 		// Frame settings
-		frame.setSize(350,250);
+		frame.setPreferredSize(new Dimension(350,250));
 		frame.setResizable(true);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
