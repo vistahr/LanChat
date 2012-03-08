@@ -128,8 +128,9 @@ public class ChatController {
 								SLCP receiver = new SLCP(SLCP_VERSION);
 								try {
 									ChatResponse resp = receiver.parse(data);
-									if(resp instanceof ChatMessage)
+									if(resp instanceof ChatMessage) {
 										model.addEntry((ChatMessage)resp);
+									}
 									// when muted, hide tray messages
 									if(!model.isMute()) {
 										view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
@@ -321,8 +322,9 @@ public class ChatController {
 	 */
 	private void sendMessagePressedAction(ActionEvent e) {
 		try {
-			if(view.getTxtSendMsg().equals(""))
+			if(view.getTxtSendMsg().equals("")) {
 				throw new IllegalArgumentException();
+			}	
 			
 			// fill model
 			model.setChatMessage(view.getTxtSendMsg());
