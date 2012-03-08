@@ -222,6 +222,7 @@ public class ChatView implements Observer {
 		Dimension txtSendMsgDim = new Dimension(200,30);
 		txtSendMsg.setPreferredSize(txtSendMsgDim);
 		txtSendMsg.setMinimumSize(txtSendMsgDim);
+		txtSendMsg.setMaximumSize(txtSendMsgDim);
 		
 		
 		panelBottomL.add(btnSendMsg);
@@ -232,8 +233,8 @@ public class ChatView implements Observer {
 
 		
 		// add Panels
-		frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
-		frame.getContentPane().add(editorScrollPane);
+		//frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
+		//frame.getContentPane().add(editorScrollPane);
 		frame.getContentPane().add(panelBottom, BorderLayout.PAGE_END);
 		
 		// Frame settings
