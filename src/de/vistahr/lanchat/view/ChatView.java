@@ -55,6 +55,10 @@ import javax.swing.UIManager;
 
 import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.model.ChatMessage;
+import edu.cmu.relativelayout.Binding;
+import edu.cmu.relativelayout.BindingFactory;
+import edu.cmu.relativelayout.RelativeConstraints;
+import edu.cmu.relativelayout.RelativeLayout;
 
 
 /**
@@ -109,6 +113,8 @@ public class ChatView implements Observer {
 	public ChatView(Observable model) {
 		model.addObserver(this);
 		initialize();
+		initNewLayout();
+		frame.setVisible(true);
 	}
 	
 	
@@ -157,8 +163,6 @@ public class ChatView implements Observer {
 		return panelBottom;
 	}
 
-
-
 	private void setTxtChatname(String name) {
 		txtChatname.setText(name);
 	}
@@ -166,8 +170,6 @@ public class ChatView implements Observer {
 	private void setTxtSendMsg(String msg) {
 		txtSendMsg.setText(msg);
 	}
-
-
 	
 	private void setPaneChatbox(ArrayList<ChatMessage> entries) {
 		String message = "connected...";
@@ -179,11 +181,20 @@ public class ChatView implements Observer {
 	    paneChatbox.setText(message.toString());
 	}
 
-
 	
-	public void initialize() {
+	
+	private void initialize() {
 		// Frame
 		frame = new JFrame(APP_NAME);
+		
+		// Frame settings
+		frame.setPreferredSize(new Dimension(350,250));
+		frame.setResizable(true);
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		
+		frame.setLocationRelativeTo(null);
 		
 		// Components settings
 		paneChatbox.setEditable(false);
@@ -191,14 +202,6 @@ public class ChatView implements Observer {
 		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		editorScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-		// Panels
-		JPanel panelTopL = new JPanel();
-		panelTopL.add(btnQuit);
-		
-		JPanel panelTopR = new JPanel();
-		panelTopR.add(lblChatname);
-		panelTopR.add(txtChatname);
-		panelTopR.add(btnMute);
 		
 		btnMute.setPreferredSize(new Dimension(20,20));
 		try {
@@ -207,6 +210,28 @@ public class ChatView implements Observer {
 			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_UNMUTE);
 		}
 		
+		
+		try {
+			Image icon = new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_APP)).getImage();
+			frame.setIconImage(icon);
+		} catch(NullPointerException e) {
+			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_APP);
+		}
+		
+	}
+	
+	
+	private void initLayout() {
+		
+		// Panels
+		JPanel panelTopL = new JPanel();
+		panelTopL.add(btnQuit);
+		
+		JPanel panelTopR = new JPanel();
+		panelTopR.add(lblChatname);
+		panelTopR.add(txtChatname);
+		panelTopR.add(btnMute);
+
 		
 		panelTop = new JPanel(new BorderLayout());
 		panelTop.add(panelTopL, BorderLayout.LINE_START);
@@ -233,29 +258,31 @@ public class ChatView implements Observer {
 
 		
 		// add Panels
-		//frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
-		//frame.getContentPane().add(editorScrollPane);
+		frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
+		frame.getContentPane().add(editorScrollPane);
 		frame.getContentPane().add(panelBottom, BorderLayout.PAGE_END);
-		
-		// Frame settings
-		frame.setPreferredSize(new Dimension(350,250));
-		frame.setResizable(true);
-		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
-		
-		frame.setVisible(true);
-		frame.setLocationRelativeTo(null);
-		
-		try {
-			Image icon = new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_APP)).getImage();
-			frame.setIconImage(icon);
-		} catch(NullPointerException e) {
-			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_APP);
-		}
-		
 	}
 	
+	
+	private void initNewLayout() {
+		panelBottom = new JPanel(new RelativeLayout());
+		
+		BindingFactory bf = new BindingFactory();
+		
+		Binding leftEdge = bf.leftEdge();
+		
+		RelativeConstraints txtSndMsgCs = new RelativeConstraints();
+		txtSndMsgCs.addBinding(leftEdge);
+		
+		panelBottom.add(txtSendMsg,txtSndMsgCs);
+		
+		Dimension txtSendMsgDim = new Dimension(200,30);
+		txtSendMsg.setPreferredSize(txtSendMsgDim);
+		txtSendMsg.setMinimumSize(txtSendMsgDim);
+		txtSendMsg.setMaximumSize(txtSendMsgDim);
+		
+		frame.add(panelBottom);
+	}
 	
 	
 	/**
