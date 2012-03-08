@@ -29,14 +29,11 @@
 package de.vistahr.lanchat.controller;
 
 import java.awt.AWTException;
-import java.awt.Dimension;
 import java.awt.SystemTray;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
@@ -52,7 +49,6 @@ import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.model.ChatMessage;
@@ -233,24 +229,6 @@ public class ChatController {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				e.getAdjustable().setValue(e.getAdjustable().getMaximum());
-			}
-		});
-		// autoresize for textinput
-		view.getFrame().addComponentListener(new ComponentListener() {
-			@Override
-			public void componentShown(ComponentEvent e) {
-			}
-			@Override
-			public void componentResized(ComponentEvent e) {
-				System.out.println("" + e);
-				//view.getJTextfieldSendMsg().setPreferredSize(new Dimension(e.getComponent().getWidth() - 150 ,30));
-				//view.getJTextfieldSendMsg().revalidate();
-			}
-			@Override
-			public void componentMoved(ComponentEvent e) {
-			}
-			@Override
-			public void componentHidden(ComponentEvent e) {
 			}
 		});
 	}

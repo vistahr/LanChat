@@ -28,7 +28,6 @@
  */
 package de.vistahr.lanchat.view;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.SystemTray;
@@ -41,12 +40,10 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -55,7 +52,6 @@ import javax.swing.UIManager;
 
 import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.model.ChatMessage;
-import edu.cmu.relativelayout.Binding;
 import edu.cmu.relativelayout.BindingFactory;
 import edu.cmu.relativelayout.RelativeConstraints;
 import edu.cmu.relativelayout.RelativeLayout;
@@ -92,21 +88,16 @@ public class ChatView implements Observer {
 	
 	// Components
 	private JButton btnQuit 			 = new JButton("leave it");
-	private JLabel lblChatname 			 = new JLabel("Chatname:");
-	private JTextField txtChatname		 = new JTextField(12);
+	private JTextField txtChatname		 = new JTextField(15);
 	private JEditorPane paneChatbox 	 = new JEditorPane();
 	private JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
-	private JLabel lblSendMsg 			 = new JLabel("Message:");
 	private JTextField txtSendMsg 		 = new JTextField("");
 	private JButton btnSendMsg			 = new JButton("send");
 	private JButton btnMute 			 = new JButton();
 	
 	// Panels
-	private JPanel panelTop;
-	private JPanel panelBottom;
-	
-	
-	
+	private JPanel mainPanel;
+
 	/**
 	 * Constructor set up the UI and listeners
 	 */
@@ -153,14 +144,6 @@ public class ChatView implements Observer {
 	
 	public JScrollPane getEditorScrollPane() {
 		return editorScrollPane;
-	}
-	
-	public JPanel getPanelTop() {
-		return panelTop;
-	}
-
-	public JPanel getPanelBottom() {
-		return panelBottom;
 	}
 
 	private void setTxtChatname(String name) {
@@ -221,67 +204,19 @@ public class ChatView implements Observer {
 	}
 	
 	
-	private void initLayout() {
-		
-		// Panels
-		JPanel panelTopL = new JPanel();
-		panelTopL.add(btnQuit);
-		
-		JPanel panelTopR = new JPanel();
-		panelTopR.add(lblChatname);
-		panelTopR.add(txtChatname);
-		panelTopR.add(btnMute);
-
-		
-		panelTop = new JPanel(new BorderLayout());
-		panelTop.add(panelTopL, BorderLayout.LINE_START);
-		panelTop.add(panelTopR, BorderLayout.LINE_END);
-		
-		
-		//JPanel panelCenter = new JPanel();
-		//panelCenter.add(editorScrollPane);
-		
-		JPanel panelBottomL = new JPanel();
-		panelBottomL.add(lblSendMsg);
-		panelBottomL.add(txtSendMsg);
-		Dimension txtSendMsgDim = new Dimension(200,30);
-		txtSendMsg.setPreferredSize(txtSendMsgDim);
-		txtSendMsg.setMinimumSize(txtSendMsgDim);
-		txtSendMsg.setMaximumSize(txtSendMsgDim);
-		
-		
-		panelBottomL.add(btnSendMsg);
-
-		
-		panelBottom = new JPanel(new BorderLayout());
-		panelBottom.add(panelBottomL, BorderLayout.LINE_START);
-
-		
-		// add Panels
-		frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
-		frame.getContentPane().add(editorScrollPane);
-		frame.getContentPane().add(panelBottom, BorderLayout.PAGE_END);
-	}
-	
-	
 	private void initNewLayout() {
-		panelBottom = new JPanel(new RelativeLayout());
-		
 		BindingFactory bf = new BindingFactory();
-		
-		Binding leftEdge = bf.leftEdge();
-		
-		RelativeConstraints txtSndMsgCs = new RelativeConstraints();
-		txtSndMsgCs.addBinding(leftEdge);
-		
-		panelBottom.add(txtSendMsg,txtSndMsgCs);
-		
-		Dimension txtSendMsgDim = new Dimension(200,30);
-		txtSendMsg.setPreferredSize(txtSendMsgDim);
-		txtSendMsg.setMinimumSize(txtSendMsgDim);
-		txtSendMsg.setMaximumSize(txtSendMsgDim);
-		
-		frame.add(panelBottom);
+		// top
+		mainPanel = new JPanel(new RelativeLayout());
+		mainPanel.add(btnQuit, new RelativeConstraints(bf.topEdge(), bf.leftEdge()));
+		mainPanel.add(txtChatname,new RelativeConstraints(bf.rightEdge(), bf.topEdge()));
+		// center
+		mainPanel.add(editorScrollPane, new RelativeConstraints(bf.below(btnQuit), bf.leftEdge(), bf.rightEdge(), bf.above(txtSendMsg)));
+		// bottom
+		mainPanel.add(txtSendMsg, new RelativeConstraints(bf.bottomEdge(), bf.leftEdge(), bf.leftOf(btnSendMsg)));
+		mainPanel.add(btnSendMsg, new RelativeConstraints(bf.bottomEdge(), bf.rightEdge()));
+		// add to mainframe
+		frame.add(mainPanel);
 	}
 	
 	
