@@ -173,7 +173,7 @@ public class ChatView implements Observer {
 		// Frame settings
 		frame.setPreferredSize(new Dimension(350,250));
 		frame.setResizable(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // own closemethod implemented
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		
@@ -188,7 +188,7 @@ public class ChatView implements Observer {
 		
 		
 		// icon - mutebutton
-		btnMute.setPreferredSize(new Dimension(20,20));
+		btnMute.setPreferredSize(new Dimension(30,28));
 		try {
 			btnMute.setIcon(new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_UNMUTE)));
 		} catch(NullPointerException e) {
@@ -211,7 +211,8 @@ public class ChatView implements Observer {
 		// top
 		mainPanel = new JPanel(new RelativeLayout());
 		mainPanel.add(btnQuit, new RelativeConstraints(bf.topEdge(), bf.leftEdge()));
-		mainPanel.add(txtChatname,new RelativeConstraints(bf.rightEdge(), bf.topEdge()));
+		mainPanel.add(txtChatname,new RelativeConstraints(bf.topEdge(), bf.leftOf(btnMute)));
+		mainPanel.add(btnMute, new RelativeConstraints(bf.rightEdge(), bf.topEdge()));
 		// center
 		mainPanel.add(editorScrollPane, new RelativeConstraints(bf.below(btnQuit), bf.leftEdge(), bf.rightEdge(), bf.above(txtSendMsg)));
 		// bottom

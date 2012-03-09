@@ -119,29 +119,7 @@ public class ChatController {
 					mcast.receive(new Receivable() {
 						@Override
 						public void onReceive(String data) {
-							try {
-								// Parse incoming data
-								SLCP receiver = new SLCP(SLCP_VERSION);
-								try {
-									ChatResponse resp = receiver.parse(data);
-									if(resp instanceof ChatMessage) {
-										model.addEntry((ChatMessage)resp);
-									}
-									// when muted, hide tray messages
-									if(!model.isMute()) {
-										view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
-										playSound(getClass().getResource(ChatView.RES_PATH + ChatView.RES_SOUND_SEND));
-									}
-									
-								} catch(ParseException e) {
-									// continue - invalid input
-								}
-								
-							} catch (NullPointerException e) {
-								// continue empty messaga data
-							} catch (Exception e) {
-								view.showMessageDialog(e.getMessage());
-							}
+							receiveMessageAction(data);
 						}
 					});
 				} catch (IOException e) {
@@ -321,6 +299,36 @@ public class ChatController {
 			
 		} catch (IllegalArgumentException ex) {
 			// no msg output for chatname & message
+		}
+	}
+	
+	
+	private void receiveMessageAction(String data) {
+		try {
+			// Parse incoming data
+			SLCP receiver = new SLCP(SLCP_VERSION);
+			try {
+				ChatResponse resp = receiver.parse(data);
+				if(resp instanceof ChatMessage) {
+					model.addEntry((ChatMessage)resp);
+					if(!view.getFrame().isActive()) {
+						view.getFrame().toFront();
+					}
+				}
+				// when muted, hide tray messages
+				if(!model.isMute()) {
+					view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
+					playSound(getClass().getResource(ChatView.RES_PATH + ChatView.RES_SOUND_SEND));
+				}
+				
+			} catch(ParseException e) {
+				// continue - invalid input
+			}
+			
+		} catch (NullPointerException e) {
+			// continue empty messaga data
+		} catch (Exception e) {
+			view.showMessageDialog(e.getMessage());
 		}
 	}
 	
