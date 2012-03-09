@@ -88,7 +88,7 @@ public class ChatView implements Observer {
 	
 	// Components
 	private JButton btnQuit 			 = new JButton("leave it");
-	private JTextField txtChatname		 = new JTextField(15);
+	private JTextField txtChatname		 = new JTextField(10);
 	private JEditorPane paneChatbox 	 = new JEditorPane();
 	private JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
 	private JTextField txtSendMsg 		 = new JTextField("");
@@ -173,10 +173,8 @@ public class ChatView implements Observer {
 		// Frame settings
 		frame.setPreferredSize(new Dimension(350,250));
 		frame.setResizable(true);
-		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
-		
 		frame.setLocationRelativeTo(null);
 		
 		// Components settings
@@ -184,8 +182,12 @@ public class ChatView implements Observer {
 		paneChatbox.setPreferredSize(new Dimension(320, 150));
 		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		editorScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
 		
+		// chatname
+		txtChatname.setHorizontalAlignment(JTextField.RIGHT);
+		
+		
+		// icon - mutebutton
 		btnMute.setPreferredSize(new Dimension(20,20));
 		try {
 			btnMute.setIcon(new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_UNMUTE)));
@@ -193,7 +195,7 @@ public class ChatView implements Observer {
 			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_UNMUTE);
 		}
 		
-		
+		// icon - frame
 		try {
 			Image icon = new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_APP)).getImage();
 			frame.setIconImage(icon);
