@@ -15,7 +15,7 @@
 	
 	<property environment="env"/>
 	<property name="ci-build" value="${env.BUILD_NUMBER}"/>
-	<property name="ci-version" value="_v01"/> 
+	<property name="ci-version" value="_v011b"/> 
 	
 	
 	<path id="class.path">    
