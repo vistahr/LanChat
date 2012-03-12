@@ -17,7 +17,7 @@
  * 	FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Vince OR
  * 	CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
  * 	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * 	SERVICES{ LOSS OF USE, DATA, OR PROFITS{ OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * 	SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
  * 	ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * 	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * 	ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -26,26 +26,25 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.model;
+package de.vistahr.lanchat.model.test;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ChatMessage extends ChatResponse {
+import de.vistahr.lanchat.model.ChatResponse;
 
+public class MockChatResponse extends ChatResponse {
 
-	public ChatMessage(String chatName, String chatMessage, Date written) {
+	public MockChatResponse(String chatName, String chatMessage, Date written) {
 		super(chatName, chatMessage, written, 0);
 	}
-	
-	public ChatMessage(String chatName, String chatMessage, Date written, int ID) {
+
+	public MockChatResponse(String chatName, String chatMessage, Date written, int ID) {
 		super(chatName, chatMessage, written, ID);
 	}
-	
+
+	@Override
 	public String toString() {
-		SimpleDateFormat df = new SimpleDateFormat(DATE_OUT_FORMAT);
-		return String.format("[%s] %s: %s",df.format(getWritten()),getChatName().getName(),getChatMessage().getMessage());
+		return null;
 	}
 
-	
 }

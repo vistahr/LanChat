@@ -26,27 +26,68 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.test;
+package de.vistahr.lanchat.model;
 
-import static org.junit.Assert.*;
+public class Message {
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+	private String message = "";
 
-public class ChatControllerTest {
-
-	@Before
-	public void setUp() throws Exception {
+	
+	private static final int MSG_LENGTH = 500;
+	
+	
+	public Message(String msg) {
+		setMessage(msg);
+	}
+	
+	
+	public String getMessage() {
+		return message;
 	}
 
-	@After
-	public void tearDown() throws Exception {
+
+	public void setMessage(String cm) {
+		if(cm == null) {
+			message = "";
+			throw new NullPointerException();
+		}
+		
+		if(cm.equals("")) {
+			message = "";
+			
+		} else {
+			message = cm.trim();
+			if(cm.length() > MSG_LENGTH)
+				message = message.substring(0, MSG_LENGTH);			
+		}
 	}
 
-	@Test
-	public void testChatController() {
-		fail("Not yet implemented");
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((message == null) ? 0 : message.hashCode());
+		return result;
 	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Message))
+			return false;
+		Message other = (Message) obj;
+		if (message == null) {
+			if (other.message != null)
+				return false;
+		} else if (!message.equals(other.message))
+			return false;
+		return true;
+	}
+
 
 }

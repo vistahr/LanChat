@@ -34,8 +34,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
@@ -50,9 +50,10 @@ import java.util.concurrent.Executors;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-import de.vistahr.lanchat.model.ChatViewData;
+import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.ChatResponse;
+import de.vistahr.lanchat.model.Name;
 import de.vistahr.lanchat.view.ChatView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.Receivable;
@@ -64,10 +65,12 @@ import de.vistahr.network.SLCP;
  */
 public class ChatController {
 	
-	private ChatViewData model;
+	private Chat model;
 	private ChatView view;
 	private Multicast mcast;
-
+	
+	private ExecutorService exec;
+	
 	// Simple LanChat Protocol verion
 	public static String SLCP_VERSION = "1";
 	
@@ -77,29 +80,39 @@ public class ChatController {
 	public static int MULTICAST_GROUP = 4447;
 
 	
-	public ChatController(ChatViewData m, ChatView v) {
+	public ChatController(Chat m, ChatView v) {
 		model = m;
 		view  = v;
-		
+		// init controller
+		initControllerAction();
 		// add Listeners
-		addListeners();
-		
+		addListenersAction();
+		// run receivertaskloop
+		runReceiverAction();
+	}
+	
+	
+	private void initControllerAction() {
 		// Set default Username
 		try {
-			model.setChatname(InetAddress.getLocalHost().getHostName());
+			model.setChatName(InetAddress.getLocalHost().getHostName());
 		} catch (UnknownHostException e) {
-			model.setChatname("none");
+			model.setChatName(Name.getDefaultFallbackName());
 		}
 		
 		// init multicast instance
 		try {
 			mcast = new Multicast(MULTICAST_URL, MULTICAST_GROUP);
+			mcast.openSocket();
 		} catch (IOException e) {
 			view.showMessageDialog(e.getMessage());
 		}
-		
+	}
+	
+	
+	private void runReceiverAction() {
 		// Receivertaskloop
-		ExecutorService exec = Executors.newSingleThreadExecutor();
+		exec = Executors.newSingleThreadExecutor();
 		Runnable receiverTask = new Runnable() {
 			@Override
 			public void run() {
@@ -107,28 +120,7 @@ public class ChatController {
 					mcast.receive(new Receivable() {
 						@Override
 						public void onReceive(String data) {
-							try {
-								// Parse incoming data
-								SLCP receiver = new SLCP(SLCP_VERSION);
-								try {
-									ChatResponse resp = receiver.parse(data);
-									if(resp instanceof ChatMessage)
-										model.addEntry((ChatMessage)resp);
-									// when muted, hide tray messages
-									if(!model.isMute()) {
-										view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage());
-										playSound(getClass().getResource("/res/ding.wav"));
-									}
-									
-								} catch(ParseException e) {
-									// continue - invalid input
-								}
-								
-							} catch (NullPointerException e) {
-								// continue empty messaga data
-							} catch (Exception e) {
-								view.showMessageDialog(e.getMessage());
-							}
+							receiveMessageAction(data);
 						}
 					});
 				} catch (IOException e) {
@@ -137,53 +129,42 @@ public class ChatController {
 			}
 		};
 		exec.submit(receiverTask);
-		
 	}
 	
 
 	/**
 	 * Add viewlisteners
 	 */
-	private void addListeners() {
+	private void addListenersAction() {
 		// send 
 		view.getBtnSendMsg().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sendMessagePressed(e);
+				sendMessagePressedAction(e);
 			}
 		});
 		// send 
 		view.getJTextfieldSendMsg().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sendMessagePressed(e);
-			}
-		});
-		// quit
-		view.getBtnQuit().addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				quitChatPressed(e);
+				sendMessagePressedAction(e);
 			}
 		});
 		// mute
 		view.getBtnMute().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mutePressed(e);
+				mutePressedAction(e);
 			}
 		});
 		// chatname
-		view.getJTextfieldChatname().addKeyListener(new KeyListener() {
+		view.getJTextfieldChatname().addFocusListener(new FocusListener() {
 			@Override
-			public void keyTyped(KeyEvent e) {
+			public void focusLost(FocusEvent e) {
+				changeChatnameAction(e);
 			}
 			@Override
-			public void keyReleased(KeyEvent e) {
-				changeChatname(e);
-			}
-			@Override
-			public void keyPressed(KeyEvent e) {
+			public void focusGained(FocusEvent e) {
 			}
 		});
 		// window listeners
@@ -208,14 +189,17 @@ public class ChatController {
 			public void windowDeactivated(WindowEvent e) {}
 			@Override
 			public void windowClosing(WindowEvent e) {
-				quitChatPressed(null);
+				quitChatPressedAction(null);
 			}
 			@Override
 			public void windowClosed(WindowEvent e) {}
 			@Override
-			public void windowActivated(WindowEvent e) {}
+			public void windowActivated(WindowEvent e) {
+				view.getJTextfieldSendMsg().setCaretPosition(0);
+				view.getJTextfieldSendMsg().requestFocus();
+			}
 		});
-		// autoscroll
+		// autoscroll to bottom // TODO cannot croll to top
 		view.getEditorScrollPane().getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -228,11 +212,11 @@ public class ChatController {
 	 * Key event, when chatname changed
 	 * @param e
 	 */	
-	private void changeChatname(KeyEvent e) {
+	private void changeChatnameAction(FocusEvent e) {
 		try {
-			model.setChatname(view.getTxtChatname());
+			model.setChatName(view.getTxtChatname());
 		} catch(IllegalArgumentException ex) {
-			model.setChatname("default");
+			model.setChatName(Name.getDefaultFallbackName());
 		}	
 	}
 	
@@ -241,7 +225,7 @@ public class ChatController {
 	 * Toggle action, event when mute button pressed
 	 * @param e
 	 */
-	private void mutePressed(ActionEvent e) {
+	private void mutePressedAction(ActionEvent e) {
 		
 			if(!model.isMute()) {
 				try {
@@ -267,10 +251,10 @@ public class ChatController {
 	 * Action event, when quit button pressed
 	 * @param e
 	 */
-	private void quitChatPressed(ActionEvent e) {
+	private void quitChatPressedAction(ActionEvent e) {
 		try {
 			// send quit message
-			ChatMessage msg = new ChatMessage(model.getChatname(), "leaved", new Date());
+			ChatMessage msg = new ChatMessage(model.getChatName().getName(), "leaved", new Date());
 			SLCP sender = new SLCP(SLCP_VERSION);
 			mcast.send(sender.generateMessage(msg));
 			mcast.closeSocket();
@@ -278,7 +262,10 @@ public class ChatController {
 		} catch (IOException ex) {
 			view.showMessageDialog(ex.getMessage());
 		}
-		System.exit(1);
+		view.getFrame().setVisible(false);
+		view.getFrame().dispose();
+		view = null;
+		exec.shutdown();
 	}
 
 	
@@ -286,11 +273,15 @@ public class ChatController {
 	 * Action event, when send message pressed
 	 * @param e
 	 */
-	private void sendMessagePressed(ActionEvent e) {
+	private void sendMessagePressedAction(ActionEvent e) {
 		try {
+			if(view.getTxtSendMsg().equals("")) {
+				throw new IllegalArgumentException();
+			}	
+			
 			// fill model
 			model.setChatMessage(view.getTxtSendMsg());
-		
+			
 			// send
 			ChatMessage msg = new ChatMessage(view.getTxtChatname(), view.getTxtSendMsg(), new Date());
 			SLCP sender = new SLCP(SLCP_VERSION);
@@ -301,10 +292,40 @@ public class ChatController {
 			view.showMessageDialog(ex.getMessage());
 			
 		} catch (NullPointerException ex) {
-			view.showMessageDialog("error: modelvar not initialized");
+			ex.printStackTrace();
 			
 		} catch (IllegalArgumentException ex) {
 			// no msg output for chatname & message
+		}
+	}
+	
+	
+	private void receiveMessageAction(String data) {
+		try {
+			// Parse incoming data
+			SLCP receiver = new SLCP(SLCP_VERSION);
+			try {
+				final ChatResponse resp = receiver.parse(data);
+				if(resp instanceof ChatMessage) {
+					// add entry to the model to display it on the panechatbox
+					model.addEntry((ChatMessage)resp);
+					// activate gui, when in background
+					if(!view.getFrame().isActive()) {
+						view.getFrame().toFront();
+					}
+				}
+				// when muted, hide tray messages
+				if(!model.isMute()) {
+					view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
+					playSound(getClass().getResource(ChatView.RES_PATH + ChatView.RES_SOUND_SEND));
+				}
+				
+			} catch(ParseException e) {
+				// continue - invalid input
+			}
+			
+		} catch (NullPointerException e) {
+			// continue empty messaga data
 		}
 	}
 	

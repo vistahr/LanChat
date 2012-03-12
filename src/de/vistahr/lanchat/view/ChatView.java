@@ -28,7 +28,6 @@
  */
 package de.vistahr.lanchat.view;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.SystemTray;
@@ -37,6 +36,7 @@ import java.awt.TrayIcon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -45,15 +45,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import de.vistahr.lanchat.model.ChatViewData;
+import de.vistahr.lanchat.model.Chat;
 import de.vistahr.lanchat.model.ChatMessage;
+import edu.cmu.relativelayout.BindingFactory;
+import edu.cmu.relativelayout.RelativeConstraints;
+import edu.cmu.relativelayout.RelativeLayout;
 
 
 /**
@@ -73,9 +75,6 @@ public class ChatView implements Observer {
 	    }	
 	}
 	
-	// Mainframe & basics
-	private JFrame frame;
-	private TrayIcon trayIcon;
 	public static final String APP_NAME = "LanChat - blabla your life";
 	
 	public static final String RES_PATH = "/res/";
@@ -84,24 +83,29 @@ public class ChatView implements Observer {
 	public static final String RES_ICON_APP = "chat.png";
 	public static final String RES_SOUND_SEND = "ding.wav";
 	
+	// Mainframe & basics
+	private JFrame frame;
+	private TrayIcon trayIcon;
+	
 	// Components
-	private JButton btnQuit 			 = new JButton("leave it");
-	private JLabel lblChatname 			 = new JLabel("Chatname:");
-	private JTextField txtChatname		 = new JTextField(12);
+	private JTextField txtChatname		 = new JTextField(10);
 	private JEditorPane paneChatbox 	 = new JEditorPane();
 	private JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
-	private JLabel lblSendMsg 			 = new JLabel("Message:");
-	private JTextField txtSendMsg 		 = new JTextField(20);
-	private JButton btnSendMsg			 = new JButton("send");
+	private JTextField txtSendMsg 		 = new JTextField("");
+	private JButton btnSendMsg			 = new JButton("Send");
 	private JButton btnMute 			 = new JButton();
 	
-	
+	// Panels
+	private JPanel mainPanel;
+
 	/**
 	 * Constructor set up the UI and listeners
 	 */
 	public ChatView(Observable model) {
 		model.addObserver(this);
 		initialize();
+		initNewLayout();
+		frame.setVisible(true);
 	}
 	
 	
@@ -110,10 +114,6 @@ public class ChatView implements Observer {
 		return frame;
 	}
 	
-	public JButton getBtnQuit() {
-		return btnQuit;
-	}
-
 	public JTextField getJTextfieldChatname() {
 		return txtChatname;
 	}
@@ -141,8 +141,7 @@ public class ChatView implements Observer {
 	public JScrollPane getEditorScrollPane() {
 		return editorScrollPane;
 	}
-	
-	
+
 	private void setTxtChatname(String name) {
 		txtChatname.setText(name);
 	}
@@ -150,82 +149,56 @@ public class ChatView implements Observer {
 	private void setTxtSendMsg(String msg) {
 		txtSendMsg.setText(msg);
 	}
-
-
 	
 	private void setPaneChatbox(ArrayList<ChatMessage> entries) {
 		String message = "connected...";
 		
 		Iterator<ChatMessage> itr = entries.iterator();
 	    while (itr.hasNext()) {
-	    	message = message + "\n" + itr.next().toString();
+	    	try {
+	    		message = message + "\n" + itr.next().toString();
+	    	} catch(ConcurrentModificationException e) {
+	    		break;
+	    	}
 	    }
 	    paneChatbox.setText(message.toString());
 	}
-
-
 	
-	public void initialize() {
+	public void scrollChatboxToBottom() {
+		getEditorScrollPane().getVerticalScrollBar().setValue(Integer.MAX_VALUE);
+	}
+	
+	
+	private void initialize() {
 		// Frame
 		frame = new JFrame(APP_NAME);
+		
+		// Frame settings
+		frame.setPreferredSize(new Dimension(350,250));
+		frame.setResizable(true);
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // own closemethod implemented
+		frame.pack();
+		frame.setLocationRelativeTo(null);
 		
 		// Components settings
 		paneChatbox.setEditable(false);
 		paneChatbox.setPreferredSize(new Dimension(320, 150));
 		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		editorScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-		// Panels
-		JPanel panelTopL = new JPanel();
-		panelTopL.add(btnQuit);
 		
-		JPanel panelTopR = new JPanel();
-		panelTopR.add(lblChatname);
-		panelTopR.add(txtChatname);
-		panelTopR.add(btnMute);
-		
-		JPanel panelTop = new JPanel(new BorderLayout());
-		panelTop.add(panelTopL, BorderLayout.LINE_START);
-		panelTop.add(panelTopR, BorderLayout.LINE_END);
+		// chatname
+		//txtChatname.setHorizontalAlignment(JTextField.RIGHT);
 		
 		
-		//JPanel panelCenter = new JPanel();
-		//panelCenter.add(editorScrollPane);
-		
-		JPanel panelBottomL = new JPanel();
-		panelBottomL.add(lblSendMsg);
-		panelBottomL.add(txtSendMsg);
-		panelBottomL.add(btnSendMsg);
-		
-		JPanel panelBottomR = new JPanel();
-		btnMute.setPreferredSize(new Dimension(20,20));
+		// icon - mutebutton
+		btnMute.setPreferredSize(new Dimension(30,28));
 		try {
-			btnMute.setIcon(new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_MUTE)));
+			btnMute.setIcon(new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_UNMUTE)));
 		} catch(NullPointerException e) {
-			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_MUTE);
+			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_UNMUTE);
 		}
 		
-		
-		JPanel panelBottom = new JPanel(new BorderLayout());
-		panelBottom.add(panelBottomL, BorderLayout.LINE_START);
-		panelBottom.add(panelBottomR, BorderLayout.LINE_END);
-		
-		
-		// add Panels
-		frame.getContentPane().add(panelTop, BorderLayout.PAGE_START);
-		frame.getContentPane().add(editorScrollPane);
-		frame.getContentPane().add(panelBottom, BorderLayout.PAGE_END);
-		
-		// Frame settings
-		frame.setSize(350,250);
-		frame.setResizable(true);
-		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
-		
-		frame.setVisible(true);
-		frame.setLocationRelativeTo(null);
-		
+		// icon - frame
 		try {
 			Image icon = new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_APP)).getImage();
 			frame.setIconImage(icon);
@@ -235,11 +208,21 @@ public class ChatView implements Observer {
 		
 	}
 	
-	// TODO - auto grown sendTxtMsgField
-	private void addListeners() {
-		//getJTextfieldSendMsg().addL
-	}
 	
+	private void initNewLayout() {
+		BindingFactory bf = new BindingFactory();
+		// top
+		mainPanel = new JPanel(new RelativeLayout());
+		mainPanel.add(txtChatname,new RelativeConstraints(bf.topEdge(), bf.leftEdge()));
+		mainPanel.add(btnMute, new RelativeConstraints(bf.rightEdge(), bf.topEdge()));
+		// center
+		mainPanel.add(editorScrollPane, new RelativeConstraints(bf.below(txtChatname), bf.leftEdge(), bf.rightEdge(), bf.above(txtSendMsg)));
+		// bottom
+		mainPanel.add(txtSendMsg, new RelativeConstraints(bf.bottomEdge(), bf.leftEdge(), bf.leftOf(btnSendMsg)));
+		mainPanel.add(btnSendMsg, new RelativeConstraints(bf.bottomEdge(), bf.rightEdge()));
+		// add to mainframe
+		frame.add(mainPanel);
+	}
 	
 	
 	/**
@@ -247,9 +230,9 @@ public class ChatView implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object model) {
-		setPaneChatbox(((ChatViewData) model).getEntries());
-		setTxtChatname(((ChatViewData) model).getChatname());
-		setTxtSendMsg(((ChatViewData) model).getChatMessage());
+		setPaneChatbox(((Chat) model).getEntries());
+		setTxtChatname(((Chat) model).getChatName().getName());
+		setTxtSendMsg(((Chat) model).getChatMessage().getMessage());
 	}
 
 	

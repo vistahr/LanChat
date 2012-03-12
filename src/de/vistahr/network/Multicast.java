@@ -69,7 +69,7 @@ public class Multicast {
 	public Multicast(String networkGroup,int networkPort) throws IOException {
 		this.networkGroup  = networkGroup;
 		this.networkPort   = networkPort;
-		openSocket();
+		//openSocket();
 	}
 	
 	
@@ -79,6 +79,15 @@ public class Multicast {
 	 */
 	public MulticastSocket getSocket() {
 		return socket;
+	}
+
+	public String getNetworkGroup() {
+		return networkGroup;
+	}
+
+
+	public int getNetworkPort() {
+		return networkPort;
 	}
 	
 	/**
@@ -148,15 +157,17 @@ public class Multicast {
 	public String toString() {
 		return this.networkGroup + ":" + this.networkPort; 
 	}
-
-
-	public String getNetworkGroup() {
-		return networkGroup;
-	}
-
-
-	public int getNetworkPort() {
-		return networkPort;
+	
+	/**
+	 * leaving the group, when shutting down
+	 */
+	@Override
+	protected void finalize() {
+		try {
+			closeSocket();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

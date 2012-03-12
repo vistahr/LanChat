@@ -60,11 +60,11 @@ public class SLCPTest {
 	public void setUp() throws Exception {
 		slcp = new SLCP(SLCP_VERSION);
 		
-		globalSettedMsg = new ChatMessage("testname", "testmessage", dateSend, 96);
-		protocolv1MsgOutput = "<?xml version=\"1.0\" encoding=\"" + SLCP.ENCODING + "\" standalone=\"no\"?><lanchat type=\"message\" version=\"" + SLCP_VERSION + "\"><tstamp>" + dateSend.getTime() + "</tstamp><from>testname</from><message>testmessage</message><id>96</id></lanchat>";
+		globalSettedMsg = new ChatMessage("testname", "testmessage", dateSend, SLCP.getMacAddressHash());
+		protocolv1MsgOutput = "<?xml version=\"1.0\" encoding=\"" + SLCP.ENCODING + "\" standalone=\"no\"?><lanchat type=\"message\" version=\"" + SLCP_VERSION + "\"><tstamp>" + dateSend.getTime() + "</tstamp><from>testname</from><message>testmessage</message><id>" + SLCP.getMacAddressHash() + "</id></lanchat>";
 		
-		globalSettedPing = new ChatPing("testname", dateSend, 96);
-		protocolv1PingOutput = "<?xml version=\"1.0\" encoding=\"" + SLCP.ENCODING + "\" standalone=\"no\"?><lanchat type=\"ping\" version=\"" + SLCP_VERSION + "\"><tstamp>" + dateSend.getTime() + "</tstamp><from>testname</from><id>96</id></lanchat>";
+		globalSettedPing = new ChatPing("testname", dateSend, SLCP.getMacAddressHash());
+		protocolv1PingOutput = "<?xml version=\"1.0\" encoding=\"" + SLCP.ENCODING + "\" standalone=\"no\"?><lanchat type=\"ping\" version=\"" + SLCP_VERSION + "\"><tstamp>" + dateSend.getTime() + "</tstamp><from>testname</from><id>" + SLCP.getMacAddressHash() + "</id></lanchat>";
 	}
 
 	@After

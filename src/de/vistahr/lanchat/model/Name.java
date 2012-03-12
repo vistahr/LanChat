@@ -28,77 +28,57 @@
  */
 package de.vistahr.lanchat.model;
 
-import java.util.Date;
+public class Name {
 
-
-public abstract class ChatResponse {
-
-	public final static String DATE_OUT_FORMAT = "HH:MM:ss";
+	private String name = "";
 	
-	private Name chatName;
-	private Message chatMessage;	
-	private Date written;
-	private int ID;
+	private static final int NAME_LENGTH = 20;
+	private static String DEFAULT_NAME = "default";
 	
 	
-	
-
-	public ChatResponse(final String chatName, final String chatMessage, final Date written, final int ID) {
-		setChatName(chatName);
-		setChatMessage(chatMessage);
-		this.written = written;
-		this.ID = ID;
+	public Name(String name) {
+		setName(name);
 	}
 	
 	
-	public Date getWritten() {
-		return written;
-	}
-	
-	
-	public void setWritten(Date written) {
-		this.written = written;
-	}
-	
-	
-	public Name getChatName() {
-		return chatName;
-	}
-	
-	
-	public void setChatName(String cn) {
-		chatName = new Name(cn);
-	}
-	
-	
-	public Message getChatMessage() {
-		return chatMessage;
-	}
-	
-	
-	public void setChatMessage(String cm) {
-		chatMessage = new Message(cm);
+	public String getName() {
+		return name;
 	}
 
-	
-	public int getID() {
-		return ID;
+	public void setName(String n) {
+		if(n == null)
+			throw new NullPointerException();
+		
+		// valid chars pattern
+		String validCharPattern = "\\W";
+		try {
+			name = n.trim().replaceAll(validCharPattern, "");
+			if(name.length() > NAME_LENGTH)
+				name = name.substring(0, NAME_LENGTH);
+				
+		if(name.equals(""))
+			throw new IllegalArgumentException();	
+		
+		} catch(StringIndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
 	}
 
+
+	public static int getMaximumNameLength() {
+		return NAME_LENGTH;
+	}
 	
-	public abstract String toString();
+	public static String getDefaultFallbackName() {
+		return DEFAULT_NAME;
+	}
 
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ID;
-		result = prime * result
-				+ ((chatMessage == null) ? 0 : chatMessage.hashCode());
-		result = prime * result
-				+ ((chatName == null) ? 0 : chatName.hashCode());
-		result = prime * result + ((written == null) ? 0 : written.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -109,30 +89,15 @@ public abstract class ChatResponse {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof ChatResponse))
+		if (!(obj instanceof Name))
 			return false;
-		ChatResponse other = (ChatResponse) obj;
-		if (ID != other.ID)
-			return false;
-		if (chatMessage == null) {
-			if (other.chatMessage != null)
+		Name other = (Name) obj;
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!chatMessage.equals(other.chatMessage))
-			return false;
-		if (chatName == null) {
-			if (other.chatName != null)
-				return false;
-		} else if (!chatName.equals(other.chatName))
-			return false;
-		if (written == null) {
-			if (other.written != null)
-				return false;
-		} else if (!written.equals(other.written))
+		} else if (!name.equals(other.name))
 			return false;
 		return true;
 	}
-
-	
-
 	
 }

@@ -26,97 +26,72 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.view.test;
+package de.vistahr.lanchat.model.test;
 
 import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ChatViewTest {
+import de.vistahr.lanchat.model.ChatMessage;
+import de.vistahr.lanchat.model.Chat;
 
+public class ChatTest {
+
+	Chat cvd;
+	
 	@Before
 	public void setUp() throws Exception {
+		cvd = new Chat();
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		cvd = null;
 	}
 
 	@Test
-	public void testChatView() {
-		fail("Not yet implemented");
+	public void testChatData() {
+		assertNotNull(cvd);
 	}
 
 	@Test
-	public void testGetFrame() {
-		fail("Not yet implemented");
+	public void testIsMute() {
+		assertFalse(cvd.isMute());
 	}
 
 	@Test
-	public void testGetBtnQuit() {
-		fail("Not yet implemented");
+	public void testSetMute() {
+		cvd.setMute(true);
+		assertTrue(cvd.isMute());
+	}
+
+
+
+	@Test
+	public void testGetEntries() {
+		ArrayList<ChatMessage> listMsg = cvd.getEntries();
+		assertTrue(listMsg.isEmpty());
+	}
+	
+	@Test
+	public void testAddEntry() {
+		cvd.addEntry(new ChatMessage("argName", "bla message", new Date()));
+		ArrayList<ChatMessage> listMsg = cvd.getEntries();
+		assertEquals(1, listMsg.size());
 	}
 
 	@Test
-	public void testGetJTextfieldChatname() {
-		fail("Not yet implemented");
+	public void testGetLastEntry() {
+		ChatMessage testInsertCM = new ChatMessage("argName", "bla message", new Date());
+		cvd.addEntry(testInsertCM);
+		ChatMessage cm = cvd.getLastEntry();
+		assertEquals(testInsertCM, cm);
 	}
-
-	@Test
-	public void testGetTxtChatname() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetJTextfieldSendMsg() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetTxtSendMsg() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetBtnSendMsg() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetBtnMute() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetEditorScrollPane() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testInitialize() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testUpdate() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetTrayIcon() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testShowMessageDialog() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testShowTrayMessageDialog() {
-		fail("Not yet implemented");
-	}
+	
 
 }

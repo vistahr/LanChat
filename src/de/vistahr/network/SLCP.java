@@ -31,7 +31,10 @@ package de.vistahr.network;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -165,6 +168,29 @@ public class SLCP implements Protocol {
 	}
 	
 	
+	public static int getMacAddressHash() {
+		// get mac address
+		String macAddress = ""; 
+		try {
+		  for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) { 
+		    byte[] hardwareAddress = ni.getHardwareAddress(); 
+		    if(hardwareAddress != null) { 
+		      for (int i = 0; i < hardwareAddress.length; i++) { 
+		    	  macAddress += String.format( (i==0?"":"-")+"%02X", hardwareAddress[i]);		    
+		      }
+		    }
+		  }
+		  // convert mac address to int
+		  return macAddress.hashCode();
+		  
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		
+		throw new NumberFormatException();
+	}
+	
+	
 	/**
 	 * Generatemapper to send a message
 	 * @param message
@@ -208,7 +234,7 @@ public class SLCP implements Protocol {
 			Element msg = null;
 			if(type.equals("message")) {
 				msg = doc.createElement("message");
-				msg.appendChild(doc.createTextNode(message.getChatMessage()));
+				msg.appendChild(doc.createTextNode(message.getChatMessage().getMessage()));
 			}
 			
 			Element date = doc.createElement("tstamp");
@@ -216,7 +242,7 @@ public class SLCP implements Protocol {
 			root.appendChild(date);
 			
 			Element from = doc.createElement("from");
-			from.appendChild(doc.createTextNode(message.getChatName()));
+			from.appendChild(doc.createTextNode(message.getChatName().getName()));
 			root.appendChild(from);
 			
 			
@@ -224,7 +250,7 @@ public class SLCP implements Protocol {
 				root.appendChild(msg); 
 			
 			Element id = doc.createElement("id");
-			id.appendChild(doc.createTextNode("" + message.getID()));
+			id.appendChild(doc.createTextNode("" + SLCP.getMacAddressHash()));
 			
 			
 			root.appendChild(id);

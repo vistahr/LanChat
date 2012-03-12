@@ -35,22 +35,20 @@ import java.util.Observable;
  * Main model, which holds the data of the view
  * @author vistahr
  */
-public class ChatViewData extends Observable {
+public class Chat extends Observable {
 	
-	private static final int CHATNAME_LENGTH = 20;
-	private static final int CHATMSG_LENGTH = 500;
-	
-	private String chatName;
-	private String chatMessage;
+	private Name chatName;
+	private Message chatMessage;
 	private ArrayList<ChatMessage> entries;
 	
 	private boolean mute;
+
 	
 	
-	public ChatViewData() {
+	public Chat() {
 		entries = new ArrayList<ChatMessage>();
-		chatMessage = "";
-		chatName = "";
+		chatMessage = new Message("");
+		chatName = new Name(Name.getDefaultFallbackName());
 		mute = false;
 	}
 	
@@ -63,11 +61,11 @@ public class ChatViewData extends Observable {
 		this.mute = mute;
 	}
 
-	public String getChatMessage() {
+	public Message getChatMessage() {
 		return chatMessage;
 	}
 
-	public String getChatname() {
+	public Name getChatName() {
 		return chatName;
 	}
 	
@@ -76,32 +74,14 @@ public class ChatViewData extends Observable {
 	}
 	
 	
-	public void setChatname(String cn) {
-		if(cn.equals("") || cn == null)
-			throw new IllegalArgumentException("No chatname setted");
-		
-		String validCharPattern = "\\W";
-		try {
-			chatName = cn.trim().replaceAll(validCharPattern, "");
-			if(cn.length() > CHATNAME_LENGTH)
-				chatName = chatName.substring(0, CHATNAME_LENGTH);
-				
-		} catch(StringIndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
+	public void setChatName(String cn) {
+		chatName = new Name(cn);
 		setChanged();
 		notifyObservers(this);
 	}
 
 	public void setChatMessage(String cm) {
-		if(cm.equals("") || cm == null) {
-			chatMessage = "";
-			throw new IllegalArgumentException("No chatmessage setted");
-		}
-		
-		chatMessage = cm.trim();
-		if(cm.length() > CHATMSG_LENGTH)
-			chatMessage = chatMessage.substring(0, CHATMSG_LENGTH);
+		chatMessage = new Message(cm);
 		setChanged();
 		notifyObservers(this);
 	}

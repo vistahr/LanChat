@@ -15,11 +15,11 @@
 	
 	<property environment="env"/>
 	<property name="ci-build" value="${env.BUILD_NUMBER}"/>
-	<property name="ci-version" value="_v01"/> 
+	<property name="ci-version" value="_v011b"/> 
 	
 	
 	<path id="class.path">    
-		<fileset dir="${lib.dir}" includes="*.jar" />
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
 	</path>
 	
 	
@@ -43,7 +43,7 @@
 	
 	<target name="test" depends="compile">
 		<mkdir dir="${test.report.dir}" />
-		<junit printsummary="yes">        
+		<junit printsummary="yes">
 			<classpath location="${build.dir}" />
 			<classpath refid="class.path" />      
 			<formatter type="xml" />
@@ -59,23 +59,32 @@
 	
 	<target name="build" depends="test">
 		<mkdir dir="${target.dir}"/>
+		<manifestclasspath property="jar.classpath" jarfile="${target.dir}/${ant.project.name}.jar">
+        	<classpath refid="class.path"/>
+	    </manifestclasspath>
 		<jar destfile="${target.dir}/${ant.project.name}.jar" update="true">
-			<fileset dir="${build.dir}"/>
+			<fileset dir="${build.dir}"/>	
 			<fileset dir="${src.dir}" excludes="**/*.java"/>
+			<fileset dir="." includes="${lib.dir}/**"/>
 			<manifest>
 		      <attribute name="Main-Class" value="${main-class}"/>
+			  <attribute name="Class-Path" value="${jar.classpath}"/>
 		    </manifest>
 		</jar>
-		<echo message="build done, Jarfile '${target.dir}/${ant.project.name}.jar' generated."/>
+		<echo message="build done"/>
 	</target>
 	
 	<target name="build-ci" depends="test">
 		<mkdir dir="${target.dir}"/>
+		<manifestclasspath property="jar.classpath" jarfile="${target.dir}/${ant.project.name}.jar">
+        	<classpath refid="class.path"/>
+	    </manifestclasspath> 
 		<jar destfile="${target.dir}/${ant.project.name}${ci-version}-${ci-build}.jar" update="true">
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}" excludes="**/*.java"/>
 			<manifest>
 		      <attribute name="Main-Class" value="${main-class}"/>
+			  <attribute name="Class-Path" value="${jar.classpath}"/>
 		    </manifest>
 		</jar>
 		<echo message="build done"/>

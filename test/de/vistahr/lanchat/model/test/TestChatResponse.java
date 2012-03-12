@@ -26,100 +26,77 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.network.test;
+package de.vistahr.lanchat.model.test;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.vistahr.lanchat.controller.ChatController;
-import de.vistahr.network.Multicast;
-import de.vistahr.network.Receivable;
-
-public class MulticastTest {
+public class TestChatResponse {
 	
-	Multicast m;
-	Thread t;
+	MockChatResponse mock;
+	Date now;
 	
 	@Before
 	public void setUp() throws Exception {
-		m = new Multicast(ChatController.MULTICAST_URL, ChatController.MULTICAST_GROUP);
-		try {
-			m.openSocket();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		now = new Date();
+		mock = new MockChatResponse("testname", "something written.", now, 96);
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		m = null; // shutdown multicast
-		t = null; // shutdown thread
+		mock = null;
+	}
+
+
+	
+	@Test
+	public void testChatResponseStringStringDate() {
+		assertNotNull(new MockChatResponse("testname", "something written.", new Date()));
 	}
 
 	@Test
-	public void testMulticast() {
-		assertNotNull(m);
+	public void testChatResponseStringStringDateInt() {
+		assertNotNull(mock);
 	}
-	
-	@Test
-	public void testOpenSocket() {
-		assertNotNull(m.getSocket());
-	}
-	
 
 	@Test
-	public void testSendAndReceive() throws IOException {
-		ArrayList<String> sStrings = new ArrayList<String>();
-		sStrings.add("123");
-		sStrings.add("abc");
-		sStrings.add("öäü");
-		sStrings.add("?!=$%&/(-.,;");
-		sStrings.add("This is a message users can send o.O ;-) ");
-		
-		Iterator<String> iter = sStrings.iterator();
-		while(iter.hasNext()) {
-			sendAndReceive(iter.next());
-		}
-	}
-	public void sendAndReceive(final String curMsg) throws IOException {
-		t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					m.receive(new Receivable() {
-						@Override
-						public void onReceive(String data) {
-							assertEquals(curMsg, data);
-							
-						}
-					});
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		m.send(curMsg);
+	public void testGetSetWritten() {
+		assertEquals(now, mock.getWritten());
+		Date later = new Date();
+		mock.setWritten(later);
+		assertEquals(later, mock.getWritten());
 	}
 
 
 
 	@Test
-	public void testToString() {
-		assertEquals(m.getNetworkGroup() + ":" + m.getNetworkPort() , m.toString());
+	public void testGetSetChatName() {
+		assertEquals("testname", mock.getChatName().getName());
+		mock.setChatName("newName");
+		assertEquals("newName", mock.getChatName().getName());
 	}
-	
-	
-	@Test 
-	public void testCloseSocket() throws IOException {
-		m.closeSocket();
-		assertNull(m.getSocket());
+
+
+
+	@Test
+	public void testGetSetChatMessage() {
+		assertEquals("something written.", mock.getChatMessage().getMessage());
+		mock.setChatMessage("simple message");
+		assertEquals("simple message", mock.getChatMessage().getMessage());
 	}
-	
+
+
+	@Test
+	public void testGetID() {
+		assertEquals(96, mock.getID());
+	}
+
+
+
+
 }

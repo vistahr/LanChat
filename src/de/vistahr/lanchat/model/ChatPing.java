@@ -36,12 +36,16 @@ public class ChatPing extends ChatResponse {
 
 	
 	public ChatPing(String chatName, Date written) {
-		super(chatName, null, written, 0);
+		super(chatName, "", written, 0);
 	}
 	
 	public ChatPing(String chatName, Date written, int ID) {
-		super(chatName, null, written, ID);
-	}	
+		super(chatName, "", written, ID);
+	}
 
-	
+	@Override
+	public String toString() {
+		return null;
+	}
+
 }
