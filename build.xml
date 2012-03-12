@@ -79,9 +79,9 @@
 		<mkdir dir="${target.dir}"/>
 		<manifestclasspath property="jar.classpath" jarfile="${target.dir}/${ant.project.name}.jar">
         	<classpath refid="class.path"/>
-	    </manifestclasspath> 
+	    </manifestclasspath>
 		<jar destfile="${target.dir}/${ant.project.name}${ci-version}-${ci-build}.jar" update="true">
-			<fileset dir="${build.dir}"/>
+			<fileset dir="${build.dir}"/>	
 			<fileset dir="${src.dir}" excludes="**/*.java"/>
 			<fileset dir="." includes="${lib.dir}/**"/>
 			<manifest>
@@ -89,8 +89,9 @@
 			  <attribute name="Class-Path" value="${jar.classpath}"/>
 		    </manifest>
 		</jar>
+		<chmod file="${target.dir}/${ant.project.name}.jar" perm="700"/>
 		<echo message="build done"/>
-	</target>	
-
-
+	</target>
+	
+	
 </project>
