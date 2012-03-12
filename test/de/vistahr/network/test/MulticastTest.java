@@ -50,6 +50,11 @@ public class MulticastTest {
 	@Before
 	public void setUp() throws Exception {
 		m = new Multicast(ChatController.MULTICAST_URL, ChatController.MULTICAST_GROUP);
+		try {
+			m.openSocket();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@After

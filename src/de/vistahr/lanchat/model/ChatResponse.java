@@ -42,12 +42,8 @@ public abstract class ChatResponse {
 	
 	
 	
-	public ChatResponse(String chatName, String chatMessage, Date written) {
-		this(chatName, chatMessage, written, 0);
-	}
-	
 
-	public ChatResponse(String chatName, String chatMessage, Date written, int ID) {
+	public ChatResponse(final String chatName, final String chatMessage, final Date written, final int ID) {
 		setChatName(chatName);
 		setChatMessage(chatMessage);
 		this.written = written;
@@ -87,11 +83,6 @@ public abstract class ChatResponse {
 	
 	public int getID() {
 		return ID;
-	}
-
-	
-	public void setID(int ID) {
-		this.ID = ID;
 	}
 
 	

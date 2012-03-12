@@ -36,6 +36,7 @@ import java.awt.TrayIcon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -87,12 +88,11 @@ public class ChatView implements Observer {
 	private TrayIcon trayIcon;
 	
 	// Components
-	private JButton btnQuit 			 = new JButton("leave it");
 	private JTextField txtChatname		 = new JTextField(10);
 	private JEditorPane paneChatbox 	 = new JEditorPane();
 	private JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
 	private JTextField txtSendMsg 		 = new JTextField("");
-	private JButton btnSendMsg			 = new JButton("send");
+	private JButton btnSendMsg			 = new JButton("Send");
 	private JButton btnMute 			 = new JButton();
 	
 	// Panels
@@ -114,10 +114,6 @@ public class ChatView implements Observer {
 		return frame;
 	}
 	
-	public JButton getBtnQuit() {
-		return btnQuit;
-	}
-
 	public JTextField getJTextfieldChatname() {
 		return txtChatname;
 	}
@@ -159,11 +155,18 @@ public class ChatView implements Observer {
 		
 		Iterator<ChatMessage> itr = entries.iterator();
 	    while (itr.hasNext()) {
-	    	message = message + "\n" + itr.next().toString();
+	    	try {
+	    		message = message + "\n" + itr.next().toString();
+	    	} catch(ConcurrentModificationException e) {
+	    		break;
+	    	}
 	    }
 	    paneChatbox.setText(message.toString());
 	}
-
+	
+	public void scrollChatboxToBottom() {
+		getEditorScrollPane().getVerticalScrollBar().setValue(Integer.MAX_VALUE);
+	}
 	
 	
 	private void initialize() {
@@ -184,7 +187,7 @@ public class ChatView implements Observer {
 		editorScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		// chatname
-		txtChatname.setHorizontalAlignment(JTextField.RIGHT);
+		//txtChatname.setHorizontalAlignment(JTextField.RIGHT);
 		
 		
 		// icon - mutebutton
@@ -210,11 +213,10 @@ public class ChatView implements Observer {
 		BindingFactory bf = new BindingFactory();
 		// top
 		mainPanel = new JPanel(new RelativeLayout());
-		mainPanel.add(btnQuit, new RelativeConstraints(bf.topEdge(), bf.leftEdge()));
-		mainPanel.add(txtChatname,new RelativeConstraints(bf.topEdge(), bf.leftOf(btnMute)));
+		mainPanel.add(txtChatname,new RelativeConstraints(bf.topEdge(), bf.leftEdge()));
 		mainPanel.add(btnMute, new RelativeConstraints(bf.rightEdge(), bf.topEdge()));
 		// center
-		mainPanel.add(editorScrollPane, new RelativeConstraints(bf.below(btnQuit), bf.leftEdge(), bf.rightEdge(), bf.above(txtSendMsg)));
+		mainPanel.add(editorScrollPane, new RelativeConstraints(bf.below(txtChatname), bf.leftEdge(), bf.rightEdge(), bf.above(txtSendMsg)));
 		// bottom
 		mainPanel.add(txtSendMsg, new RelativeConstraints(bf.bottomEdge(), bf.leftEdge(), bf.leftOf(btnSendMsg)));
 		mainPanel.add(btnSendMsg, new RelativeConstraints(bf.bottomEdge(), bf.rightEdge()));

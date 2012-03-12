@@ -69,7 +69,7 @@ public class Multicast {
 	public Multicast(String networkGroup,int networkPort) throws IOException {
 		this.networkGroup  = networkGroup;
 		this.networkPort   = networkPort;
-		openSocket();
+		//openSocket();
 	}
 	
 	

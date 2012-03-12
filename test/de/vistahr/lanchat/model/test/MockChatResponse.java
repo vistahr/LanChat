@@ -35,11 +35,10 @@ import de.vistahr.lanchat.model.ChatResponse;
 public class MockChatResponse extends ChatResponse {
 
 	public MockChatResponse(String chatName, String chatMessage, Date written) {
-		super(chatName, chatMessage, written);
+		super(chatName, chatMessage, written, 0);
 	}
 
-	public MockChatResponse(String chatName, String chatMessage, Date written,
-			int ID) {
+	public MockChatResponse(String chatName, String chatMessage, Date written, int ID) {
 		super(chatName, chatMessage, written, ID);
 	}
 

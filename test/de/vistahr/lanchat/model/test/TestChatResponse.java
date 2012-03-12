@@ -92,10 +92,8 @@ public class TestChatResponse {
 
 
 	@Test
-	public void testGetSetID() {
+	public void testGetID() {
 		assertEquals(96, mock.getID());
-		mock.setID(100044);
-		assertEquals(100044, mock.getID());
 	}
 
 

@@ -103,6 +103,7 @@ public class ChatController {
 		// init multicast instance
 		try {
 			mcast = new Multicast(MULTICAST_URL, MULTICAST_GROUP);
+			mcast.openSocket();
 		} catch (IOException e) {
 			view.showMessageDialog(e.getMessage());
 		}
@@ -149,13 +150,6 @@ public class ChatController {
 				sendMessagePressedAction(e);
 			}
 		});
-		// quit
-		view.getBtnQuit().addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				quitChatPressedAction(e);
-			}
-		});
 		// mute
 		view.getBtnMute().addActionListener(new ActionListener() {
 			@Override
@@ -200,9 +194,12 @@ public class ChatController {
 			@Override
 			public void windowClosed(WindowEvent e) {}
 			@Override
-			public void windowActivated(WindowEvent e) {}
+			public void windowActivated(WindowEvent e) {
+				view.getJTextfieldSendMsg().setCaretPosition(0);
+				view.getJTextfieldSendMsg().requestFocus();
+			}
 		});
-		// autoscroll
+		// autoscroll to bottom // TODO cannot croll to top
 		view.getEditorScrollPane().getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -308,9 +305,11 @@ public class ChatController {
 			// Parse incoming data
 			SLCP receiver = new SLCP(SLCP_VERSION);
 			try {
-				ChatResponse resp = receiver.parse(data);
+				final ChatResponse resp = receiver.parse(data);
 				if(resp instanceof ChatMessage) {
+					// add entry to the model to display it on the panechatbox
 					model.addEntry((ChatMessage)resp);
+					// activate gui, when in background
 					if(!view.getFrame().isActive()) {
 						view.getFrame().toFront();
 					}
@@ -327,8 +326,6 @@ public class ChatController {
 			
 		} catch (NullPointerException e) {
 			// continue empty messaga data
-		} catch (Exception e) {
-			view.showMessageDialog(e.getMessage());
 		}
 	}
 	
