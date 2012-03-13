@@ -164,7 +164,8 @@ public class Multicast {
 	@Override
 	protected void finalize() {
 		try {
-			closeSocket();
+			if(!getSocket().isClosed())
+				closeSocket();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
