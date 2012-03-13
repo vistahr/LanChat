@@ -139,11 +139,10 @@ public class Multicast {
 		byte[] bytes = new byte[65536]; 
 	    DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 	    
-    
 		while(true) { 
 			socket.receive(packet);
 			if(packet.getLength() != 0) {
-				String message = new String(packet.getData(),0,packet.getLength(), CHARSET); 
+				String message = new String(packet.getData(),0,packet.getLength(),CHARSET); 
 				byte[] byteMsg = new BASE64Decoder().decodeBuffer(message);
 				r.onReceive(new String(byteMsg));
 			}

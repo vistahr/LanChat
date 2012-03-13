@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <project name="LanChat" basedir="." default="build">
 
 	<property name="src.dir" value="src"/>
@@ -32,10 +32,10 @@
 	
 	<target name="compile" depends="init-clean">
 		<mkdir dir="${build.dir}"/>
-		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,source" includeantruntime="false">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,source" includeantruntime="false" encoding="UTF-8">
 	      <classpath refid="class.path" />
 	    </javac>
-	    <javac srcdir="${test.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,source" includeantruntime="false">
+	    <javac srcdir="${test.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,source" includeantruntime="false" encoding="UTF-8">
 	      <classpath refid="class.path" />
 	    </javac>
 	</target>

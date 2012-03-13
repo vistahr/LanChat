@@ -36,6 +36,8 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
@@ -206,6 +208,23 @@ public class ChatController {
 				e.getAdjustable().setValue(e.getAdjustable().getMaximum());
 			}
 		});
+		// tray icon
+		view.getTrayIcon().addMouseListener(new MouseListener() {
+	        public void mouseClicked(MouseEvent e) {
+	        	// Get back
+	        	view.getFrame().setVisible(true);
+	        	view.getFrame().setState(JFrame.NORMAL);
+	        	SystemTray.getSystemTray().remove(view.getTrayIcon());
+	        }
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
+	    });
 	}
 	
 	/**

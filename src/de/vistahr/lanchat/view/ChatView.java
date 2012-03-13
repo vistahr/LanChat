@@ -33,8 +33,6 @@ import java.awt.Image;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -141,6 +139,18 @@ public class ChatView implements Observer {
 	public JScrollPane getEditorScrollPane() {
 		return editorScrollPane;
 	}
+	
+	public TrayIcon getTrayIcon() {
+		if (SystemTray.isSupported()) {
+			if(this.trayIcon == null) {
+			    Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/res/chat.png"));
+			    trayIcon = new TrayIcon(icon, APP_NAME);
+			    trayIcon.setImageAutoSize(true);
+			    return trayIcon;
+			}
+		}
+		return null;
+	}
 
 	private void setTxtChatname(String name) {
 		txtChatname.setText(name);
@@ -235,41 +245,6 @@ public class ChatView implements Observer {
 		setTxtSendMsg(((Chat) model).getChatMessage().getMessage());
 	}
 
-	
-	
-	/**
-	 * Initialize and set up the trayicon
-	 * @return TrayIcon object
-	 */
-	public TrayIcon getTrayIcon() {
-		// check if os supports tray
-		if (SystemTray.isSupported()) {
-			if(this.trayIcon == null) {
-			    Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/res/chat.png"));
-			    trayIcon = new TrayIcon(icon, APP_NAME);
-			    trayIcon.setImageAutoSize(true);
-			    trayIcon.addMouseListener(new MouseListener() {
-			        public void mouseClicked(MouseEvent e) {
-			        	// Get back
-			        	getFrame().setVisible(true);
-			        	getFrame().setState(JFrame.NORMAL);
-			        	SystemTray.getSystemTray().remove(getTrayIcon());
-			        }
-					@Override
-					public void mousePressed(MouseEvent e) {}
-					@Override
-					public void mouseReleased(MouseEvent e) {}
-					@Override
-					public void mouseEntered(MouseEvent e) {}
-					@Override
-					public void mouseExited(MouseEvent e) {}
-			    });
-			}
-		    return trayIcon;
-		}
-		return null;
-	}
-	
 	
 	/**
 	 * Creates an warning dialog box
