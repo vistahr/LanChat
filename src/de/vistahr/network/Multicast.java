@@ -158,20 +158,5 @@ public class Multicast {
 		return this.networkGroup + ":" + this.networkPort; 
 	}
 	
-	/**
-	 * leaving the group, when shutting down
-	 */
-	@Override
-	protected void finalize() {
-		try {
-			if(!getSocket().isClosed()) {
-				closeSocket();
-			}
-				
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	
 }
