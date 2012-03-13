@@ -76,7 +76,7 @@
 	</target>
 	
 	<target name="build-ci" depends="build">
-		<rename src="${target.dir}/${ant.project.name}.jar" dest="${target.dir}/${ant.project.name}${ci-version}-${ci-build}.jar"/>
+		<move file="${target.dir}/${ant.project.name}.jar" tofile="${target.dir}/${ant.project.name}${ci-version}-${ci-build}.jar"/>
 	</target>
 	
 	
