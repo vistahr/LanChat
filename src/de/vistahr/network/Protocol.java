@@ -32,10 +32,13 @@ import java.text.ParseException;
 
 import de.vistahr.lanchat.model.ChatResponse;
 
-
+/**
+ * Interface for the protocol
+ * 
+ * @author vistahr
+ * 
+ */
 interface Protocol {
-
 	public ChatResponse parse(String incoming) throws ParseException;
 	public String generate(ChatResponse message, String type);
-	
 }

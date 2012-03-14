@@ -86,7 +86,7 @@ public class ChatView implements Observer {
 	private TrayIcon trayIcon;
 	
 	// Components
-	private JTextField txtChatname		 = new JTextField(10);
+	private JTextField txtChatname		 = new JTextField(15);
 	private JEditorPane paneChatbox 	 = new JEditorPane();
 	private JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
 	private JTextField txtSendMsg 		 = new JTextField("");
@@ -143,7 +143,7 @@ public class ChatView implements Observer {
 	public TrayIcon getTrayIcon() {
 		if (SystemTray.isSupported()) {
 			if(this.trayIcon == null) {
-			    Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/res/chat.png"));
+			    Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource(RES_PATH + RES_ICON_APP));
 			    trayIcon = new TrayIcon(icon, APP_NAME);
 			    trayIcon.setImageAutoSize(true);
 			    return trayIcon;
@@ -186,7 +186,6 @@ public class ChatView implements Observer {
 		// Frame settings
 		frame.setPreferredSize(new Dimension(350,250));
 		frame.setResizable(true);
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // own closemethod implemented
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		
@@ -201,7 +200,7 @@ public class ChatView implements Observer {
 		
 		
 		// icon - mutebutton
-		btnMute.setPreferredSize(new Dimension(30,28));
+		btnMute.setPreferredSize(new Dimension(30,25));
 		try {
 			btnMute.setIcon(new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_UNMUTE)));
 		} catch(NullPointerException e) {

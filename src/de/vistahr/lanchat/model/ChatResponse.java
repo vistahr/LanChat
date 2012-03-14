@@ -30,7 +30,10 @@ package de.vistahr.lanchat.model;
 
 import java.util.Date;
 
-
+/**
+ * The main abstract method for incoming data
+ * @author vistahr
+ */
 public abstract class ChatResponse {
 
 	public final static String DATE_OUT_FORMAT = "HH:MM:ss";

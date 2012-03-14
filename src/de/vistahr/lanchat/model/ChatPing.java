@@ -30,8 +30,10 @@ package de.vistahr.lanchat.model;
 
 import java.util.Date;
 
-
-
+/**
+ * Chatping represent a single Chatping
+ * @author vistahr
+ */
 public class ChatPing extends ChatResponse {
 
 	

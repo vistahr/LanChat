@@ -33,6 +33,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
@@ -59,8 +60,6 @@ import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.ChatPing;
 import de.vistahr.lanchat.model.ChatResponse;
 
-
-
 /**
  * Simple LanChat Protocol
  * 
@@ -82,7 +81,7 @@ public class SLCP implements Protocol {
 	
 	
 	public final String version;
-	public static String ENCODING = "UTF-8"; // TODO
+	public static Charset ENCODING = Charset.defaultCharset();
 	
 	
 	
@@ -214,7 +213,7 @@ public class SLCP implements Protocol {
 	@Override
 	public String generate(ChatResponse message, String type) {
 		String xmlString = "";
-		
+
 		// build XML
 		try {
 			DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
@@ -262,7 +261,7 @@ public class SLCP implements Protocol {
             TransformerFactory transfac = TransformerFactory.newInstance();
             Transformer trans = transfac.newTransformer();
             trans.setOutputProperty(OutputKeys.INDENT, "no");
-            trans.setOutputProperty(OutputKeys.ENCODING, ENCODING);
+            trans.setOutputProperty(OutputKeys.ENCODING, ENCODING.toString());
             trans.setOutputProperty(OutputKeys.STANDALONE, "yes");
             
             
@@ -274,6 +273,7 @@ public class SLCP implements Protocol {
             
             xmlString = sw.toString();
 			
+            
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 			

@@ -28,6 +28,10 @@
  */
 package de.vistahr.lanchat.model;
 
+/**
+ * A message class with validators
+ * @author vistahr
+ */
 public class Message {
 
 	private String message = "";

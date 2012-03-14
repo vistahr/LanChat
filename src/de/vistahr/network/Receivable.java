@@ -33,7 +33,7 @@ package de.vistahr.network;
  * Receiver interface
  * 
  * @author vistahr
- *
+ * 
  */
 public interface Receivable {
 	public void onReceive(String data);

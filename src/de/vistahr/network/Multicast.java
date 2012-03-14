@@ -33,9 +33,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
+
 
 /**
  * Multicast support with socket handling, receive and send
@@ -53,7 +57,7 @@ public class Multicast {
 	private InetAddress group;
 	private MulticastSocket socket = null;
 	
-	private static String CHARSET = "UTF-8";
+	private static Charset ENCODING = Charset.defaultCharset();
 	
 	
 	/**
@@ -122,11 +126,9 @@ public class Multicast {
 	 * @throws IOException
 	 */
 	public void send(String stringMsg) throws IOException {
-		byte[] message = stringMsg.getBytes(CHARSET);
 		// to base 64
-		String message64 = new BASE64Encoder().encode(stringMsg.getBytes(CHARSET)); 
-		message = message64.getBytes(CHARSET);
-		socket.send(new DatagramPacket(message, message.length , InetAddress.getByName(this.networkGroup) ,this.networkPort));
+		byte[] message64 = Base64.encodeBase64(stringMsg.getBytes()); 
+		socket.send(new DatagramPacket(message64, message64.length , InetAddress.getByName(this.networkGroup) ,this.networkPort));
 	}
 	
 	/**
@@ -139,12 +141,12 @@ public class Multicast {
 		byte[] bytes = new byte[65536]; 
 	    DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 	    
-		while(true) { 
+		while(true) {
 			socket.receive(packet);
 			if(packet.getLength() != 0) {
-				String message = new String(packet.getData(),0,packet.getLength(),CHARSET); 
-				byte[] byteMsg = new BASE64Decoder().decodeBuffer(message);
-				r.onReceive(new String(byteMsg));
+				String message = new String(packet.getData(),0,packet.getLength());
+				byte[] byteMsg = Base64.decodeBase64(message);
+				r.onReceive(new String(byteMsg,ENCODING.toString()));
 			}
 		}
 	}

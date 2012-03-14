@@ -31,6 +31,10 @@ package de.vistahr.lanchat.model;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Chatmessage represents a single message
+ * @author vistahr
+ */
 public class ChatMessage extends ChatResponse {
 
 
