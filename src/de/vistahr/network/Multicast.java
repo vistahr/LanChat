@@ -33,10 +33,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -70,10 +67,9 @@ public class Multicast {
 	 * 			Multicastport
 	 * @throws IOException 
 	 */
-	public Multicast(String networkGroup,int networkPort) throws IOException {
+	public Multicast(final String networkGroup,final int networkPort) throws IOException {
 		this.networkGroup  = networkGroup;
 		this.networkPort   = networkPort;
-		//openSocket();
 	}
 	
 	

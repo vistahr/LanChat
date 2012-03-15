@@ -96,7 +96,6 @@ public class SLCP implements Protocol {
 
 	@Override
 	public ChatResponse parse(String incoming) throws ParseException {
-		
 		try {
 			DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBFac.newDocumentBuilder();
