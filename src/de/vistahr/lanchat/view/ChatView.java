@@ -73,7 +73,7 @@ public class ChatView implements Observer {
 	    }	
 	}
 	
-	public static final String APP_NAME = "LanChat - blabla your life";
+	public static final String APP_NAME = "LanChat - blabla your life v0.1.1";
 	
 	public static final String RES_PATH = "/res/";
 	public static final String RES_ICON_MUTE = "mute.png";
