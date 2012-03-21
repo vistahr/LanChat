@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <project name="LanChat" basedir="." default="build">
 
 	<property name="src.dir" value="src"/>
@@ -15,7 +15,7 @@
 	
 	<property environment="env"/>
 	<property name="ci-build" value="${env.BUILD_NUMBER}"/>
-	<property name="ci-version" value="_v011b"/> 
+	<property name="ci-version" value="_v011"/> 
 	
 	
 	<path id="class.path">    
