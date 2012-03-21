@@ -52,11 +52,11 @@ import java.util.concurrent.Executors;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-import de.vistahr.lanchat.model.Chat;
+import de.vistahr.lanchat.model.RootViewModel;
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.ChatResponse;
 import de.vistahr.lanchat.model.Name;
-import de.vistahr.lanchat.view.ChatView;
+import de.vistahr.lanchat.view.component.RootView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.Receivable;
 import de.vistahr.network.SLCP;
@@ -65,10 +65,10 @@ import de.vistahr.network.SLCP;
  * Main Chatcontroller
  * @author vistahr
  */
-public class ChatController {
+public class RootController {
 	
-	private Chat model;
-	private ChatView view;
+	private RootViewModel model;
+	private RootView view;
 	private Multicast mcast;
 	
 	private ExecutorService exec;
@@ -82,7 +82,7 @@ public class ChatController {
 	public static int MULTICAST_GROUP = 4447;
 
 	
-	public ChatController(Chat m, ChatView v) {
+	public RootController(RootViewModel m, RootView v) {
 		model = m;
 		view  = v;
 		// init controller
@@ -249,17 +249,17 @@ public class ChatController {
 			if(!model.isMute()) {
 				try {
 					model.setMute(true);
-					view.getBtnMute().setIcon(new ImageIcon(getClass().getResource(ChatView.RES_PATH + ChatView.RES_ICON_MUTE)));
+					view.getBtnMute().setIcon(new ImageIcon(getClass().getResource(RootView.RES_PATH + RootView.RES_ICON_MUTE)));
 				} catch(NullPointerException ex) {
-					view.showMessageDialog("Cannot load resource " + ChatView.RES_PATH + ChatView.RES_ICON_MUTE);
+					view.showMessageDialog("Cannot load resource " + RootView.RES_PATH + RootView.RES_ICON_MUTE);
 				}
 				
 			} else {
 				try {
 					model.setMute(false);
-					view.getBtnMute().setIcon(new ImageIcon(getClass().getResource(ChatView.RES_PATH + ChatView.RES_ICON_UNMUTE)));
+					view.getBtnMute().setIcon(new ImageIcon(getClass().getResource(RootView.RES_PATH + RootView.RES_ICON_UNMUTE)));
 				} catch(NullPointerException ex) {
-					view.showMessageDialog("Cannot load resource " + ChatView.RES_PATH + ChatView.RES_ICON_UNMUTE);
+					view.showMessageDialog("Cannot load resource " + RootView.RES_PATH + RootView.RES_ICON_UNMUTE);
 				}
 			}
 		
@@ -336,7 +336,7 @@ public class ChatController {
 				// when muted, hide tray messages
 				if(!model.isMute()) {
 					view.showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
-					playSound(getClass().getResource(ChatView.RES_PATH + ChatView.RES_SOUND_SEND));
+					playSound(getClass().getResource(RootView.RES_PATH + RootView.RES_SOUND_SEND));
 				}
 				
 			} catch(ParseException e) {

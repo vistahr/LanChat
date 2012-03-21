@@ -38,7 +38,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.vistahr.lanchat.controller.ChatController;
+import de.vistahr.lanchat.controller.RootController;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.Receivable;
 
@@ -49,7 +49,7 @@ public class MulticastTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		m = new Multicast(ChatController.MULTICAST_URL, ChatController.MULTICAST_GROUP);
+		m = new Multicast(RootController.MULTICAST_URL, RootController.MULTICAST_GROUP);
 		try {
 			m.openSocket();
 		} catch (IOException e) {

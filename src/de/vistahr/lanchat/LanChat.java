@@ -28,9 +28,9 @@
  */
 package de.vistahr.lanchat;
 
-import de.vistahr.lanchat.controller.ChatController;
-import de.vistahr.lanchat.model.Chat;
-import de.vistahr.lanchat.view.ChatView;
+import de.vistahr.lanchat.controller.RootController;
+import de.vistahr.lanchat.model.RootViewModel;
+import de.vistahr.lanchat.view.component.RootView;
 
 /**
  * Startclass for lanchat init the maincontroller, model & view
@@ -39,10 +39,10 @@ import de.vistahr.lanchat.view.ChatView;
 public class LanChat {
 
 	public static void main(String[] args) {
-		Chat model = new Chat();
-		ChatView view = new ChatView(model);
+		RootViewModel model = new RootViewModel();
+		RootView view = new RootView(model);
 		
-		new ChatController(model, view);
+		new RootController(model, view);
 	}
 	
 	

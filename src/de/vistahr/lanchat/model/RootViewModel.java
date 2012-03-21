@@ -35,7 +35,7 @@ import java.util.Observable;
  * Main model, which holds the data of the view
  * @author vistahr
  */
-public class Chat extends Observable {
+public class RootViewModel extends Observable {
 	
 	private Name chatName;
 	private Message chatMessage;
@@ -45,7 +45,7 @@ public class Chat extends Observable {
 
 	
 	
-	public Chat() {
+	public RootViewModel() {
 		entries = new ArrayList<ChatMessage>();
 		chatMessage = new Message("");
 		chatName = new Name(Name.getDefaultFallbackName());

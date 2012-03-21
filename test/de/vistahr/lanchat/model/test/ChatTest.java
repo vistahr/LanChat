@@ -38,15 +38,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.vistahr.lanchat.model.ChatMessage;
-import de.vistahr.lanchat.model.Chat;
+import de.vistahr.lanchat.model.RootViewModel;
 
 public class ChatTest {
 
-	Chat cvd;
+	RootViewModel cvd;
 	
 	@Before
 	public void setUp() throws Exception {
-		cvd = new Chat();
+		cvd = new RootViewModel();
 	}
 
 	@After

@@ -26,7 +26,7 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.view;
+package de.vistahr.lanchat.view.component;
 
 import java.awt.Dimension;
 import java.awt.Image;
@@ -49,7 +49,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import de.vistahr.lanchat.model.Chat;
+import de.vistahr.lanchat.model.RootViewModel;
 import de.vistahr.lanchat.model.ChatMessage;
 import edu.cmu.relativelayout.BindingFactory;
 import edu.cmu.relativelayout.RelativeConstraints;
@@ -63,9 +63,14 @@ import edu.cmu.relativelayout.RelativeLayout;
  * @author vistahr
  *
  */
-public class ChatView implements Observer {
+public class RootView implements Observer {
 	
-	{  // init systemlook before instantiate components
+	{  // init before instantiate components
+		// set app name for mac
+		System.setProperty("com.apple.mrj.application.apple.menu.about.name", APP_NAME);
+		// use osx jmenu 
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		// systemlook		
 		try {
 	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	    } catch (Exception e) {
@@ -99,7 +104,7 @@ public class ChatView implements Observer {
 	/**
 	 * Constructor set up the UI and listeners
 	 */
-	public ChatView(Observable model) {
+	public RootView(Observable model) {
 		model.addObserver(this);
 		initialize();
 		initNewLayout();
@@ -239,9 +244,9 @@ public class ChatView implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object model) {
-		setPaneChatbox(((Chat) model).getEntries());
-		setTxtChatname(((Chat) model).getChatName().getName());
-		setTxtSendMsg(((Chat) model).getChatMessage().getMessage());
+		setPaneChatbox(((RootViewModel) model).getEntries());
+		setTxtChatname(((RootViewModel) model).getChatName().getName());
+		setTxtSendMsg(((RootViewModel) model).getChatMessage().getMessage());
 	}
 
 	
