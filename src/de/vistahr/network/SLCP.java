@@ -79,6 +79,8 @@ import de.vistahr.lanchat.model.ChatResponse;
  */
 public class SLCP implements Protocol {
 	
+	// Simple LanChat Protocol verion
+	public static int VERSION_V1 = 1;
 	
 	public final String version;
 	public static Charset ENCODING = Charset.defaultCharset();

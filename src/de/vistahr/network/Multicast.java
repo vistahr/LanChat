@@ -46,7 +46,6 @@ import org.apache.commons.codec.binary.Base64;
  *
  */
 public class Multicast {
-
 	
 	private String networkGroup;
 	private int networkPort;
@@ -72,7 +71,6 @@ public class Multicast {
 		this.networkPort   = networkPort;
 	}
 	
-	
 	/**
 	 * Get MulticastSocket
 	 * @return MulticastSocket
@@ -81,11 +79,18 @@ public class Multicast {
 		return socket;
 	}
 
+	/**
+	 * Get Ntwourkgroup
+	 * @return
+	 */
 	public String getNetworkGroup() {
 		return networkGroup;
 	}
 
-
+	/**
+	 * Get Networkport
+	 * @return
+	 */
 	public int getNetworkPort() {
 		return networkPort;
 	}
@@ -113,17 +118,15 @@ public class Multicast {
 		socket = null;
 	}
 	
-
-	
 	/**
 	 * Send a given message
 	 * @param stringMsg
 	 * 			Message that will be sent
 	 * @throws IOException
 	 */
-	public void send(String stringMsg) throws IOException {
+	public void send(String stringMsg) throws IOException { 
 		// to base 64
-		byte[] message64 = Base64.encodeBase64(stringMsg.getBytes()); 
+		byte[] message64 = Base64.encodeBase64(stringMsg.getBytes());
 		socket.send(new DatagramPacket(message64, message64.length , InetAddress.getByName(this.networkGroup) ,this.networkPort));
 	}
 	

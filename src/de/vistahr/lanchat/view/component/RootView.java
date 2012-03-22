@@ -28,29 +28,15 @@
  */
 package de.vistahr.lanchat.view.component;
 
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.model.ChatMessage;
+import de.vistahr.lanchat.resource.Bundle;
 import edu.cmu.relativelayout.BindingFactory;
 import edu.cmu.relativelayout.RelativeConstraints;
 import edu.cmu.relativelayout.RelativeLayout;
@@ -64,42 +50,63 @@ import edu.cmu.relativelayout.RelativeLayout;
  *
  */
 public class RootView implements Observer {
-	
-	{  // init before instantiate components
-		// set app name for mac
-		System.setProperty("com.apple.mrj.application.apple.menu.about.name", APP_NAME);
-		// use osx jmenu 
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		// systemlook		
-		try {
-	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }	
-	}
-	
-	public static final String APP_NAME = "LanChat - blabla your life v0.1.1";
-	
-	public static final String RES_PATH = "/res/";
-	public static final String RES_ICON_MUTE = "mute.png";
-	public static final String RES_ICON_UNMUTE = "unmute.png";
-	public static final String RES_ICON_APP = "chat.png";
-	public static final String RES_SOUND_SEND = "ding.wav";
-	
+
+
 	// Mainframe & basics
-	private JFrame frame;
-	private TrayIcon trayIcon;
-	
+	private MainFrame mainframe;
+
 	// Components
-	private JTextField txtChatname		 = new JTextField(15);
-	private JEditorPane paneChatbox 	 = new JEditorPane();
-	private JScrollPane editorScrollPane = new JScrollPane(paneChatbox);
-	private JTextField txtSendMsg 		 = new JTextField("");
-	private JButton btnSendMsg			 = new JButton("Send");
-	private JButton btnMute 			 = new JButton();
+	private ChatName chatname;
+	private Chatbox chatbox;
+	private ChatboxScroller chatscroller;
+	private SendBox sendbox;
+	private SendButton sendbutton;
+	private MuteButton mutebutton;
+	private Tray tray;
 	
 	// Panels
 	private JPanel mainPanel;
+
+	
+	
+	public MainFrame getMainframe() {
+		return mainframe;
+	}
+
+
+	public ChatName getChatname() {
+		return chatname;
+	}
+
+	public Chatbox getChatbox() {
+		return chatbox;
+	}
+
+	public ChatboxScroller getChatscroller() {
+		return chatscroller;
+	}
+
+	public SendBox getSendbox() {
+		return sendbox;
+	}
+
+	public SendButton getSendbutton() {
+		return sendbutton;
+	}
+
+	public MuteButton getMutebutton() {
+		return mutebutton;
+	}
+
+	public JPanel getMainPanel() {
+		return mainPanel;
+	}
+
+	
+	public Tray getTray() {
+		return tray;
+	}
+
 
 	/**
 	 * Constructor set up the UI and listeners
@@ -107,135 +114,55 @@ public class RootView implements Observer {
 	public RootView(Observable model) {
 		model.addObserver(this);
 		initialize();
-		initNewLayout();
-		frame.setVisible(true);
-	}
-	
-	
-
-	public JFrame getFrame() {
-		return frame;
-	}
-	
-	public JTextField getJTextfieldChatname() {
-		return txtChatname;
-	}
-	
-	public String getTxtChatname() {
-		return txtChatname.getText();
-	}
-
-	public JTextField getJTextfieldSendMsg() {
-		return txtSendMsg;
-	}
-	
-	public String getTxtSendMsg() {
-		return txtSendMsg.getText();
-	}
-
-	public JButton getBtnSendMsg() {
-		return btnSendMsg;
-	}
-
-	public JButton getBtnMute() {
-		return btnMute;
-	}
-	
-	public JScrollPane getEditorScrollPane() {
-		return editorScrollPane;
-	}
-	
-	public TrayIcon getTrayIcon() {
-		if (SystemTray.isSupported()) {
-			if(this.trayIcon == null) {
-			    Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource(RES_PATH + RES_ICON_APP));
-			    trayIcon = new TrayIcon(icon, APP_NAME);
-			    trayIcon.setImageAutoSize(true);
-			    return trayIcon;
-			}
-		}
-		return null;
-	}
-
-	private void setTxtChatname(String name) {
-		txtChatname.setText(name);
-	}
-	
-	private void setTxtSendMsg(String msg) {
-		txtSendMsg.setText(msg);
-	}
-	
-	private void setPaneChatbox(ArrayList<ChatMessage> entries) {
-		String message = "connected...";
-		
-		Iterator<ChatMessage> itr = entries.iterator();
-	    while (itr.hasNext()) {
-	    	try {
-	    		message = message + "\n" + itr.next().toString();
-	    	} catch(ConcurrentModificationException e) {
-	    		break;
-	    	}
-	    }
-	    paneChatbox.setText(message.toString());
-	}
-	
-	public void scrollChatboxToBottom() {
-		getEditorScrollPane().getVerticalScrollBar().setValue(Integer.MAX_VALUE);
+		positionLayout();
+		mainframe.setVisible(true);
 	}
 	
 	
 	private void initialize() {
+		
+		// set app name for mac
+		System.setProperty("com.apple.mrj.application.apple.menu.about.name", Bundle.getString("APP_NAME"));
+		// use osx jmenu 
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		
+		// systemlook		
+		try {
+	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }	
+				
 		// Frame
-		frame = new JFrame(APP_NAME);
-		
-		// Frame settings
-		frame.setPreferredSize(new Dimension(350,250));
-		frame.setResizable(true);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		
-		// Components settings
-		paneChatbox.setEditable(false);
-		paneChatbox.setPreferredSize(new Dimension(320, 150));
-		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		editorScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		
-		// chatname
-		//txtChatname.setHorizontalAlignment(JTextField.RIGHT);
+		mainframe = new MainFrame(Bundle.getString("APP_NAME"));
 		
 		
-		// icon - mutebutton
-		btnMute.setPreferredSize(new Dimension(30,25));
-		try {
-			btnMute.setIcon(new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_UNMUTE)));
-		} catch(NullPointerException e) {
-			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_UNMUTE);
-		}
-		
-		// icon - frame
-		try {
-			Image icon = new ImageIcon(getClass().getResource(RES_PATH + RES_ICON_APP)).getImage();
-			frame.setIconImage(icon);
-		} catch(NullPointerException e) {
-			showMessageDialog("Cannot load resource " + RES_PATH + RES_ICON_APP);
-		}
-		
+		// Components
+		/////////////
+		mainPanel = new JPanel();
+		chatname = new ChatName();
+		mutebutton = new MuteButton();
+		chatbox = new Chatbox();
+		chatscroller = new ChatboxScroller(chatbox);
+		sendbox = new SendBox();
+		sendbutton = new SendButton();
+		tray = new Tray();
 	}
 	
 	
-	private void initNewLayout() {
+	private void positionLayout() {
 		BindingFactory bf = new BindingFactory();
 		// top
 		mainPanel = new JPanel(new RelativeLayout());
-		mainPanel.add(txtChatname,new RelativeConstraints(bf.topEdge(), bf.leftEdge()));
-		mainPanel.add(btnMute, new RelativeConstraints(bf.rightEdge(), bf.topEdge()));
+		mainPanel.add(chatname,new RelativeConstraints(bf.topEdge(), bf.leftEdge()));
+		mainPanel.add(mutebutton, new RelativeConstraints(bf.rightEdge(), bf.topEdge()));
 		// center
-		mainPanel.add(editorScrollPane, new RelativeConstraints(bf.below(txtChatname), bf.leftEdge(), bf.rightEdge(), bf.above(txtSendMsg)));
+		mainPanel.add(chatscroller, new RelativeConstraints(bf.below(chatname), bf.leftEdge(), bf.rightEdge(), bf.above(sendbox)));
 		// bottom
-		mainPanel.add(txtSendMsg, new RelativeConstraints(bf.bottomEdge(), bf.leftEdge(), bf.leftOf(btnSendMsg)));
-		mainPanel.add(btnSendMsg, new RelativeConstraints(bf.bottomEdge(), bf.rightEdge()));
+		mainPanel.add(sendbox, new RelativeConstraints(bf.bottomEdge(), bf.leftEdge(), bf.leftOf(sendbutton)));
+		mainPanel.add(sendbutton, new RelativeConstraints(bf.bottomEdge(), bf.rightEdge()));
 		// add to mainframe
-		frame.add(mainPanel);
+		mainframe.add(mainPanel);
 	}
 	
 	
@@ -244,32 +171,10 @@ public class RootView implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object model) {
-		setPaneChatbox(((RootViewModel) model).getEntries());
-		setTxtChatname(((RootViewModel) model).getChatName().getName());
-		setTxtSendMsg(((RootViewModel) model).getChatMessage().getMessage());
+		chatbox.setContent(((RootViewModel) model).getEntries());
+		chatname.setText(((RootViewModel) model).getChatName().getName());
+		sendbox.setText(((RootViewModel) model).getChatMessage().getMessage());
 	}
 
 	
-	/**
-	 * Creates an warning dialog box
-	 * @param message
-	 * 			Message that will shown in the Dialogbox
-	 */
-	public void showMessageDialog(String message) {
-		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.WARNING_MESSAGE);
-	}
-	
-	
-	/**
-	 * Creates an trayicon dialog
-	 * @param header
-	 * 			message will shown in tray header
-	 * @param message
-	 * 			tray message
-	 */
-	public void showTrayMessageDialog(String header, String message) {
-		getTrayIcon().displayMessage(header, message, TrayIcon.MessageType.INFO);
-	}	
-	
-
 }
