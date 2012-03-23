@@ -34,7 +34,7 @@ import java.util.Date;
  * Chatping represent a single Chatping
  * @author vistahr
  */
-public class ChatPing extends ChatResponse {
+public class ChatPing extends AbstractChatResponse {
 
 	
 	public ChatPing(String chatName, Date written) {

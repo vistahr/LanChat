@@ -26,68 +26,19 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.model;
+package de.vistahr.network;
+
+import java.text.ParseException;
+
+import de.vistahr.lanchat.model.AbstractChatResponse;
 
 /**
- * A message class with validators
+ * Interface for the protocol
+ * 
  * @author vistahr
+ * 
  */
-public class Message {
-
-	private String message = "";
-
-	
-	private static final int MSG_LENGTH = 500;
-	
-	
-	public Message(String msg) {
-		setMessage(msg);
-	}
-	
-	
-	public String getMessage() {
-		return message;
-	}
-
-
-	public void setMessage(String cm) {
-		if(cm == null) {
-			throw new IllegalStateException("message null");
-		}
-		if(!cm.equals("")) {
-			message = cm.trim();
-			if(cm.length() > MSG_LENGTH) {
-				message = message.substring(0, MSG_LENGTH);	
-			}
-		}
-	}
-
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((message == null) ? 0 : message.hashCode());
-		return result;
-	}
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Message))
-			return false;
-		Message other = (Message) obj;
-		if (message == null) {
-			if (other.message != null)
-				return false;
-		} else if (!message.equals(other.message))
-			return false;
-		return true;
-	}
-
-
+interface IProtocol {
+	public AbstractChatResponse parse(String incoming) throws ParseException;
+	public String generate(AbstractChatResponse message, String type);
 }

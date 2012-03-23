@@ -40,7 +40,7 @@ import org.junit.Test;
 
 import de.vistahr.lanchat.controller.RootController;
 import de.vistahr.network.Multicast;
-import de.vistahr.network.Receivable;
+import de.vistahr.network.IReceivable;
 
 public class MulticastTest {
 	
@@ -88,18 +88,14 @@ public class MulticastTest {
 			sendAndReceive(iter.next());
 		}
 	}
+	
+	
 	public void sendAndReceive(final String curMsg) throws IOException {
 		t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					m.receive(new Receivable() {
-						@Override
-						public void onReceive(String data) {
-							assertEquals(curMsg, data);
-							
-						}
-					});
+					m.startReceive();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

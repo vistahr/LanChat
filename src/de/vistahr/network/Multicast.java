@@ -35,7 +35,12 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.charset.Charset;
 
+import javax.swing.event.EventListenerList;
+
 import org.apache.commons.codec.binary.Base64;
+
+import de.vistahr.lanchat.event.MulticastReceiveEvent;
+import de.vistahr.lanchat.listener.IMulticastReceiveListener;
 
 
 /**
@@ -54,6 +59,9 @@ public class Multicast {
 	private MulticastSocket socket = null;
 	
 	private static Charset ENCODING = Charset.defaultCharset();
+	
+	
+	private EventListenerList listeners = new EventListenerList();
 	
 	
 	/**
@@ -131,12 +139,12 @@ public class Multicast {
 	}
 	
 	/**
-	 * Open the socket and starts the receiving loop.
+	 * Open the socket and starts the infinity receiver loop.
 	 * @param r 
 	 * 			Receiver interface
 	 * @throws IOException
 	 */
-	public void receive(Receivable r) throws IOException {
+	public void startReceive() throws IOException {
 		byte[] bytes = new byte[65536]; 
 	    DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 	    
@@ -145,7 +153,7 @@ public class Multicast {
 			if(packet.getLength() != 0) {
 				String message = new String(packet.getData(),0,packet.getLength());
 				byte[] byteMsg = Base64.decodeBase64(message);
-				r.onReceive(new String(byteMsg,ENCODING.toString()));
+				notifyReceiver(new MulticastReceiveEvent(this, new String(byteMsg,ENCODING.toString())));
 			}
 		}
 	}
@@ -156,6 +164,23 @@ public class Multicast {
 	@Override
 	public String toString() {
 		return this.networkGroup + ":" + this.networkPort; 
+	}
+	
+	
+	public void addReceiveListener(IMulticastReceiveListener listener) {
+		listeners.add(IMulticastReceiveListener.class, listener);
+	}
+	
+	
+	public void removeReceiveListener(IMulticastReceiveListener listener) {
+		listeners.remove(IMulticastReceiveListener.class, listener);
+	}
+	
+	
+	public synchronized void notifyReceiver(MulticastReceiveEvent event) {
+		for(IMulticastReceiveListener l: listeners.getListeners(IMulticastReceiveListener.class)) {
+			l.receive(event);
+		}
 	}
 	
 	

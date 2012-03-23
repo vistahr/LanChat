@@ -29,12 +29,13 @@
 package de.vistahr.lanchat.model;
 
 import java.util.Date;
+import java.util.EventObject;
 
 /**
  * The main abstract method for incoming data
  * @author vistahr
  */
-public abstract class ChatResponse {
+public abstract class AbstractChatResponse {
 
 	public final static String DATE_OUT_FORMAT = "HH:MM:ss";
 	
@@ -46,7 +47,7 @@ public abstract class ChatResponse {
 	
 	
 
-	public ChatResponse(final String chatName, final String chatMessage, final Date written, final int ID) {
+	public AbstractChatResponse(final String chatName, final String chatMessage, final Date written, final int ID) {
 		setChatName(chatName);
 		setChatMessage(chatMessage);
 		this.written = written;
@@ -112,9 +113,9 @@ public abstract class ChatResponse {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof ChatResponse))
+		if (!(obj instanceof AbstractChatResponse))
 			return false;
-		ChatResponse other = (ChatResponse) obj;
+		AbstractChatResponse other = (AbstractChatResponse) obj;
 		if (ID != other.ID)
 			return false;
 		if (chatMessage == null) {

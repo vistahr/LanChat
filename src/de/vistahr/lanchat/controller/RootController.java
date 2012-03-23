@@ -34,19 +34,18 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.vistahr.lanchat.listener.ReceiveListener;
 import de.vistahr.lanchat.model.Name;
 import de.vistahr.lanchat.model.RootViewModel;
 import de.vistahr.lanchat.view.component.MessageDialog;
 import de.vistahr.lanchat.view.component.RootView;
 import de.vistahr.lanchat.view.listener.ChangeChatnameListener;
 import de.vistahr.lanchat.view.listener.MuteListener;
-import de.vistahr.lanchat.view.listener.ReceiveListener;
 import de.vistahr.lanchat.view.listener.RootWindowListener;
 import de.vistahr.lanchat.view.listener.ScrollListener;
 import de.vistahr.lanchat.view.listener.SendListener;
 import de.vistahr.lanchat.view.listener.TrayMouseListener;
 import de.vistahr.network.Multicast;
-import de.vistahr.network.Receivable;
 
 /**
  * Main Chatcontroller
@@ -99,27 +98,21 @@ public class RootController {
 		}
 		
 		// run receiverloop
-		runReceiverAction();
-		
-		
+		runReceiver();
 	}
 	
 	
-	private void runReceiverAction() {
+	private void runReceiver() {
 		// Receivertaskloop
 		exec = Executors.newSingleThreadExecutor();
 		Runnable receiverTask = new Runnable() {
 			@Override
 			public void run() {
 				try {
-					mcast.receive(new Receivable() {
-						@Override
-						public void onReceive(String data) {
-							new ReceiveListener(model, view, data);
-						}
-					});
+					mcast.startReceive();
+					
 				} catch (IOException e) {
-					new MessageDialog(e.getMessage());
+					e.printStackTrace();
 				}
 			}
 		};
@@ -128,9 +121,11 @@ public class RootController {
 	
 
 	/**
-	 * Add viewlisteners
+	 * Add listeners
 	 */
 	private void addListeners() {
+		// receiver
+		mcast.addReceiveListener(new ReceiveListener(model, view));
 		// send 
 		view.getSendbutton().addActionListener(new SendListener(model, view, mcast));
 		// send 

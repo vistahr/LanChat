@@ -58,7 +58,7 @@ import org.xml.sax.SAXParseException;
 
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.ChatPing;
-import de.vistahr.lanchat.model.ChatResponse;
+import de.vistahr.lanchat.model.AbstractChatResponse;
 
 /**
  * Simple LanChat Protocol
@@ -77,7 +77,7 @@ import de.vistahr.lanchat.model.ChatResponse;
  * 		<id></id>
  * </lanchat>
  */
-public class SLCP implements Protocol {
+public class SLCP implements IProtocol {
 	
 	// Simple LanChat Protocol verion
 	public static int VERSION_V1 = 1;
@@ -97,7 +97,7 @@ public class SLCP implements Protocol {
 	
 
 	@Override
-	public ChatResponse parse(String incoming) throws ParseException {
+	public AbstractChatResponse parse(String incoming) throws ParseException {
 		try {
 			DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBFac.newDocumentBuilder();
@@ -212,7 +212,7 @@ public class SLCP implements Protocol {
 
 	
 	@Override
-	public String generate(ChatResponse message, String type) {
+	public String generate(AbstractChatResponse message, String type) {
 		String xmlString = "";
 
 		// build XML

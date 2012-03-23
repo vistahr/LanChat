@@ -30,9 +30,9 @@ package de.vistahr.lanchat.model.test;
 
 import java.util.Date;
 
-import de.vistahr.lanchat.model.ChatResponse;
+import de.vistahr.lanchat.model.AbstractChatResponse;
 
-public class MockChatResponse extends ChatResponse {
+public class MockChatResponse extends AbstractChatResponse {
 
 	public MockChatResponse(String chatName, String chatMessage, Date written) {
 		super(chatName, chatMessage, written, 0);

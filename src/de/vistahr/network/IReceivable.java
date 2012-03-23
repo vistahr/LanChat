@@ -26,54 +26,15 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.view.listener;
 
-import java.net.URL;
-import java.text.ParseException;
+package de.vistahr.network;
 
-import de.vistahr.lanchat.model.ChatMessage;
-import de.vistahr.lanchat.model.ChatResponse;
-import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.resource.Bundle;
-import de.vistahr.lanchat.view.component.RootView;
-import de.vistahr.network.SLCP;
-
-public class ReceiveListener extends AbstractListener {
-
-	
-	public ReceiveListener(RootViewModel m, RootView v, String data) {
-		super(m, v);
-		
-		try {
-			// Parse incoming data
-			SLCP receiver = new SLCP(SLCP.VERSION_V1);
-			try {
-				final ChatResponse resp = receiver.parse(data);
-				if(resp instanceof ChatMessage) {
-					// add entry to the model to display it on the panechatbox
-					model.addEntry((ChatMessage)resp);
-					// activate gui, when in background
-					if(!view.getMainframe().isActive()) {
-						view.getMainframe().toFront();
-					}
-				}
-				// when muted, hide tray messages
-				if(!model.isMute()) {
-					view.getTray().showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
-					playSound(getClass().getResource(Bundle.getString("SOUND_INCOMING")));
-				}
-				
-			} catch(ParseException e) {
-				// continue - invalid input
-			}
-			
-		} catch (NullPointerException e) {
-			// continue empty messaga data
-		}
-	}
-	
-	// TODO
-	private void playSound(URL res) {
-	}
-	
+/**
+ * Receiver interface
+ * 
+ * @author vistahr
+ * 
+ */
+public interface IReceivable {
+	public void onReceive(String data);
 }

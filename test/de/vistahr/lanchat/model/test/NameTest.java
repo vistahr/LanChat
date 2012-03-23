@@ -72,7 +72,7 @@ public class NameTest {
 		name.setName(testChatname);
 	}
 	
-	@Test(expected=NullPointerException.class)
+	@Test(expected=IllegalStateException.class)
 	public void testSetNameNullPointerException() {
 		String testChatname = null;
 		name.setName(testChatname);

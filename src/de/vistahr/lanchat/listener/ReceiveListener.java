@@ -26,83 +26,60 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.model;
+package de.vistahr.lanchat.listener;
 
-/**
- * A name class with validators
- * @author vistahr
- */
-public class Name {
+import java.net.URL;
+import java.text.ParseException;
 
-	private String name = "";
+import de.vistahr.lanchat.event.MulticastReceiveEvent;
+import de.vistahr.lanchat.model.AbstractChatResponse;
+import de.vistahr.lanchat.model.ChatMessage;
+import de.vistahr.lanchat.model.RootViewModel;
+import de.vistahr.lanchat.resource.Bundle;
+import de.vistahr.lanchat.view.component.RootView;
+import de.vistahr.lanchat.view.listener.AbstractListener;
+import de.vistahr.network.SLCP;
+
+public class ReceiveListener extends AbstractListener implements IMulticastReceiveListener {
 	
-	private static final int NAME_LENGTH = 20;
-	private static String DEFAULT_NAME = "default";
 	
-	
-	public Name(String name) {
-		setName(name);
+	public ReceiveListener(RootViewModel m, RootView v) {
+		super(m, v);
 	}
 	
 	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String n) {
-		if(n == null) {
-			throw new IllegalStateException("name null");
-		}
-		
-		// valid chars pattern
-		String validCharPattern = "\\W";
+	@Override
+	public void receive(MulticastReceiveEvent event) {
 		try {
-			name = n.trim().replaceAll(validCharPattern, "");
-			if(name.length() > NAME_LENGTH)
-				name = name.substring(0, NAME_LENGTH);
+			// Parse incoming data
+			SLCP receiver = new SLCP(SLCP.VERSION_V1);
+			try {
+				final AbstractChatResponse resp = receiver.parse(event.getData());
+				if(resp instanceof ChatMessage) {
+					// add entry to the model to display it on the panechatbox
+					model.addEntry((ChatMessage)resp);
+					// activate gui, when in background
+					if(!view.getMainframe().isActive()) {
+						view.getMainframe().toFront();
+					}
+				}
+				// when muted, hide tray messages
+				if(!model.isMute()) {
+					view.getTray().showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
+					playSound(getClass().getResource(Bundle.getString("SOUND_INCOMING")));
+				}
 				
-		if(name.equals(""))
-			throw new IllegalArgumentException();	
-		
-		} catch(StringIndexOutOfBoundsException e) {
-			e.printStackTrace();
+			} catch(ParseException ex) {
+				// continue - invalid input TODO -> log
+			}
+			
+		} catch (NullPointerException ex) {
+			// continue empty messaga data TODO -> log
 		}
 	}
-
-
-	public static int getMaximumNameLength() {
-		return NAME_LENGTH;
-	}
 	
-	public static String getDefaultFallbackName() {
-		return DEFAULT_NAME;
-	}
-
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Name))
-			return false;
-		Name other = (Name) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
+	// TODO
+	private void playSound(URL res) {
 	}
 	
 }

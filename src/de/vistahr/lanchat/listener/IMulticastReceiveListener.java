@@ -26,19 +26,14 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.network;
+package de.vistahr.lanchat.listener;
 
-import java.text.ParseException;
+import java.util.EventListener;
 
-import de.vistahr.lanchat.model.ChatResponse;
+import de.vistahr.lanchat.event.MulticastReceiveEvent;
 
-/**
- * Interface for the protocol
- * 
- * @author vistahr
- * 
- */
-interface Protocol {
-	public ChatResponse parse(String incoming) throws ParseException;
-	public String generate(ChatResponse message, String type);
+
+
+public interface IMulticastReceiveListener extends EventListener {
+	void receive(MulticastReceiveEvent e);
 }

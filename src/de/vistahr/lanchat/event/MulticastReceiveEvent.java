@@ -26,15 +26,23 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
+package de.vistahr.lanchat.event;
 
-package de.vistahr.network;
+import java.util.EventObject;
 
-/**
- * Receiver interface
- * 
- * @author vistahr
- * 
- */
-public interface Receivable {
-	public void onReceive(String data);
+public class MulticastReceiveEvent extends EventObject {
+
+	private String data;
+	
+	public MulticastReceiveEvent(Object source, String data) {
+		super(source);
+		this.data = data;
+	}
+
+	public String getData() {
+		return data;
+	}
+	
+	
+	
 }

@@ -35,7 +35,7 @@ import java.util.Date;
  * Chatmessage represents a single message
  * @author vistahr
  */
-public class ChatMessage extends ChatResponse {
+public class ChatMessage extends AbstractChatResponse {
 
 
 	public ChatMessage(String chatName, String chatMessage, Date written) {

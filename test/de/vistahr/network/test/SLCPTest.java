@@ -39,7 +39,7 @@ import org.junit.Test;
 
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.ChatPing;
-import de.vistahr.lanchat.model.ChatResponse;
+import de.vistahr.lanchat.model.AbstractChatResponse;
 import de.vistahr.network.SLCP;
 
 public class SLCPTest {
@@ -94,14 +94,14 @@ public class SLCPTest {
 	
 	@Test
 	public void testParseMessageString() throws ParseException {
-		ChatResponse msgOutFromParse = slcp.parse(protocolv1MsgOutput);
+		AbstractChatResponse msgOutFromParse = slcp.parse(protocolv1MsgOutput);
 		assertEquals(globalSettedMsg.toString(), msgOutFromParse.toString());
 		assertNotNull(msgOutFromParse);
 	}
 	
 	@Test
 	public void testParsePingString() throws ParseException {
-		ChatResponse pingOutFromParse = slcp.parse(protocolv1PingOutput);
+		AbstractChatResponse pingOutFromParse = slcp.parse(protocolv1PingOutput);
 		assertEquals(globalSettedPing.hashCode(), pingOutFromParse.hashCode());
 		assertNotNull(pingOutFromParse);
 	}
