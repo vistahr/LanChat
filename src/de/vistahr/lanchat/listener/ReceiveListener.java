@@ -34,11 +34,14 @@ import java.text.ParseException;
 import de.vistahr.lanchat.event.MulticastReceiveEvent;
 import de.vistahr.lanchat.model.AbstractChatResponse;
 import de.vistahr.lanchat.model.ChatMessage;
+import de.vistahr.lanchat.model.ChatPing;
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.resource.Bundle;
+import de.vistahr.lanchat.util.settings.PropertiesUtil;
 import de.vistahr.lanchat.view.component.RootView;
 import de.vistahr.lanchat.view.listener.AbstractListener;
 import de.vistahr.network.SLCP;
+import de.vistahr.network.listener.IMulticastReceiveListener;
+import de.vistahr.util.logger.JLoggerUtil;
 
 public class ReceiveListener extends AbstractListener implements IMulticastReceiveListener {
 	
@@ -49,37 +52,50 @@ public class ReceiveListener extends AbstractListener implements IMulticastRecei
 	
 	
 	@Override
-	public void receive(MulticastReceiveEvent event) {
+	public synchronized void receive(MulticastReceiveEvent event) {
+		
+		// Parse incoming data
+		SLCP receiver = new SLCP(SLCP.VERSION_V1);
 		try {
-			// Parse incoming data
-			SLCP receiver = new SLCP(SLCP.VERSION_V1);
-			try {
-				final AbstractChatResponse resp = receiver.parse(event.getData());
-				if(resp instanceof ChatMessage) {
-					// add entry to the model to display it on the panechatbox
-					model.addEntry((ChatMessage)resp);
-					// activate gui, when in background
-					if(!view.getMainframe().isActive()) {
-						view.getMainframe().toFront();
-					}
-				}
+			final AbstractChatResponse resp = receiver.parse(event.getData());
+			
+			if(resp instanceof ChatMessage) {
+				// add entry to the model to display it on the panechatbox
+				model.addEntry((ChatMessage)resp);
+				// change trayicon (when application is minimized)
+				view.getTray().setIncomingTrayIcon();
+				
+				if(!view.getMainframe().isActive())
+					view.getMainframe().setIncomingAppIcon();
+				
 				// when muted, hide tray messages
 				if(!model.isMute()) {
 					view.getTray().showTrayMessageDialog("incoming message", model.getLastEntry().getChatMessage().getMessage());
-					playSound(getClass().getResource(Bundle.getString("SOUND_INCOMING")));
+					playSound(getClass().getResource(PropertiesUtil.getLanchatPropertyString("SOUND_INCOMING")));
 				}
-				
-			} catch(ParseException ex) {
-				// continue - invalid input TODO -> log
 			}
 			
+			if(resp instanceof ChatPing) {
+				model.addUserListEntry(resp.getID(),resp.getChatName());
+			}
+			
+			
+		} catch(ParseException ex) {
+			JLoggerUtil.getLogger().warn("ParseException in receive. Invalid input detected, continue receiving.");
+			
+		} catch (IllegalAccessException e) {
+			JLoggerUtil.getLogger().warn("IllegalAccessException in receive. Tray not supported.");
+			
 		} catch (NullPointerException ex) {
-			// continue empty messaga data TODO -> log
+			JLoggerUtil.getLogger().warn("NullPointerException in receive. Empty message detected, continue receiving.");
 		}
+			
+		
 	}
 	
-	// TODO
+	// TODO playSound not implemented
 	private void playSound(URL res) {
+		JLoggerUtil.getLogger().info("playSound not implemented");
 	}
 	
 }

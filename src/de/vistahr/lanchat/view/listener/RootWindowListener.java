@@ -34,33 +34,34 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 
 import javax.swing.JFrame;
 
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.view.component.MessageDialog;
 import de.vistahr.lanchat.view.component.RootView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.SLCP;
+import de.vistahr.util.logger.JLoggerUtil;
 
 public class RootWindowListener extends AbstractListener implements WindowListener {
 
 	ExecutorService exec;
 	Multicast mcast;
+	Timer timer;
 	
-	public RootWindowListener(RootViewModel m, RootView v, Multicast mc, ExecutorService e) {
+	public RootWindowListener(RootViewModel m, RootView v, Multicast mc, ExecutorService e, Timer t) {
 		super(m, v);
 		
-		exec = e;
+		exec  = e;
+		timer = t;
 		mcast = mc;
 	}
 
 	@Override
 	public void windowOpened(WindowEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -72,51 +73,69 @@ public class RootWindowListener extends AbstractListener implements WindowListen
 			mcast.send(sender.generateMessage(msg));
 			mcast.closeSocket();
 			
+			// leave chat
+			model.removeUserListEntry(msg.getID());
+
+			view.getMainframe().setVisible(false);
+			view.getMainframe().dispose();
+			
+			timer.cancel();
+			timer.purge();
+			
+			exec.shutdown();
+			
+			JLoggerUtil.getLogger().info("Application shutting down successful.");
+			
 		} catch (IOException ex) {
-			new MessageDialog(ex.getMessage());
-		}
-		
-		view.getMainframe().setVisible(false);
-		view.getMainframe().dispose();
-		
-		exec.shutdown();
+			JLoggerUtil.getLogger().warn(ex.getMessage());
+			
+		} catch (NullPointerException ex) {
+			JLoggerUtil.getLogger().warn("Hard exit");
+			System.exit(1);
+		}		
 	}
 
 	@Override
 	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void windowIconified(WindowEvent e) {
-		// hide
-		view.getMainframe().setState(JFrame.ICONIFIED);
-		view.getMainframe().setVisible(false);
 		SystemTray tray = SystemTray.getSystemTray();
+		
     	try {
 			tray.add(view.getTray().getIcon());
+			view.getTray().setDefaultTrayIcon();
+			view.getMainframe().setState(JFrame.ICONIFIED);
+			view.getMainframe().setVisible(false);
+			
+		} catch (IllegalAccessException ex) {
+			JLoggerUtil.getLogger().warn("Tray not supported");
+			
 		} catch (AWTException ex) {
-			new MessageDialog(ex.getMessage());
+			JLoggerUtil.getLogger().warn("AWTException in windowIconified");
 		}
 	}
-
+	
 	@Override
 	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-
+		try {
+			view.getTray().setDefaultTrayIcon();
+		} catch (IllegalAccessException e1) {
+			JLoggerUtil.getLogger().warn("Tray not supported");
+		}
 	}
 
 	@Override
 	public void windowActivated(WindowEvent e) {
 		view.getSendbox().setCaretPosition(0);
 		view.getSendbox().requestFocus();
+		view.getMainframe().setDefaultAppIcon();
 	}
 
 	@Override
 	public void windowDeactivated(WindowEvent e) {
-		// TODO view.getMainframe().close();
-		
 	}
 
+	
 }

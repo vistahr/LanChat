@@ -32,7 +32,8 @@ import javax.swing.JOptionPane;
 
 public class MessageDialog extends JOptionPane {
 
-	
+	private static final long serialVersionUID = -5208257873340450120L;
+
 	public MessageDialog(String message, int type) {
 		showMessageDialog(null, message, "Error", type);
 	}

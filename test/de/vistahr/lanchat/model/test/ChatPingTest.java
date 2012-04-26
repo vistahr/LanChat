@@ -28,9 +28,7 @@
  */
 package de.vistahr.lanchat.model.test;
 
-import static org.junit.Assert.*;
-
-import java.util.Date;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,12 +39,10 @@ import de.vistahr.lanchat.model.ChatPing;
 public class ChatPingTest {
 
 	ChatPing cp;
-	Date now;
-	
+
 	@Before
 	public void setUp() {
-		now = new Date();
-		cp = new ChatPing("testname", now, 96);
+		cp = new ChatPing("testname", 96);
 	}
 
 	@After

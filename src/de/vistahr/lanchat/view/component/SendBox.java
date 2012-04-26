@@ -32,6 +32,8 @@ import javax.swing.JTextField;
 
 public class SendBox extends JTextField {
 
+	private static final long serialVersionUID = 4765469436743702902L;
+
 	public SendBox() {
 		super();
 	}

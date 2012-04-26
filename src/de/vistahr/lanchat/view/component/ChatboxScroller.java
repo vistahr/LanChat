@@ -33,7 +33,8 @@ import javax.swing.JScrollPane;
 
 public class ChatboxScroller extends JScrollPane {
 
-	
+	private static final long serialVersionUID = -6989390900945150994L;
+
 	public ChatboxScroller(JEditorPane pane) {
 		super(pane);
 		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);

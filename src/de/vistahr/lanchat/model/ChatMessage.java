@@ -31,6 +31,8 @@ package de.vistahr.lanchat.model;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.vistahr.network.SLCP;
+
 /**
  * Chatmessage represents a single message
  * @author vistahr
@@ -39,8 +41,9 @@ public class ChatMessage extends AbstractChatResponse {
 
 
 	public ChatMessage(String chatName, String chatMessage, Date written) {
-		super(chatName, chatMessage, written, 0);
+		super(chatName, chatMessage, written, SLCP.getMacAddressHash());
 	}
+	
 	
 	public ChatMessage(String chatName, String chatMessage, Date written, int ID) {
 		super(chatName, chatMessage, written, ID);

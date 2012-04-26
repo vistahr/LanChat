@@ -31,12 +31,14 @@ package de.vistahr.lanchat.controller;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.vistahr.lanchat.listener.ReceiveListener;
 import de.vistahr.lanchat.model.Name;
 import de.vistahr.lanchat.model.RootViewModel;
+import de.vistahr.lanchat.task.SendPingTask;
 import de.vistahr.lanchat.view.component.MessageDialog;
 import de.vistahr.lanchat.view.component.RootView;
 import de.vistahr.lanchat.view.listener.ChangeChatnameListener;
@@ -46,6 +48,7 @@ import de.vistahr.lanchat.view.listener.ScrollListener;
 import de.vistahr.lanchat.view.listener.SendListener;
 import de.vistahr.lanchat.view.listener.TrayMouseListener;
 import de.vistahr.network.Multicast;
+import de.vistahr.util.logger.JLoggerUtil;
 
 /**
  * Main Chatcontroller
@@ -58,11 +61,12 @@ public class RootController {
 	private Multicast mcast;
 	
 	private ExecutorService exec;
+	private Timer timer;
 	
 	
 	// Multicast settings
 	public static String MULTICAST_URL = "230.0.0.1";
-	public static int MULTICAST_GROUP = 4447;
+	public static int MULTICAST_GROUP  = 4447;
 
 	
 	public RootController(RootViewModel m, RootView v) {
@@ -74,7 +78,7 @@ public class RootController {
 		
 		// run ui
 		initData();
-		addListeners();
+		addListeners();		
 	}
 	
 	
@@ -93,18 +97,35 @@ public class RootController {
 		try {
 			mcast = new Multicast(MULTICAST_URL, MULTICAST_GROUP);
 			mcast.openSocket();
+			
 		} catch (IOException e) {
 			new MessageDialog(e.getMessage());
 		}
 		
+		// Executer serverive
+		exec = Executors.newCachedThreadPool();
+		
 		// run receiverloop
-		runReceiver();
+		runReceiverTask();
+		runPingTask();
 	}
 	
 	
-	private void runReceiver() {
+
+	private void runPingTask() {
+	    Runnable pingTask = new Runnable() {
+			@Override
+			public void run() {
+				timer = new Timer();
+				timer.schedule(new SendPingTask(model, mcast) ,100 ,5000);
+			}
+		};
+		exec.execute(pingTask);
+	}
+	
+	
+	private void runReceiverTask() {
 		// Receivertaskloop
-		exec = Executors.newSingleThreadExecutor();
 		Runnable receiverTask = new Runnable() {
 			@Override
 			public void run() {
@@ -116,7 +137,7 @@ public class RootController {
 				}
 			}
 		};
-		exec.submit(receiverTask);
+		exec.execute(receiverTask);
 	}
 	
 
@@ -124,22 +145,19 @@ public class RootController {
 	 * Add listeners
 	 */
 	private void addListeners() {
-		// receiver
 		mcast.addReceiveListener(new ReceiveListener(model, view));
-		// send 
 		view.getSendbutton().addActionListener(new SendListener(model, view, mcast));
-		// send 
 		view.getSendbox().addActionListener(new SendListener(model, view, mcast));
-		// mute
 		view.getMutebutton().addActionListener(new MuteListener(model, view));
-		// chatname
 		view.getChatname().addFocusListener(new ChangeChatnameListener(model, view));
-		// window listeners
-		view.getMainframe().addWindowListener(new RootWindowListener(model, view, mcast, exec));
-		// autoscroll to bottom // TODO cannot croll to top
+		view.getMainframe().addWindowListener(new RootWindowListener(model, view, mcast, exec, timer));
+		// autoscroll to bottom // TODO cannot scroll to top
 		view.getChatscroller().getVerticalScrollBar().addAdjustmentListener(new ScrollListener(model, view));
-		// tray icon
-		view.getTray().getIcon().addMouseListener(new TrayMouseListener(model, view));
+		try {
+			view.getTray().getIcon().addMouseListener(new TrayMouseListener(model, view));
+		} catch (IllegalAccessException e) {
+			JLoggerUtil.getLogger().warn("Tray not supported");
+		}
 	}
 	
 	

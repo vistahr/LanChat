@@ -34,9 +34,9 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.resource.Bundle;
-import de.vistahr.lanchat.view.component.MessageDialog;
+import de.vistahr.lanchat.util.settings.PropertiesUtil;
 import de.vistahr.lanchat.view.component.RootView;
+import de.vistahr.util.logger.JLoggerUtil;
 
 public class MuteListener extends AbstractListener implements ActionListener {
 
@@ -49,17 +49,19 @@ public class MuteListener extends AbstractListener implements ActionListener {
 		if(!model.isMute()) {
 			try {
 				model.setMute(true);
-				view.getMutebutton().setIcon(new ImageIcon(getClass().getResource(Bundle.getString("ICON_MUTE"))));
+				view.getMutebutton().setIcon(new ImageIcon(PropertiesUtil.getLanchatPropertyImage("ICON_MUTE")));
+				
 			} catch(NullPointerException ex) {
-				new MessageDialog("Cannot load resource " + Bundle.getString("ICON_MUTE"));
+				JLoggerUtil.getLogger().warn("Cannot load resource " + PropertiesUtil.getLanchatPropertyString("ICON_MUTE"));
 			}
 			
 		} else {
 			try {
 				model.setMute(false);
-				view.getMutebutton().setIcon(new ImageIcon(getClass().getResource(Bundle.getString("ICON_UNMUTE"))));
+				view.getMutebutton().setIcon(new ImageIcon(PropertiesUtil.getLanchatPropertyImage("ICON_UNMUTE")));
+				
 			} catch(NullPointerException ex) {
-				new MessageDialog("Cannot load resource " + Bundle.getString("ICON_UNMUTE"));
+				JLoggerUtil.getLogger().warn("Cannot load resource " + PropertiesUtil.getLanchatPropertyString("ICON_UNMUTE"));
 			}
 		}
 	}

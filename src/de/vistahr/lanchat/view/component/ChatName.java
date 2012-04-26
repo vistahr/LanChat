@@ -31,9 +31,9 @@ package de.vistahr.lanchat.view.component;
 import javax.swing.JTextField;
 
 public class ChatName extends JTextField {
-	
-	
-	
+
+	private static final long serialVersionUID = -816181882259466838L;
+
 	public ChatName() {
 		super(15);
 	}

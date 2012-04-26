@@ -32,7 +32,8 @@ import javax.swing.JButton;
 
 public class SendButton extends JButton {
 
-	
+	private static final long serialVersionUID = 8566375701187193244L;
+
 	public SendButton() {
 		super("Send");
 	}

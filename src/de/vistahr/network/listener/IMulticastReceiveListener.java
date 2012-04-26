@@ -26,33 +26,14 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.resource;
+package de.vistahr.network.listener;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.EventListener;
 
-public class Bundle {
+import de.vistahr.lanchat.event.MulticastReceiveEvent;
 
-	
-	private static String basename = "lanchat";
-	
-	
-	private static ResourceBundle getBundle() {
-		ResourceBundle resb;
-		
-		try {
-			resb = ResourceBundle.getBundle(basename);
-			
-		} catch(MissingResourceException e) {
-			resb = ResourceBundle.getBundle("res." + basename);
-		}
-		
-		return resb;
-	}
-	
-	public static String getString(String key) {
-		return getBundle().getString(key);
-	}
-	
-	
+
+
+public interface IMulticastReceiveListener extends EventListener {
+	void receive(MulticastReceiveEvent e);
 }

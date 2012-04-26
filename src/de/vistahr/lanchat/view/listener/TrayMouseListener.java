@@ -28,11 +28,15 @@
  */
 package de.vistahr.lanchat.view.listener;
 
+import java.awt.SystemTray;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JFrame;
+
 import de.vistahr.lanchat.model.RootViewModel;
 import de.vistahr.lanchat.view.component.RootView;
+import de.vistahr.util.logger.JLoggerUtil;
 
 public class TrayMouseListener extends AbstractListener implements MouseListener {
 
@@ -42,32 +46,31 @@ public class TrayMouseListener extends AbstractListener implements MouseListener
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
+		view.getMainframe().setVisible(true); 
+		view.getMainframe().setState(JFrame.NORMAL);
+		try {
+			SystemTray.getSystemTray().remove(view.getTray().getIcon());
+		} catch (IllegalAccessException ex) {
+			JLoggerUtil.getLogger().warn("Tray not supported");
+		}
 
+    	
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

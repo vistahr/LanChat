@@ -26,14 +26,46 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.listener;
+package de.vistahr.lanchat.util.settings;
 
-import java.util.EventListener;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 
-import de.vistahr.lanchat.event.MulticastReceiveEvent;
+import de.vistahr.util.logger.JLoggerUtil;
 
+public class PropertiesUtil {
 
+	
+	private static String basename = "/lanchat.properties";
+	
+	
+	public static String getLanchatPropertyString(String key) {
+		Properties properties = new Properties();
+		String resultProperty = "";
+		
+		try {
+			properties.load(PropertiesUtil.class.getResourceAsStream(basename));
+			resultProperty = properties.getProperty(key);
+			
+		} catch (FileNotFoundException e) {
+			JLoggerUtil.getLogger().warn("FileNotFoundException " + basename);
+			
+		} catch (IOException e) {
+			JLoggerUtil.getLogger().warn("IOException " + basename);
 
-public interface IMulticastReceiveListener extends EventListener {
-	void receive(MulticastReceiveEvent e);
+		} catch (NullPointerException e) {
+			JLoggerUtil.getLogger().warn("NullPointerException " + basename);
+		}
+		
+		
+		return resultProperty;
+	}
+	
+	public static Image getLanchatPropertyImage(String key) {
+		return Toolkit.getDefaultToolkit().getImage(PropertiesUtil.class.getResource(PropertiesUtil.getLanchatPropertyString(key)));
+	}
+	
 }

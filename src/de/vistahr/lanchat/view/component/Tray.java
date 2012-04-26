@@ -30,28 +30,52 @@ package de.vistahr.lanchat.view.component;
 
 import java.awt.Image;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.util.MissingResourceException;
 
-import de.vistahr.lanchat.resource.Bundle;
+import de.vistahr.lanchat.util.settings.PropertiesUtil;
+import de.vistahr.util.logger.JLoggerUtil;
 
 
 public class Tray {
 	
-	private TrayIcon trayIcon;
+	private TrayIcon trayIcon = null;
 	
 	
-	public TrayIcon getIcon() {
-		if (SystemTray.isSupported()) {
-			if(this.trayIcon == null) {
-			    Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource(Bundle.getString("ICON_APP")));
-			    trayIcon = new TrayIcon(icon, Bundle.getString("APP_NAME"));
-			    trayIcon.setImageAutoSize(true);
-			    return trayIcon;
-			}
-		}
-		return null;
+	public void setIncomingTrayIcon() throws IllegalAccessException {
+		getIcon().setImage(PropertiesUtil.getLanchatPropertyImage("ICON_INCOMING"));
 	}
+	
+	public void setDefaultTrayIcon() throws IllegalAccessException {
+		getIcon().setImage(PropertiesUtil.getLanchatPropertyImage("ICON_APP"));
+	}	
+	
+	private boolean initTrayIcon(Image icon, String iconTooltip) {
+		if (SystemTray.isSupported()) {
+			try {
+				trayIcon = new TrayIcon(icon, iconTooltip);
+				trayIcon.setImageAutoSize(true);
+				
+			} catch(MissingResourceException e) {
+				JLoggerUtil.getLogger().warn("MissingResourceException in changeTrayIcon - Icon not found");
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+
+	public TrayIcon getIcon() throws IllegalAccessException {
+		if (SystemTray.isSupported()) {
+			if(trayIcon == null)
+				initTrayIcon(PropertiesUtil.getLanchatPropertyImage("ICON_APP"), PropertiesUtil.getLanchatPropertyString("APP_NAME"));
+			return trayIcon;
+		}
+		throw new IllegalAccessException("SystemTray not supported.");
+	}
+	
 	
 	public void showTrayMessageDialog(String header, String message) {
 		trayIcon.displayMessage(header, message, TrayIcon.MessageType.INFO);

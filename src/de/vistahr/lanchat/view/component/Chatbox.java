@@ -39,7 +39,8 @@ import de.vistahr.lanchat.model.ChatMessage;
 
 public class Chatbox extends JEditorPane {
 
-	
+	private static final long serialVersionUID = 4887666361002358164L;
+
 	public Chatbox() {
 		super();
 		setEditable(false);

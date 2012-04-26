@@ -40,7 +40,8 @@ import javax.swing.event.EventListenerList;
 import org.apache.commons.codec.binary.Base64;
 
 import de.vistahr.lanchat.event.MulticastReceiveEvent;
-import de.vistahr.lanchat.listener.IMulticastReceiveListener;
+import de.vistahr.network.listener.IMulticastReceiveListener;
+import de.vistahr.util.logger.JLoggerUtil;
 
 
 /**
@@ -148,8 +149,14 @@ public class Multicast {
 		byte[] bytes = new byte[65536]; 
 	    DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 	    
-		while(true) {
-			socket.receive(packet);
+		 while(true) {
+			try {
+				socket.receive(packet);
+			} catch (NullPointerException e) {
+				JLoggerUtil.getLogger().warn("NullPointerException - Thread stopped in receiving. Break receiverloop.");
+				break;
+			}
+			
 			if(packet.getLength() != 0) {
 				String message = new String(packet.getData(),0,packet.getLength());
 				byte[] byteMsg = Base64.decodeBase64(message);

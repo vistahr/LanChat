@@ -2,7 +2,9 @@
 <project name="LanChat" basedir="." default="build">
 
 	<property name="src.dir" value="src"/>
-
+	
+	<property name="res.dir" value="res"/>
+	
 	<property name="test.dir" value="test"/>
 		
 	<property name="build.dir" value="bin"/>
@@ -25,7 +27,6 @@
 	
 	<target name="init-clean">
 		<delete dir="${target.dir}"/>
-		<delete dir="${build.dir}"/>
 		<delete dir="${test.report.dir}" />
 	</target>
 	
@@ -63,7 +64,8 @@
         	<classpath refid="class.path"/>
 	    </manifestclasspath>
 		<jar destfile="${target.dir}/${ant.project.name}.jar" update="true">
-			<fileset dir="${build.dir}"/>	
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${res.dir}"/>
 			<fileset dir="${src.dir}" excludes="**/*.java"/>
 			<zipgroupfileset dir="." includes="${lib.dir}/**"/>
 			<manifest>

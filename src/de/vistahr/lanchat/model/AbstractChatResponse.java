@@ -29,7 +29,6 @@
 package de.vistahr.lanchat.model;
 
 import java.util.Date;
-import java.util.EventObject;
 
 /**
  * The main abstract method for incoming data

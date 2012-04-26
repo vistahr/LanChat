@@ -56,9 +56,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import de.vistahr.lanchat.model.AbstractChatResponse;
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.ChatPing;
-import de.vistahr.lanchat.model.AbstractChatResponse;
 
 /**
  * Simple LanChat Protocol
@@ -98,6 +98,14 @@ public class SLCP implements IProtocol {
 
 	@Override
 	public AbstractChatResponse parse(String incoming) throws ParseException {
+		
+		String from 	= "";
+		String message 	= "";
+		long tstamp 	= 0;
+		int ID 			= 0;
+		
+		String type = "";
+		
 		try {
 			DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBFac.newDocumentBuilder();
@@ -111,43 +119,38 @@ public class SLCP implements IProtocol {
 			// parse nodes
 			NodeList nl;
 			
-			nl = lanchat.getElementsByTagName("tstamp");
-			Node dateNode = nl.item(0);
-			long tstamp = 0;
-			try {
-				tstamp = Long.parseLong(dateNode.getTextContent());
-			} catch(NumberFormatException e) {
-				throw new ParseException("invalid input", 0);
+			type = lanchat.getAttribute("type");
+			
+			
+			if(type.equals("message")) {
+				nl = lanchat.getElementsByTagName("tstamp");
+				Node dateNode = nl.item(0);
+				try {
+					tstamp = Long.parseLong(dateNode.getTextContent());
+				} catch(NumberFormatException e) {
+					throw new ParseException("invalid input", 0);
+				}
 			}
 			
+			if(type.equals("message") || type.equals("ping")) {
+				nl = lanchat.getElementsByTagName("from");
+				Node fromNode = nl.item(0);
+				from = fromNode.getTextContent();
+			}	
 			
-			
-			nl = lanchat.getElementsByTagName("from");
-			Node fromNode = nl.item(0);
-			String from = fromNode.getTextContent();
-			
-			
-			String message = "";
-			try {
+			if(type.equals("message")) {
 				nl = lanchat.getElementsByTagName("message");
 				Node messageNode = nl.item(0);
 				message = messageNode.getTextContent();
-			} catch(NullPointerException e) {
-				// continue - ChatPing has no message
 			}
-				
-			nl = lanchat.getElementsByTagName("id");
-			Node IDNode = nl.item(0);
-			String ID = IDNode.getTextContent();
+			
+			if(type.equals("message") || type.equals("ping")) {
+				nl = lanchat.getElementsByTagName("id");
+				Node IDNode = nl.item(0);
+				ID = Integer.parseInt(IDNode.getTextContent());
+			}
 			
 			
-			if(message == null)
-				return new ChatPing(from, new Date(tstamp), Integer.parseInt(ID));
-			
-			
-			return new ChatMessage(from, message, new Date(tstamp), Integer.parseInt(ID));
-			
-
 		} catch (SAXParseException e) {
 			throw new ParseException("invalid input", 0);
 			 
@@ -155,16 +158,20 @@ public class SLCP implements IProtocol {
 			throw new ParseException("invalid input", 0);
 			
 		} catch (SAXException e) {
-			e.printStackTrace();
+			throw new ParseException("invalid input", 0);
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new ParseException("invalid input", 0);
 			
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			throw new ParseException("invalid input", 0);
 		}
 		
-		return null;
+		
+		if(type.equals("ping"))
+			return new ChatPing(from, ID);
+		
+		return new ChatMessage(from, message, new Date(tstamp), ID);
 	}
 	
 	
@@ -235,11 +242,13 @@ public class SLCP implements IProtocol {
 			if(type.equals("message")) {
 				msg = doc.createElement("message");
 				msg.appendChild(doc.createTextNode(message.getChatMessage().getMessage()));
+				
+				Element date = doc.createElement("tstamp");
+				date.appendChild(doc.createTextNode("" + message.getWritten().getTime()));
+				root.appendChild(date);
 			}
 			
-			Element date = doc.createElement("tstamp");
-			date.appendChild(doc.createTextNode("" + message.getWritten().getTime()));
-			root.appendChild(date);
+			
 			
 			Element from = doc.createElement("from");
 			from.appendChild(doc.createTextNode(message.getChatName().getName()));
@@ -250,7 +259,8 @@ public class SLCP implements IProtocol {
 				root.appendChild(msg); 
 			
 			Element id = doc.createElement("id");
-			id.appendChild(doc.createTextNode("" + SLCP.getMacAddressHash()));
+			id.appendChild(doc.createTextNode("" + message.getID()));
+			//id.appendChild(doc.createTextNode("" + SLCP.getMacAddressHash()));
 			
 			
 			root.appendChild(id);

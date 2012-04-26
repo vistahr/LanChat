@@ -55,7 +55,7 @@ public class SendListener extends AbstractListener implements ActionListener {
 		try {
 			if(view.getSendbox().getText().equals("")) {
 				throw new IllegalArgumentException();
-			}	
+			}
 			
 			// fill model
 			model.setChatMessage(view.getSendbox().getText());
@@ -64,7 +64,12 @@ public class SendListener extends AbstractListener implements ActionListener {
 			ChatMessage msg = new ChatMessage(view.getChatname().getText(), view.getSendbox().getText(), new Date());
 			SLCP sender = new SLCP(SLCP.VERSION_V1);
 			mcast.send(sender.generateMessage(msg));
+			
+			// #delete-Content# is the only string which deletes
+			// the content in the update-method in view
+			model.setChatMessage("#delete-Content#");
 			model.setChatMessage("");
+			
 			
 		} catch(IOException ex) {
 			new MessageDialog(ex.getMessage());

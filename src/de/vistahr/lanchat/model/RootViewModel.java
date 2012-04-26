@@ -29,7 +29,12 @@
 package de.vistahr.lanchat.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
+import java.util.Vector;
+
+import de.vistahr.util.logger.JLoggerUtil;
 
 /**
  * Main model, which holds the data of the view
@@ -41,15 +46,18 @@ public class RootViewModel extends Observable {
 	private Message chatMessage;
 	private ArrayList<ChatMessage> entries;
 	
+	private Map<Integer, Name> userList;
+	
 	private boolean mute;
 
 	
 	
 	public RootViewModel() {
-		entries = new ArrayList<ChatMessage>();
+		entries 	= new ArrayList<ChatMessage>();
 		chatMessage = new Message("");
-		chatName = new Name(Name.getDefaultFallbackName());
-		mute = false;
+		chatName 	= new Name(Name.getDefaultFallbackName());
+		mute 		= false;
+		userList	= new HashMap<Integer, Name>();
 	}
 	
 	
@@ -74,6 +82,13 @@ public class RootViewModel extends Observable {
 	}
 	
 	
+	public Vector<Name> getUserList() {
+		Vector<Name> entries = new Vector<Name>();
+		entries.addAll(userList.values());
+		return entries;
+	}
+
+
 	public void setChatName(String cn) {
 		chatName = new Name(cn);
 		setChanged();
@@ -92,9 +107,28 @@ public class RootViewModel extends Observable {
 		notifyObservers(this);
 	}
 	
+	public void addUserListEntry(int ID, Name name) {
+		userList.put(ID, name);
+		setChanged();
+		notifyObservers(this);
+	}	
+	
+	public void removeUserListEntry(int ID) {
+		userList.remove(ID);
+		setChanged();
+		notifyObservers(this);
+	}
 	
 	public ChatMessage getLastEntry() {
-		return getEntries().get(getEntries().size() - 1);
+		ChatMessage msg = null;
+		try {
+			if(getEntries().size() > 0)
+				msg = getEntries().get(getEntries().size() - 1);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			JLoggerUtil.getLogger().warn("ArrayIndexOutOfBoundsException");
+		}
+		
+		return msg;
 	}
 
 

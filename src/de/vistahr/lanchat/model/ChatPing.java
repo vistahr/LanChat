@@ -28,7 +28,7 @@
  */
 package de.vistahr.lanchat.model;
 
-import java.util.Date;
+import de.vistahr.network.SLCP;
 
 /**
  * Chatping represent a single Chatping
@@ -37,17 +37,18 @@ import java.util.Date;
 public class ChatPing extends AbstractChatResponse {
 
 	
-	public ChatPing(String chatName, Date written) {
-		super(chatName, "", written, 0);
+	public ChatPing(String chatName) {
+		super(chatName, "", null, SLCP.getMacAddressHash());
 	}
 	
-	public ChatPing(String chatName, Date written, int ID) {
-		super(chatName, "", written, ID);
+	
+	public ChatPing(String chatName, int ID) {
+		super(chatName, "", null, ID);
 	}
 
 	@Override
 	public String toString() {
-		return null;
+		return "ChatPing";
 	}
 
 }

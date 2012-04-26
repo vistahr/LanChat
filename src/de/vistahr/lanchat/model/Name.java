@@ -105,4 +105,9 @@ public class Name {
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
 }

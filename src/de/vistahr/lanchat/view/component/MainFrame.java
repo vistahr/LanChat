@@ -29,32 +29,40 @@
 package de.vistahr.lanchat.view.component;
 
 import java.awt.Dimension;
-import java.awt.Image;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-import de.vistahr.lanchat.resource.Bundle;
+import de.vistahr.lanchat.util.settings.PropertiesUtil;
+import de.vistahr.util.logger.JLoggerUtil;
 
 
 public class MainFrame extends JFrame {
 
+	private static final long serialVersionUID = 1099533524779117586L;
+
+	public void setIncomingAppIcon() {
+		setIconImage(PropertiesUtil.getLanchatPropertyImage("ICON_INCOMING"));
+	}
+	
+	public void setDefaultAppIcon() {
+		setIconImage(PropertiesUtil.getLanchatPropertyImage("ICON_APP"));
+	}	
 
 	public MainFrame(String appName) {
 		super(appName);
 		
 		// Frame settings
-		setPreferredSize(new Dimension(350,250));
+		setPreferredSize(new Dimension(400,250));
 		setResizable(true);
 		pack();
 		setLocationRelativeTo(null);
 		
 		// icon - frame
 		try {
-			Image icon = new ImageIcon(getClass().getResource(Bundle.getString("ICON_APP"))).getImage();
-			setIconImage(icon);
+			setDefaultAppIcon();
+			
 		} catch(NullPointerException e) {
-			new MessageDialog("Cannot load resource " + Bundle.getString("ICON_APP"));
+			JLoggerUtil.getLogger().warn("MainFrame - Cannot load resource " + PropertiesUtil.getLanchatPropertyString("ICON_APP"));
 		}
 	}
 	

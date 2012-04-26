@@ -34,9 +34,8 @@ import java.util.Observer;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.resource.Bundle;
+import de.vistahr.lanchat.util.settings.PropertiesUtil;
 import edu.cmu.relativelayout.BindingFactory;
 import edu.cmu.relativelayout.RelativeConstraints;
 import edu.cmu.relativelayout.RelativeLayout;
@@ -63,6 +62,8 @@ public class RootView implements Observer {
 	private SendButton sendbutton;
 	private MuteButton mutebutton;
 	private Tray tray;
+	private UserList userList;
+	private UserListScroller userListScroller;
 	
 	// Panels
 	private JPanel mainPanel;
@@ -108,6 +109,16 @@ public class RootView implements Observer {
 	}
 
 
+	public UserList getUserList() {
+		return userList;
+	}
+
+
+	public UserListScroller getUserListScroller() {
+		return userListScroller;
+	}
+
+
 	/**
 	 * Constructor set up the UI and listeners
 	 */
@@ -122,7 +133,7 @@ public class RootView implements Observer {
 	private void initialize() {
 		
 		// set app name for mac
-		System.setProperty("com.apple.mrj.application.apple.menu.about.name", Bundle.getString("APP_NAME"));
+		System.setProperty("com.apple.mrj.application.apple.menu.about.name", PropertiesUtil.getLanchatPropertyString("APP_NAME"));
 		// use osx jmenu 
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		
@@ -134,30 +145,37 @@ public class RootView implements Observer {
 	    }	
 				
 		// Frame
-		mainframe = new MainFrame(Bundle.getString("APP_NAME"));
+		mainframe = new MainFrame(PropertiesUtil.getLanchatPropertyString("APP_NAME"));
 		
 		
 		// Components
 		/////////////
-		mainPanel = new JPanel();
-		chatname = new ChatName();
-		mutebutton = new MuteButton();
-		chatbox = new Chatbox();
-		chatscroller = new ChatboxScroller(chatbox);
-		sendbox = new SendBox();
-		sendbutton = new SendButton();
-		tray = new Tray();
+		mainPanel 			= new JPanel();
+		chatname 			= new ChatName();
+		mutebutton 			= new MuteButton();
+		chatbox 			= new Chatbox();
+		chatscroller 		= new ChatboxScroller(chatbox);
+		sendbox 			= new SendBox();
+		sendbutton 			= new SendButton();
+		tray 				= new Tray();
+		userList 			= new UserList();
+		userListScroller 	= new UserListScroller(userList);
+		
+		
+		userList.setFixedCellWidth(getMainframe().getWidth() / 4);
 	}
 	
 	
 	private void positionLayout() {
 		BindingFactory bf = new BindingFactory();
-		// top
 		mainPanel = new JPanel(new RelativeLayout());
+		// top
 		mainPanel.add(chatname,new RelativeConstraints(bf.topEdge(), bf.leftEdge()));
 		mainPanel.add(mutebutton, new RelativeConstraints(bf.rightEdge(), bf.topEdge()));
+		// right side
+		mainPanel.add(userListScroller, new RelativeConstraints(bf.rightEdge(), bf.below(mutebutton), bf.above(sendbutton)));
 		// center
-		mainPanel.add(chatscroller, new RelativeConstraints(bf.below(chatname), bf.leftEdge(), bf.rightEdge(), bf.above(sendbox)));
+		mainPanel.add(chatscroller, new RelativeConstraints(bf.below(chatname), bf.leftEdge(), bf.leftOf(userListScroller), bf.above(sendbox)));
 		// bottom
 		mainPanel.add(sendbox, new RelativeConstraints(bf.bottomEdge(), bf.leftEdge(), bf.leftOf(sendbutton)));
 		mainPanel.add(sendbutton, new RelativeConstraints(bf.bottomEdge(), bf.rightEdge()));
@@ -172,8 +190,13 @@ public class RootView implements Observer {
 	@Override
 	public void update(Observable o, Object model) {
 		chatbox.setContent(((RootViewModel) model).getEntries());
-		chatname.setText(((RootViewModel) model).getChatName().getName());
-		sendbox.setText(((RootViewModel) model).getChatMessage().getMessage());
+		userList.setListData(((RootViewModel) model).getUserList());
+		
+		if(!chatname.hasFocus())
+			chatname.setText(((RootViewModel) model).getChatName().getName());
+		
+		if(((RootViewModel) model).getChatMessage().getMessage().equals("#delete-Content#"))
+			sendbox.setText("");
 	}
 
 	

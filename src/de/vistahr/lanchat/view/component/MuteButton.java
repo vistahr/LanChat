@@ -33,20 +33,23 @@ import java.awt.Dimension;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import de.vistahr.lanchat.resource.Bundle;
+import de.vistahr.lanchat.util.settings.PropertiesUtil;
+import de.vistahr.util.logger.JLoggerUtil;
 
 
 public class MuteButton extends JButton {
 
-	
+	private static final long serialVersionUID = -395824186872240129L;
+
 	public MuteButton() {
 		super();
-		setPreferredSize(new Dimension(30,25));
+		setPreferredSize(new Dimension(30,20));
 		try {
-			setIcon(new ImageIcon(getClass().getResource(Bundle.getString("ICON_UNMUTE"))));
+			setIcon(new ImageIcon(PropertiesUtil.getLanchatPropertyImage("ICON_UNMUTE")));
 		} catch(NullPointerException e) {
-			new MessageDialog("Cannot load resource " + Bundle.getString("ICON_UNMUTE"));
+			JLoggerUtil.getLogger().warn("Cannot load resource " + PropertiesUtil.getLanchatPropertyString("ICON_UNMUTE"));
 		}
+		setToolTipText("When muted, tray notifications also disabled.");
 	}
 	
 }

@@ -43,8 +43,6 @@ public class ChangeChatnameListener extends AbstractListener implements FocusLis
 
 	@Override
 	public void focusGained(FocusEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -53,7 +51,7 @@ public class ChangeChatnameListener extends AbstractListener implements FocusLis
 			model.setChatName(view.getChatname().getText());
 		} catch(IllegalArgumentException ex) {
 			model.setChatName(Name.getDefaultFallbackName());
-		}	
+		}
 	}
 
 	
