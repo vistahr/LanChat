@@ -44,7 +44,7 @@ import de.vistahr.lanchat.model.RootViewModel;
 import de.vistahr.lanchat.view.component.RootView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.SLCP;
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.util.JLoggerUtil;
 
 public class RootWindowListener extends AbstractListener implements WindowListener {
 

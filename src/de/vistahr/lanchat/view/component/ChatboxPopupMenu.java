@@ -26,43 +26,26 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.task;
+package de.vistahr.lanchat.view.component;
 
-import java.io.IOException;
-import java.util.TimerTask;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
-import de.vistahr.lanchat.model.ChatPing;
-import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.network.Multicast;
-import de.vistahr.network.SLCP;
-import de.vistahr.util.JLoggerUtil;
+public class ChatboxPopupMenu extends JPopupMenu {
 
-
-public class SendPingTask extends TimerTask   {
+	private static final long serialVersionUID = 4446202311309613465L;
 	
-	private Multicast mcast;
-	private RootViewModel model;
+	private JMenuItem clearItem;
 	
 
-	
-	public SendPingTask(RootViewModel m, Multicast mc) {
-		mcast = mc;
-		model = m;
+	public JMenuItem getClearItem() {
+		return clearItem;
 	}
-	
-	@Override
-	public void run() {
-		ChatPing ping =  new ChatPing(model.getChatName().getName());
-		
-		SLCP sender = new SLCP(SLCP.VERSION_V1);
-		try {
-			String resp = sender.generatePing(ping);
-			mcast.send(resp);
-			
-		} catch (IOException e) {
-			JLoggerUtil.getLogger().warn("Send Ping failed - IOException");
-		}
+
+
+	public ChatboxPopupMenu() {
+		clearItem = new JMenuItem("clear history");
+		add(clearItem);
 	}
-	
 	
 }

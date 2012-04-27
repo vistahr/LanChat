@@ -26,43 +26,30 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.task;
+package de.vistahr.lanchat.util;
 
-import java.io.IOException;
-import java.util.TimerTask;
-
-import de.vistahr.lanchat.model.ChatPing;
-import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.network.Multicast;
-import de.vistahr.network.SLCP;
-import de.vistahr.util.JLoggerUtil;
+import java.net.URL;
 
 
-public class SendPingTask extends TimerTask   {
+public class SmileyUtil {
 	
-	private Multicast mcast;
-	private RootViewModel model;
 	
-
-	
-	public SendPingTask(RootViewModel m, Multicast mc) {
-		mcast = mc;
-		model = m;
-	}
-	
-	@Override
-	public void run() {
-		ChatPing ping =  new ChatPing(model.getChatName().getName());
+	public static String parseSmileysInString(String inputString) {
+		SmileysEnum[] smileys = SmileysEnum.values();
 		
-		SLCP sender = new SLCP(SLCP.VERSION_V1);
-		try {
-			String resp = sender.generatePing(ping);
-			mcast.send(resp);
+		for(SmileysEnum s: smileys) {
+			String smileyKey = s.toString();
 			
-		} catch (IOException e) {
-			JLoggerUtil.getLogger().warn("Send Ping failed - IOException");
+			if(!smileyKey.equals("")) {
+				URL smileyResource = SmileyUtil.class.getResource(PropertiesUtil.getSmileyPathByKey(smileyKey));
+				if(smileyResource != null)
+					inputString = inputString.replace(s.getSmiley(), "<img src=\"" + smileyResource.toString() + "\" />");
+			}
 		}
+		
+		return inputString;
 	}
+	
 	
 	
 }

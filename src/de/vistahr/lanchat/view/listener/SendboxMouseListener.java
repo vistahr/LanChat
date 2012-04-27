@@ -26,43 +26,43 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.task;
+package de.vistahr.lanchat.view.listener;
 
-import java.io.IOException;
-import java.util.TimerTask;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-import de.vistahr.lanchat.model.ChatPing;
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.network.Multicast;
-import de.vistahr.network.SLCP;
-import de.vistahr.util.JLoggerUtil;
+import de.vistahr.lanchat.view.component.RootView;
 
+public class SendboxMouseListener extends AbstractListener implements MouseListener {
 
-public class SendPingTask extends TimerTask   {
-	
-	private Multicast mcast;
-	private RootViewModel model;
-	
-
-	
-	public SendPingTask(RootViewModel m, Multicast mc) {
-		mcast = mc;
-		model = m;
+	public SendboxMouseListener(RootViewModel m, RootView v) {
+		super(m, v);
 	}
-	
+
 	@Override
-	public void run() {
-		ChatPing ping =  new ChatPing(model.getChatName().getName());
-		
-		SLCP sender = new SLCP(SLCP.VERSION_V1);
-		try {
-			String resp = sender.generatePing(ping);
-			mcast.send(resp);
-			
-		} catch (IOException e) {
-			JLoggerUtil.getLogger().warn("Send Ping failed - IOException");
+	public void mouseClicked(MouseEvent e) {
+		//  following expression is true if the right button was pressed
+		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) == InputEvent.BUTTON3_MASK){
+			view.getSendboxPopup().show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
-	
-	
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+	}
+
 }

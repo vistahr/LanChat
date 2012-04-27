@@ -28,6 +28,7 @@
  */
 package de.vistahr.lanchat.view.component;
 
+import java.awt.EventQueue;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -35,7 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.util.settings.PropertiesUtil;
+import de.vistahr.lanchat.util.PropertiesUtil;
 import edu.cmu.relativelayout.BindingFactory;
 import edu.cmu.relativelayout.RelativeConstraints;
 import edu.cmu.relativelayout.RelativeLayout;
@@ -55,10 +56,15 @@ public class RootView implements Observer {
 	private MainFrame mainframe;
 
 	// Components
-	private ChatName chatname;
+	private ChatNameText chatname;
+	
 	private Chatbox chatbox;
 	private ChatboxScroller chatscroller;
+	private ChatboxPopupMenu chatboxPopup;
+	
 	private SendBox sendbox;
+	private SendboxPopup sendboxPopup;
+	
 	private SendButton sendbutton;
 	private MuteButton mutebutton;
 	private Tray tray;
@@ -75,7 +81,7 @@ public class RootView implements Observer {
 	}
 
 
-	public ChatName getChatname() {
+	public ChatNameText getChatname() {
 		return chatname;
 	}
 
@@ -119,6 +125,16 @@ public class RootView implements Observer {
 	}
 
 
+	public ChatboxPopupMenu getChatboxPopup() {
+		return chatboxPopup;
+	}
+
+
+	public SendboxPopup getSendboxPopup() {
+		return sendboxPopup;
+	}
+
+
 	/**
 	 * Constructor set up the UI and listeners
 	 */
@@ -151,7 +167,7 @@ public class RootView implements Observer {
 		// Components
 		/////////////
 		mainPanel 			= new JPanel();
-		chatname 			= new ChatName();
+		chatname 			= new ChatNameText();
 		mutebutton 			= new MuteButton();
 		chatbox 			= new Chatbox();
 		chatscroller 		= new ChatboxScroller(chatbox);
@@ -160,8 +176,8 @@ public class RootView implements Observer {
 		tray 				= new Tray();
 		userList 			= new UserList();
 		userListScroller 	= new UserListScroller(userList);
-		
-		
+		chatboxPopup		= new ChatboxPopupMenu();
+		sendboxPopup		= new SendboxPopup(this);
 		userList.setFixedCellWidth(getMainframe().getWidth() / 4);
 	}
 	
@@ -175,7 +191,7 @@ public class RootView implements Observer {
 		// right side
 		mainPanel.add(userListScroller, new RelativeConstraints(bf.rightEdge(), bf.below(mutebutton), bf.above(sendbutton)));
 		// center
-		mainPanel.add(chatscroller, new RelativeConstraints(bf.below(chatname), bf.leftEdge(), bf.leftOf(userListScroller), bf.above(sendbox)));
+		mainPanel.add(chatscroller, new RelativeConstraints(bf.below(mutebutton), bf.leftEdge(), bf.leftOf(userListScroller), bf.above(sendbox)));
 		// bottom
 		mainPanel.add(sendbox, new RelativeConstraints(bf.bottomEdge(), bf.leftEdge(), bf.leftOf(sendbutton)));
 		mainPanel.add(sendbutton, new RelativeConstraints(bf.bottomEdge(), bf.rightEdge()));
@@ -189,14 +205,36 @@ public class RootView implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object model) {
-		chatbox.setContent(((RootViewModel) model).getEntries());
-		userList.setListData(((RootViewModel) model).getUserList());
 		
-		if(!chatname.hasFocus())
-			chatname.setText(((RootViewModel) model).getChatName().getName());
+		RootViewModel rvm = ((RootViewModel) model);
 		
-		if(((RootViewModel) model).getChatMessage().getMessage().equals("#delete-Content#"))
-			sendbox.setText("");
+		
+		// pingchange refresh only the userlist
+		if(rvm.isPingChange()) {
+			userList.setListData(rvm.getUserList());
+			rvm.setPingChange(false);
+			
+		// other fields, only changed by new messages
+		} else {
+
+			chatbox.setContent(rvm.getEntries());
+			
+			// scroll every update to bottom, cause updating the entries 
+			// scrolls automatically to the top. 
+			EventQueue.invokeLater(new Runnable(){
+				public void run() {
+					chatscroller.scrollChatboxToBottom();
+				}
+			});
+			
+			if(!chatname.hasFocus())
+				chatname.setText(rvm.getChatName().getName());
+			
+			if(rvm.getChatMessage().getMessage().equals("#delete-Content#"))
+				sendbox.setText("");
+			
+		}
+		
 	}
 
 	

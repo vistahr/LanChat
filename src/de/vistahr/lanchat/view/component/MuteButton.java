@@ -33,8 +33,8 @@ import java.awt.Dimension;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import de.vistahr.lanchat.util.settings.PropertiesUtil;
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.lanchat.util.PropertiesUtil;
+import de.vistahr.util.JLoggerUtil;
 
 
 public class MuteButton extends JButton {

@@ -42,7 +42,7 @@ public class ScrollListener extends AbstractListener implements AdjustmentListen
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
-		e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+		//e.getAdjustable().setValue(e.getAdjustable().getMaximum());
 	}
 
 }

@@ -41,7 +41,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import de.vistahr.lanchat.event.MulticastReceiveEvent;
 import de.vistahr.network.listener.IMulticastReceiveListener;
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.util.JLoggerUtil;
 
 
 /**

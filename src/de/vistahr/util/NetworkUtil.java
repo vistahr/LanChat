@@ -1,6 +1,7 @@
 /**
  * 
  * 	Copyright 2012 Vince. All rights reserved.
+
  * 	
  * 	Redistribution and use in source and binary forms, with or without modification, are
  * 	permitted provided that the following conditions are met:
@@ -26,43 +27,35 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.task;
+package de.vistahr.util;
 
-import java.io.IOException;
-import java.util.TimerTask;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Collections;
 
-import de.vistahr.lanchat.model.ChatPing;
-import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.network.Multicast;
-import de.vistahr.network.SLCP;
-import de.vistahr.util.JLoggerUtil;
-
-
-public class SendPingTask extends TimerTask   {
+public class NetworkUtil {
 	
-	private Multicast mcast;
-	private RootViewModel model;
 	
-
-	
-	public SendPingTask(RootViewModel m, Multicast mc) {
-		mcast = mc;
-		model = m;
-	}
-	
-	@Override
-	public void run() {
-		ChatPing ping =  new ChatPing(model.getChatName().getName());
-		
-		SLCP sender = new SLCP(SLCP.VERSION_V1);
+	public static int getMacAddressHash() {
+		// get mac address
+		String macAddress = ""; 
 		try {
-			String resp = sender.generatePing(ping);
-			mcast.send(resp);
-			
-		} catch (IOException e) {
-			JLoggerUtil.getLogger().warn("Send Ping failed - IOException");
+		  for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) { 
+		    byte[] hardwareAddress = ni.getHardwareAddress(); 
+		    if(hardwareAddress != null) { 
+		      for (int i = 0; i < hardwareAddress.length; i++) { 
+		    	  macAddress += String.format( (i==0?"":"-")+"%02X", hardwareAddress[i]);		    
+		      }
+		    }
+		  }
+		  // convert mac address to int
+		  return macAddress.hashCode();
+		  
+		} catch (SocketException e) {
+			e.printStackTrace();
 		}
+		
+		throw new NumberFormatException();
 	}
-	
 	
 }

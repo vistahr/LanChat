@@ -36,12 +36,14 @@ import de.vistahr.lanchat.model.AbstractChatResponse;
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.ChatPing;
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.util.settings.PropertiesUtil;
+import de.vistahr.lanchat.util.PropertiesUtil;
+import de.vistahr.lanchat.util.SmileyUtil;
 import de.vistahr.lanchat.view.component.RootView;
 import de.vistahr.lanchat.view.listener.AbstractListener;
 import de.vistahr.network.SLCP;
 import de.vistahr.network.listener.IMulticastReceiveListener;
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.util.JLoggerUtil;
+import de.vistahr.util.SoundUtil;
 
 public class ReceiveListener extends AbstractListener implements IMulticastReceiveListener {
 	
@@ -60,13 +62,17 @@ public class ReceiveListener extends AbstractListener implements IMulticastRecei
 			final AbstractChatResponse resp = receiver.parse(event.getData());
 			
 			if(resp instanceof ChatMessage) {
-				// add entry to the model to display it on the panechatbox
-				model.addEntry((ChatMessage)resp);
+				// Add entry to the model to display it on the panechatbox.
+				// Before, parse all sileys and replace ascii with html img tags.
+				ChatMessage chatMessage = (ChatMessage)resp;
+				chatMessage.getChatMessage().setMessage(SmileyUtil.parseSmileysInString(chatMessage.getChatMessage().getMessage()));
+				model.addEntry(chatMessage);
 				// change trayicon (when application is minimized)
 				view.getTray().setIncomingTrayIcon();
 				
 				if(!view.getMainframe().isActive())
 					view.getMainframe().setIncomingAppIcon();
+				
 				
 				// when muted, hide tray messages
 				if(!model.isMute()) {
@@ -77,6 +83,7 @@ public class ReceiveListener extends AbstractListener implements IMulticastRecei
 			
 			if(resp instanceof ChatPing) {
 				model.addUserListEntry(resp.getID(),resp.getChatName());
+				model.setPingChange(true);
 			}
 			
 			
@@ -93,9 +100,14 @@ public class ReceiveListener extends AbstractListener implements IMulticastRecei
 		
 	}
 	
-	// TODO playSound not implemented
+	
 	private void playSound(URL res) {
-		JLoggerUtil.getLogger().info("playSound not implemented");
+		try {
+			SoundUtil.playWAV(ReceiveListener.class.getResource(PropertiesUtil.getLanchatPropertyString("SOUND_INCOMING")));
+			
+		} catch (InterruptedException e) {
+			JLoggerUtil.getLogger().warn("InterruptedException in playSound");
+		}
 	}
 	
 }

@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Vector;
 
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.util.JLoggerUtil;
 
 /**
  * Main model, which holds the data of the view
@@ -50,7 +50,7 @@ public class RootViewModel extends Observable {
 	
 	private boolean mute;
 
-	
+	private boolean pingChange;
 	
 	public RootViewModel() {
 		entries 	= new ArrayList<ChatMessage>();
@@ -101,11 +101,30 @@ public class RootViewModel extends Observable {
 		notifyObservers(this);
 	}
 	
+	public boolean isPingChange() {
+		return pingChange;
+	}
+	
+	public void setPingChange(boolean pc) {
+		pingChange = pc;
+	}
+
+
 	public void addEntry(ChatMessage cm) {
-		entries.add(cm);
+		synchronized (entries) {
+			entries.add(cm);
+		}
 		setChanged();
 		notifyObservers(this);
 	}
+	
+	public void removeEntries() {
+		synchronized (entries) {
+			entries.clear();
+		}
+		setChanged();
+		notifyObservers(this);
+	}	
 	
 	public void addUserListEntry(int ID, Name name) {
 		userList.put(ID, name);

@@ -42,13 +42,16 @@ import de.vistahr.lanchat.task.SendPingTask;
 import de.vistahr.lanchat.view.component.MessageDialog;
 import de.vistahr.lanchat.view.component.RootView;
 import de.vistahr.lanchat.view.listener.ChangeChatnameListener;
+import de.vistahr.lanchat.view.listener.ChatboxMouseListener;
+import de.vistahr.lanchat.view.listener.ChatboxPopupClearListener;
 import de.vistahr.lanchat.view.listener.MuteListener;
 import de.vistahr.lanchat.view.listener.RootWindowListener;
 import de.vistahr.lanchat.view.listener.ScrollListener;
 import de.vistahr.lanchat.view.listener.SendListener;
+import de.vistahr.lanchat.view.listener.SendboxMouseListener;
 import de.vistahr.lanchat.view.listener.TrayMouseListener;
 import de.vistahr.network.Multicast;
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.util.JLoggerUtil;
 
 /**
  * Main Chatcontroller
@@ -89,6 +92,8 @@ public class RootController {
 		} catch (UnknownHostException e) {
 			model.setChatName(Name.getDefaultFallbackName());
 		}
+		
+		view.getSendbox().requestFocus();
 	}
 	
 	
@@ -151,13 +156,15 @@ public class RootController {
 		view.getMutebutton().addActionListener(new MuteListener(model, view));
 		view.getChatname().addFocusListener(new ChangeChatnameListener(model, view));
 		view.getMainframe().addWindowListener(new RootWindowListener(model, view, mcast, exec, timer));
-		// autoscroll to bottom // TODO cannot scroll to top
 		view.getChatscroller().getVerticalScrollBar().addAdjustmentListener(new ScrollListener(model, view));
 		try {
 			view.getTray().getIcon().addMouseListener(new TrayMouseListener(model, view));
 		} catch (IllegalAccessException e) {
 			JLoggerUtil.getLogger().warn("Tray not supported");
 		}
+		view.getChatbox().addMouseListener(new ChatboxMouseListener(model, view));
+		view.getChatboxPopup().getClearItem().addActionListener(new ChatboxPopupClearListener(model, view));
+		view.getSendbox().addMouseListener(new SendboxMouseListener(model, view));
 	}
 	
 	

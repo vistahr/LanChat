@@ -34,9 +34,9 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.util.settings.PropertiesUtil;
+import de.vistahr.lanchat.util.PropertiesUtil;
 import de.vistahr.lanchat.view.component.RootView;
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.util.JLoggerUtil;
 
 public class MuteListener extends AbstractListener implements ActionListener {
 

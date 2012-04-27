@@ -36,7 +36,7 @@ import javax.swing.JFrame;
 
 import de.vistahr.lanchat.model.RootViewModel;
 import de.vistahr.lanchat.view.component.RootView;
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.util.JLoggerUtil;
 
 public class TrayMouseListener extends AbstractListener implements MouseListener {
 

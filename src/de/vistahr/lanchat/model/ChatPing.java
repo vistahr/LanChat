@@ -28,7 +28,7 @@
  */
 package de.vistahr.lanchat.model;
 
-import de.vistahr.network.SLCP;
+import de.vistahr.util.NetworkUtil;
 
 /**
  * Chatping represent a single Chatping
@@ -38,7 +38,7 @@ public class ChatPing extends AbstractChatResponse {
 
 	
 	public ChatPing(String chatName) {
-		super(chatName, "", null, SLCP.getMacAddressHash());
+		super(chatName, "", null, NetworkUtil.getMacAddressHash());
 	}
 	
 	

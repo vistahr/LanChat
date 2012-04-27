@@ -26,43 +26,38 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.task;
+package de.vistahr.lanchat.util;
 
-import java.io.IOException;
-import java.util.TimerTask;
-
-import de.vistahr.lanchat.model.ChatPing;
-import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.network.Multicast;
-import de.vistahr.network.SLCP;
-import de.vistahr.util.JLoggerUtil;
-
-
-public class SendPingTask extends TimerTask   {
+public enum SmileysEnum {
 	
-	private Multicast mcast;
-	private RootViewModel model;
+	SMILEY_CONFUSE(":-S"),
+	SMILEY_COOL("8-)"),
+	SMILEY_CRY(":´-("),
+	SMILEY_EEK("O_O"),
+	SMILEY_EVIL("xD"),
+	SMILEY_GRIN(":-D"),
+	SMILEY_KISS(":-*"),
+	SMILEY_LOL("^^"),
+	SMILEY_MAD(":-/"),
+	SMILEY_MONEY(":-$"),
+	SMILEY_NEUTRAL(":-|"),
+	SMILEY_RAZZ(":-P"),
+	SMILEY_RED("O:-|"),
+	SMILEY_ROLL("o_O"),
+	SMILEY_SAD(":-("),
+	SMILEY_SUPRISE(":-O"),
+	SMILEY_WINK(";-)"),
+	SMILEY_ZIPPER(":-§"),
+	SMILEY_SMILE(":-)");
 	
-
+	private String smiley;
 	
-	public SendPingTask(RootViewModel m, Multicast mc) {
-		mcast = mc;
-		model = m;
+	SmileysEnum(String s) {
+		smiley = s;
 	}
 	
-	@Override
-	public void run() {
-		ChatPing ping =  new ChatPing(model.getChatName().getName());
-		
-		SLCP sender = new SLCP(SLCP.VERSION_V1);
-		try {
-			String resp = sender.generatePing(ping);
-			mcast.send(resp);
-			
-		} catch (IOException e) {
-			JLoggerUtil.getLogger().warn("Send Ping failed - IOException");
-		}
+	public String getSmiley() {
+		return smiley;
 	}
-	
 	
 }

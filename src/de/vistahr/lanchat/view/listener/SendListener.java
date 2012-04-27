@@ -35,10 +35,10 @@ import java.util.Date;
 
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.lanchat.view.component.MessageDialog;
 import de.vistahr.lanchat.view.component.RootView;
 import de.vistahr.network.Multicast;
 import de.vistahr.network.SLCP;
+import de.vistahr.util.JLoggerUtil;
 
 public class SendListener extends AbstractListener implements ActionListener {
 
@@ -66,19 +66,20 @@ public class SendListener extends AbstractListener implements ActionListener {
 			mcast.send(sender.generateMessage(msg));
 			
 			// #delete-Content# is the only string which deletes
-			// the content in the update-method in view
+			// the content in the update-method (RootView)
 			model.setChatMessage("#delete-Content#");
 			model.setChatMessage("");
 			
+			view.getSendbox().requestFocus();
 			
 		} catch(IOException ex) {
-			new MessageDialog(ex.getMessage());
+			JLoggerUtil.getLogger().warn("IOException in SendListener");
 			
 		} catch (NullPointerException ex) {
-			ex.printStackTrace();
+			JLoggerUtil.getLogger().warn("NullPointerException in SendListener");
 			
 		} catch (IllegalArgumentException ex) {
-			// no msg output for chatname & message
+			JLoggerUtil.getLogger().warn("IllegalArgumentException in SendListener - no msg output for chatname & message");
 		}
 	}
 

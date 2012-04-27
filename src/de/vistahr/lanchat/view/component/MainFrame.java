@@ -32,14 +32,16 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 
-import de.vistahr.lanchat.util.settings.PropertiesUtil;
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.lanchat.util.PropertiesUtil;
+import de.vistahr.util.JLoggerUtil;
 
 
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1099533524779117586L;
 
+	
+	
 	public void setIncomingAppIcon() {
 		setIconImage(PropertiesUtil.getLanchatPropertyImage("ICON_INCOMING"));
 	}
@@ -53,6 +55,7 @@ public class MainFrame extends JFrame {
 		
 		// Frame settings
 		setPreferredSize(new Dimension(400,250));
+		setMinimumSize(new Dimension(400,250));
 		setResizable(true);
 		pack();
 		setLocationRelativeTo(null);

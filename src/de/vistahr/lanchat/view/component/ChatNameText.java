@@ -26,46 +26,21 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.util.settings;
+package de.vistahr.lanchat.view.component;
 
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
+import java.awt.Color;
 
-import de.vistahr.util.logger.JLoggerUtil;
+import javax.swing.BorderFactory;
+import javax.swing.JTextField;
 
-public class PropertiesUtil {
+public class ChatNameText extends JTextField {
 
-	
-	private static String basename = "/lanchat.properties";
-	
-	
-	public static String getLanchatPropertyString(String key) {
-		Properties properties = new Properties();
-		String resultProperty = "";
-		
-		try {
-			properties.load(PropertiesUtil.class.getResourceAsStream(basename));
-			resultProperty = properties.getProperty(key);
-			
-		} catch (FileNotFoundException e) {
-			JLoggerUtil.getLogger().warn("FileNotFoundException " + basename);
-			
-		} catch (IOException e) {
-			JLoggerUtil.getLogger().warn("IOException " + basename);
+	private static final long serialVersionUID = -816181882259466838L;
 
-		} catch (NullPointerException e) {
-			JLoggerUtil.getLogger().warn("NullPointerException " + basename);
-		}
-		
-		
-		return resultProperty;
-	}
-	
-	public static Image getLanchatPropertyImage(String key) {
-		return Toolkit.getDefaultToolkit().getImage(PropertiesUtil.class.getResource(PropertiesUtil.getLanchatPropertyString(key)));
+	public ChatNameText() {
+		super(15);
+		setBackground(new Color(240, 240, 240));
+		setBorder(BorderFactory.createEmptyBorder());
 	}
 	
 }

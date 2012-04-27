@@ -26,43 +26,42 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.task;
+package de.vistahr.lanchat.view.component;
 
-import java.io.IOException;
-import java.util.TimerTask;
+import java.net.URL;
 
-import de.vistahr.lanchat.model.ChatPing;
-import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.network.Multicast;
-import de.vistahr.network.SLCP;
-import de.vistahr.util.JLoggerUtil;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
+import de.vistahr.lanchat.util.PropertiesUtil;
+import de.vistahr.lanchat.util.SmileyUtil;
+import de.vistahr.lanchat.util.SmileysEnum;
+import de.vistahr.lanchat.view.listener.SendboxPopupSmileyClickedListener;
 
-public class SendPingTask extends TimerTask   {
-	
-	private Multicast mcast;
-	private RootViewModel model;
-	
+public class SendboxPopup extends JPopupMenu {
 
-	
-	public SendPingTask(RootViewModel m, Multicast mc) {
-		mcast = mc;
-		model = m;
-	}
-	
-	@Override
-	public void run() {
-		ChatPing ping =  new ChatPing(model.getChatName().getName());
+	private static final long serialVersionUID = 2878641957422140438L;
+
+	public SendboxPopup(RootView v) {
+		// get all smileys and add every element into an JItem
+		SmileysEnum[] smileys = SmileysEnum.values();
 		
-		SLCP sender = new SLCP(SLCP.VERSION_V1);
-		try {
-			String resp = sender.generatePing(ping);
-			mcast.send(resp);
+		for(SmileysEnum s: smileys) {
+			JMenuItem smileyItem = null;
+			String smileyKey = s.toString();
 			
-		} catch (IOException e) {
-			JLoggerUtil.getLogger().warn("Send Ping failed - IOException");
+			if(!smileyKey.equals("")) {
+				URL smileyResource = SmileyUtil.class.getResource(PropertiesUtil.getSmileyPathByKey(smileyKey));
+				if(smileyResource != null) {
+					smileyItem = new JMenuItem(s.getSmiley(), new ImageIcon(smileyResource));
+					smileyItem.addActionListener(new SendboxPopupSmileyClickedListener(null, v));
+					add(smileyItem);
+				}
+					
+			}
 		}
+		
 	}
-	
 	
 }

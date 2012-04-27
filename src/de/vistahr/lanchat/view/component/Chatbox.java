@@ -34,8 +34,11 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import javax.swing.JEditorPane;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import de.vistahr.lanchat.model.ChatMessage;
+import de.vistahr.util.JLoggerUtil;
 
 public class Chatbox extends JEditorPane {
 
@@ -45,20 +48,31 @@ public class Chatbox extends JEditorPane {
 		super();
 		setEditable(false);
 		setPreferredSize(new Dimension(320, 150));
+		
+		setContentType("text/html");
+		HTMLEditorKit kit = new HTMLEditorKit();
+		setEditorKit(kit);
+		
+		StyleSheet styleSheet = kit.getStyleSheet();
+		styleSheet.addRule("body {color:#000; font-family:dialog; font-size:8.8px; }");
 	}
 	
 	public void setContent(ArrayList<ChatMessage> entries) {
-		String message = "connected...";
+		String message = "<span style='color:#999999;font-style:italic;font-size:8px;'>connected...</span>";
 		
-		Iterator<ChatMessage> itr = entries.iterator();
-	    while (itr.hasNext()) {
-	    	try {
-	    		message = message + "\n" + itr.next().toString();
-	    	} catch(ConcurrentModificationException e) {
-	    		break;
-	    	}
-	    }
-	    setText(message.toString());
+		synchronized (entries) {
+			Iterator<ChatMessage> itr = entries.iterator();
+			while (itr.hasNext()) {
+		    	try {
+		    		message = message + "\n<br />" + itr.next().toString();
+		    		
+		    	} catch(ConcurrentModificationException e) {
+		    		JLoggerUtil.getLogger().warn("ConcurrentModificationException in setContent of Chatbox");
+		    		break;
+		    	}
+		    }
+		    setText(message.toString());
+		}
 	}
 	
 }

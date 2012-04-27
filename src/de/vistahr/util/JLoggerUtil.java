@@ -26,43 +26,18 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.lanchat.task;
+package de.vistahr.util;
 
-import java.io.IOException;
-import java.util.TimerTask;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
-import de.vistahr.lanchat.model.ChatPing;
-import de.vistahr.lanchat.model.RootViewModel;
-import de.vistahr.network.Multicast;
-import de.vistahr.network.SLCP;
-import de.vistahr.util.JLoggerUtil;
-
-
-public class SendPingTask extends TimerTask   {
-	
-	private Multicast mcast;
-	private RootViewModel model;
-	
-
-	
-	public SendPingTask(RootViewModel m, Multicast mc) {
-		mcast = mc;
-		model = m;
+/**
+ * Mapper for Log4j
+ * @author vistahr
+ */
+public class JLoggerUtil {
+	public static Logger getLogger() {
+		PropertyConfigurator.configure("res/log4j.properties");
+		return Logger.getRootLogger();
 	}
-	
-	@Override
-	public void run() {
-		ChatPing ping =  new ChatPing(model.getChatName().getName());
-		
-		SLCP sender = new SLCP(SLCP.VERSION_V1);
-		try {
-			String resp = sender.generatePing(ping);
-			mcast.send(resp);
-			
-		} catch (IOException e) {
-			JLoggerUtil.getLogger().warn("Send Ping failed - IOException");
-		}
-	}
-	
-	
 }

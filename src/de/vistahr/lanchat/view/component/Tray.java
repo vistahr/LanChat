@@ -33,8 +33,8 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.util.MissingResourceException;
 
-import de.vistahr.lanchat.util.settings.PropertiesUtil;
-import de.vistahr.util.logger.JLoggerUtil;
+import de.vistahr.lanchat.util.PropertiesUtil;
+import de.vistahr.util.JLoggerUtil;
 
 
 public class Tray {

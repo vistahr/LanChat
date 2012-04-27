@@ -43,8 +43,6 @@ public abstract class AbstractChatResponse {
 	private Date written;
 	private int ID;
 	
-	
-	
 
 	public AbstractChatResponse(final String chatName, final String chatMessage, final Date written, final int ID) {
 		setChatName(chatName);
@@ -88,7 +86,7 @@ public abstract class AbstractChatResponse {
 		return ID;
 	}
 
-	
+
 	public abstract String toString();
 
 

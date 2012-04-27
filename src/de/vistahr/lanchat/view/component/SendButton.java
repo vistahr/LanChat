@@ -28,6 +28,8 @@
  */
 package de.vistahr.lanchat.view.component;
 
+import java.awt.Dimension;
+
 import javax.swing.JButton;
 
 public class SendButton extends JButton {
@@ -36,6 +38,7 @@ public class SendButton extends JButton {
 
 	public SendButton() {
 		super("Send");
+		setPreferredSize(new Dimension(102,20));
 	}
 	
 }

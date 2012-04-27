@@ -31,11 +31,8 @@ package de.vistahr.network;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.Collections;
 import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -59,6 +56,7 @@ import org.xml.sax.SAXParseException;
 import de.vistahr.lanchat.model.AbstractChatResponse;
 import de.vistahr.lanchat.model.ChatMessage;
 import de.vistahr.lanchat.model.ChatPing;
+import de.vistahr.util.StringUtil;
 
 /**
  * Simple LanChat Protocol
@@ -174,30 +172,7 @@ public class SLCP implements IProtocol {
 		return new ChatMessage(from, message, new Date(tstamp), ID);
 	}
 	
-	
-	public static int getMacAddressHash() {
-		// get mac address
-		String macAddress = ""; 
-		try {
-		  for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) { 
-		    byte[] hardwareAddress = ni.getHardwareAddress(); 
-		    if(hardwareAddress != null) { 
-		      for (int i = 0; i < hardwareAddress.length; i++) { 
-		    	  macAddress += String.format( (i==0?"":"-")+"%02X", hardwareAddress[i]);		    
-		      }
-		    }
-		  }
-		  // convert mac address to int
-		  return macAddress.hashCode();
-		  
-		} catch (SocketException e) {
-			e.printStackTrace();
-		}
-		
-		throw new NumberFormatException();
-	}
-	
-	
+
 	/**
 	 * Generatemapper to send a message
 	 * @param message
@@ -241,7 +216,9 @@ public class SLCP implements IProtocol {
 			Element msg = null;
 			if(type.equals("message")) {
 				msg = doc.createElement("message");
-				msg.appendChild(doc.createTextNode(message.getChatMessage().getMessage()));
+				// disallow own html tags
+				String filteredMsg = StringUtil.stripHtmlTags(message.getChatMessage().getMessage());
+				msg.appendChild(doc.createTextNode(filteredMsg));
 				
 				Element date = doc.createElement("tstamp");
 				date.appendChild(doc.createTextNode("" + message.getWritten().getTime()));

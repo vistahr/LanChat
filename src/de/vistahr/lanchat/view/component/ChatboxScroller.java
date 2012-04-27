@@ -38,7 +38,7 @@ public class ChatboxScroller extends JScrollPane {
 	public ChatboxScroller(JEditorPane pane) {
 		super(pane);
 		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}
 	
 	public void scrollChatboxToBottom() {

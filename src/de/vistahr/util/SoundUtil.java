@@ -1,6 +1,7 @@
 /**
  * 
  * 	Copyright 2012 Vince. All rights reserved.
+
  * 	
  * 	Redistribution and use in source and binary forms, with or without modification, are
  * 	permitted provided that the following conditions are met:
@@ -26,18 +27,19 @@
  * 	authors and should not be interpreted as representing official policies, either expressed
  * 	or implied, of Vince.
  */
-package de.vistahr.util.logger;
+package de.vistahr.util;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import java.applet.Applet;
+import java.applet.AudioClip;
+import java.net.URL;
 
-/**
- * Mapper for Log4j
- * @author vistahr
- */
-public class JLoggerUtil {
-	public static Logger getLogger() {
-		PropertyConfigurator.configure("res/log4j.properties");
-		return Logger.getRootLogger();
+
+public class SoundUtil {
+
+	public static void playWAV(URL waveFile) throws InterruptedException {
+		AudioClip sound = Applet.newAudioClip(waveFile); 
+		sound.play();
 	}
+	
+	
 }
