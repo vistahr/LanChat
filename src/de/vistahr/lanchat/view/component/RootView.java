@@ -161,7 +161,7 @@ public class RootView implements Observer {
 	    }	
 				
 		// Frame
-		mainframe = new MainFrame(PropertiesUtil.getLanchatPropertyString("APP_NAME"));
+		mainframe = new MainFrame(PropertiesUtil.getLanchatPropertyString("APP_NAME") + " - " + PropertiesUtil.getLanchatPropertyString("APP_VERSION"));
 		
 		
 		// Components
@@ -189,7 +189,7 @@ public class RootView implements Observer {
 		mainPanel.add(chatname,new RelativeConstraints(bf.topEdge(), bf.leftEdge()));
 		mainPanel.add(mutebutton, new RelativeConstraints(bf.rightEdge(), bf.topEdge()));
 		// right side
-		mainPanel.add(userListScroller, new RelativeConstraints(bf.rightEdge(), bf.below(mutebutton), bf.above(sendbutton)));
+		mainPanel.add(userListScroller, new RelativeConstraints(bf.rightEdge(), bf.below(mutebutton), bf.above(sendbox)));
 		// center
 		mainPanel.add(chatscroller, new RelativeConstraints(bf.below(mutebutton), bf.leftEdge(), bf.leftOf(userListScroller), bf.above(sendbox)));
 		// bottom

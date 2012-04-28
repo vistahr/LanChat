@@ -17,7 +17,16 @@
 	
 	<property environment="env"/>
 	<property name="ci-build" value="${env.BUILD_NUMBER}"/>
-	<property name="ci-version" value="_v011"/> 
+
+	
+	<property file="res/lanchat.properties"/>
+	<property name="app.version" value="${APP_VERSION}"/> 
+	
+	
+	<property name="jar.target" value="${target.dir}"/>
+	<property name="jar.name" value="${ant.project.name}${APP_VERSION}.jar"/>
+	<property name="jarci-name" value="${ant.project.name}-${ci-build}.jar"/>
+
 	
 	
 	<path id="class.path">    
@@ -60,10 +69,10 @@
 	
 	<target name="build" depends="test">
 		<mkdir dir="${target.dir}"/>
-		<manifestclasspath property="jar.classpath" jarfile="${target.dir}/${ant.project.name}.jar">
+		<manifestclasspath property="jar.classpath" jarfile="">
         	<classpath refid="class.path"/>
 	    </manifestclasspath>
-		<jar destfile="${target.dir}/${ant.project.name}.jar" update="true">
+		<jar destfile="${jar.target}/${jar.name}" update="true">
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${res.dir}"/>
 			<fileset dir="${src.dir}" excludes="**/*.java"/>
@@ -73,12 +82,12 @@
 			  <attribute name="Class-Path" value="${jar.classpath}"/>
 		    </manifest>
 		</jar>
-		<chmod file="${target.dir}/${ant.project.name}.jar" perm="700"/>
+		<chmod file="${jar.target}/${jar.name}" perm="700"/>
 		<echo message="build done"/>
 	</target>
 	
 	<target name="build-ci" depends="build">
-		<move file="${target.dir}/${ant.project.name}.jar" tofile="${target.dir}/${ant.project.name}${ci-version}-${ci-build}.jar"/>
+		<move file="${jar.target}/${jar.name}" tofile="${jar.target}/${jar.ci-name}"/>
 	</target>
 	
 	
