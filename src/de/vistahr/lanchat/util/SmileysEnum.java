@@ -32,7 +32,7 @@ public enum SmileysEnum {
 	
 	SMILEY_CONFUSE(":-S"),
 	SMILEY_COOL("8-)"),
-	SMILEY_CRY(":´-("),
+	SMILEY_CRY(":'-("),
 	SMILEY_EEK("O_O"),
 	SMILEY_EVIL("xD"),
 	SMILEY_GRIN(":-D"),
@@ -47,7 +47,7 @@ public enum SmileysEnum {
 	SMILEY_SAD(":-("),
 	SMILEY_SUPRISE(":-O"),
 	SMILEY_WINK(";-)"),
-	SMILEY_ZIPPER(":-§"),
+	SMILEY_ZIPPER(":-#"),
 	SMILEY_SMILE(":-)");
 	
 	private String smiley;
