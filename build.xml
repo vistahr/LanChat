@@ -25,7 +25,7 @@
 	
 	<property name="jar.target" value="${target.dir}"/>
 	<property name="jar.name" value="${ant.project.name}${APP_VERSION}.jar"/>
-	<property name="jarci-name" value="${ant.project.name}-${ci-build}.jar"/>
+	<property name="jar.ci-name" value="${ant.project.name}-${ci-build}.jar"/>
 
 	
 	
